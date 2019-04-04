@@ -35,7 +35,7 @@ BETA version playable at [https://free-soc.herokuapp.com/](https://free-soc.hero
     * to manage an ongoing game
 * [jquery 1.10.2](https://code.jquery.com/jquery-1.10.2.min.js)
 * [tooltipster](http://iamceege.github.io/tooltipster/) - An embed library to manage tooltips
-* [fabric.js](http://fabricjs.com/) - An embed library to manage objects a the canvas
+* [fabric.js](http://fabricjs.com/) - An node module to manage objects a the canvas
 
 ### Server side
 
