@@ -1,6 +1,8 @@
 # Free-SoC
 Match-making server using _node.js_ and _socket.io_
 
+![](./documentation/screenshoot1.png)
+
 ## Install and run
 
 To install:
