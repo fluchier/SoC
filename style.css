@@ -1,0 +1,578 @@
+/* Fix user-agent */
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  font-weight: 300;
+  -webkit-font-smoothing: antialiased;
+}
+
+html, input {
+  font-family:
+    "HelveticaNeue-Light",
+    "Helvetica Neue Light",
+    "Helvetica Neue",
+    Helvetica,
+    Arial,
+    "Lucida Grande",
+    sans-serif;
+}
+
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+ul {
+  list-style: none;
+  word-wrap: break-word;
+}
+
+/* Pages */
+
+.pages {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  width: 100%;
+}
+
+.page {
+  height: 100%;
+  position: absolute;
+  width: 100%;
+}
+
+/* Login Page */
+
+.login.page {
+  background-color: #000;
+}
+
+.login.page .form {
+  height: 100px;
+  margin-top: -100px;
+  position: absolute;
+
+  text-align: center;
+  top: 50%;
+  width: 100%;
+}
+
+.login.page .form .usernameInput {
+  background-color: transparent;
+  border: none;
+  border-bottom: 2px solid #fff;
+  outline: none;
+  padding-bottom: 15px;
+  text-align: center;
+  width: 400px;
+}
+
+.login.page .title {
+  font-size: 200%;
+}
+
+.login.page .usernameInput {
+  font-size: 200%;
+  letter-spacing: 3px;
+}
+
+.login.page .title, .login.page .usernameInput {
+  color: #fff;
+  font-weight: 100;
+}
+
+/* Game Page */
+
+.gameMgmtButtons {
+  width: 170px;
+  padding: 10px;
+}
+.createGame, .leaveGame, .joinOrLaunchGame {
+/* http://css3buttongenerator.com/ */
+  width: 150px;
+  background: #000000;
+  background-image: -webkit-linear-gradient(top, #000000, #303233);
+  background-image: -moz-linear-gradient(top, #000000, #303233);
+  background-image: -ms-linear-gradient(top, #000000, #303233);
+  background-image: -o-linear-gradient(top, #000000, #303233);
+  background-image: linear-gradient(to bottom, #000000, #303233);
+  -webkit-border-radius: 7;
+  -moz-border-radius: 7;
+  border-radius: 7px;
+  text-shadow: 1px 1px 3px #666666;
+  font-family: Arial;
+  color: #ffffff;
+  font-size: 20px;
+  padding: 5px 10px 5px 10px;
+  text-decoration: none;
+  margin-bottom: 2px;
+}
+
+
+button:disabled,
+button[disabled]{
+  border: 1px solid #999999;
+  background-color: #cccccc;
+  color: #666666;
+}
+
+
+
+/* Chat page */
+
+.game.page {
+  display: none;
+  background-color: #333333;
+}
+
+/* Font */
+
+.messages, .gameMessages {
+  font-size: 100%;
+}
+
+.row {
+  height: calc(100% - 730px);
+  width: 100%;
+  display: -webkit-box;
+  background-color: #303233;
+}
+
+.logs { 
+  width: 25%;
+  height: 100%; 
+  padding:5px; 
+  background:#ddd; 
+  border-radius:5px; 
+  overflow-y: scroll;
+  border:1px solid #CCC; 
+}
+.log {
+  color: gray;
+  font-size: 70%;
+  margin: 5px;
+  text-align: center;
+}
+
+/* Messages */
+
+.chatGameArea {
+  width: 50% ;
+  height: 100%; 
+  padding:5px; 
+  background:#eee; 
+  border-radius:5px; 
+  overflow-y: scroll;
+  border:1px solid #CCC; 
+}
+.chatArea {
+  width: 25% ;
+  height: 100%; 
+  padding:5px; 
+  background:#eee; 
+  border-radius:5px; 
+  overflow-y: scroll;
+  border:1px solid #CCC; 
+}
+
+.messages, .gameMessages {
+  height: 100%;
+  margin: 0;
+  overflow-y: scroll;
+  padding: 10px 20px 10px 20px;
+}
+
+.message.typing .messageBody, .chatdate {
+  color: gray;
+}
+
+.username {
+  font-weight: 700;
+  overflow: hidden;
+  padding-right: 15px;
+  text-align: right;
+}
+
+
+.gameAndRooms {
+  display: -webkit-inline-box;
+  width: 100%;
+}
+
+/* Rooms */
+
+.devOptions {
+  width: 300px;
+  height: 80px; 
+  background-color: #dddddd;
+  border-radius: 5px; 
+  margin: 5px 5px 5px 0;
+}
+
+.rooms {
+  text-align: center;
+  width: calc(100% - 480px);
+  height: 80px; 
+  height: 80px; 
+  padding: 5px; 
+  background-color: #dddddd;
+  border-radius: 5px; 
+  overflow-y: scroll;
+  border: 1px solid #CCC; 
+  margin: 5px 5px 5px 0;
+}
+.room {
+  display: inline;
+}
+.room > .gameId {
+  padding: 2px 5px 2px 5px;
+}
+.players {
+  display: inline;
+}
+.players > .player{
+  border: 1px solid #999;
+  min-width: 100px;
+  padding: 2px 15px 2px 15px;
+  -webkit-border-radius: 7;
+  -moz-border-radius: 7;
+  border-radius: 7px;
+  text-shadow: 1px 1px 3px #666666;
+  font-family: Arial;
+  color: #ffffff;
+  font-size: 20px;
+  padding: 5px 10px 5px 10px;
+  margin-left: 2px;
+  margin-right: 2px;
+  background: #999999;
+  background-image: -webkit-linear-gradient(top, #999999, #98a2a7);
+  background-image: -moz-linear-gradient(top, #999999, #98a2a7);
+  background-image: -ms-linear-gradient(top, #999999, #98a2a7);
+  background-image: -o-linear-gradient(top, #999999, #98a2a7);
+  background-image: linear-gradient(to bottom, #999999, #98a2a7);
+}
+
+/* Input */
+
+.inputMessage {
+  font-size: 100%;
+  border: 2px solid #00F;
+  bottom: 0;
+  height: 40px;
+  right: 0;
+  outline: none;
+  padding-left: 10px;
+  right: 0;
+  width: 100%;
+}
+
+#canvas_world {
+  background-color: #333333;
+}
+.rightPanel{
+  float: right;
+  width: calc(100% - 810px);
+}
+.twoColumns {
+  display: -webkit-inline-box;
+}
+.allPlayers {
+  width: 250px;
+  border: 2px solid #000000;
+  padding: 5px 5px 5px 5px;
+  margin: 0 10px 0 2px;
+  text-align: center;
+  background-color: #ffffff;
+}
+.playerPanel {
+  width: 320px;
+  border: 2px solid #000000;
+  text-align: center;
+  padding: 5px 5px 5px 5px;
+  text-align: center;
+  background-color: #ffffff;
+}
+.playerPanel > div {
+  width: 300px;
+}
+.turn {
+  font-family: Arial;
+  font-weight: 700;
+  color: #000000;
+  font-size: 16px;
+}
+.myScore, .chrono {
+  font-family: Arial;
+  font-weight: 200;
+  color: #000000;
+  font-size: 14px;
+}
+.infosAndDices {
+  display: -webkit-box;
+}
+
+.onePlayer {
+  padding: 5px;
+  background-color: #e0dfdf;
+  margin-bottom: 5px;
+  -webkit-border-radius: 4;
+  -moz-border-radius: 4;
+  border-radius: 4px;
+}
+.scoreAndInfos {
+  display: -webkit-inline-box;
+}
+
+.infos, ._infos {
+  text-align: left; 
+  padding: 10px 10px 10px 10px;
+}
+._score {
+  text-align: center;
+  width: 70px;
+  font-size: 48px;
+  font-weight: 600;
+}
+
+.knight, .victoryPoint, .longestRoad,
+._knight, ._victoryPoint, ._longestRoad {
+  font-family: Arial;
+  color: #000000;
+  font-size: 12px;
+}
+.hr8 {
+  width: 90%;
+  margin-bottom: 0px;
+}
+.gameButtons {
+  padding-bottom: 5px;
+  text-align: center;
+}
+.buttonsTitle {
+  font-family: Arial;
+  font-weight: 100;
+  color: #000000;
+  font-size: 16px;
+  padding-top: 3px;
+}
+.rollDice, .endTrading, .endTurn {
+  width: 77px;
+  background: #000000;
+  background-image: -webkit-linear-gradient(top, #000000, #303233);
+  background-image: -moz-linear-gradient(top, #000000, #303233);
+  background-image: -ms-linear-gradient(top, #000000, #303233);
+  background-image: -o-linear-gradient(top, #000000, #303233);
+  background-image: linear-gradient(to bottom, #000000, #303233);
+  -webkit-border-radius: 4;
+  -moz-border-radius: 4;
+  border-radius: 4px;
+  text-shadow: 1px 1px 3px #666666;
+  font-family: Arial;
+  color: #ffffff;
+  font-size: 14px;
+  padding: 5px 10px 5px 10px;
+  text-decoration: none;
+}
+.openTradingBank, .openTradingPlayers, .buyDevCard, .build {
+  width: 118px;
+  background: #000000;
+  background-image: -webkit-linear-gradient(top, #000000, #303233);
+  background-image: -moz-linear-gradient(top, #000000, #303233);
+  background-image: -ms-linear-gradient(top, #000000, #303233);
+  background-image: -o-linear-gradient(top, #000000, #303233);
+  background-image: linear-gradient(to bottom, #000000, #303233);
+  -webkit-border-radius: 4;
+  -moz-border-radius: 4;
+  border-radius: 4px;
+  text-shadow: 1px 1px 3px #666666;
+  font-family: Arial;
+  color: #ffffff;
+  font-size: 16px;
+  padding: 5px 10px 5px 10px;
+  text-decoration: none;
+}
+.play_knight, .play_victoryPoint, .play_roadBuilding, .play_monopoly, .play_yearOfPlenty {
+  width: 240px;
+  background: #000000;
+  background-image: -webkit-linear-gradient(top, #000000, #303233);
+  background-image: -moz-linear-gradient(top, #000000, #303233);
+  background-image: -ms-linear-gradient(top, #000000, #303233);
+  background-image: -o-linear-gradient(top, #000000, #303233);
+  background-image: linear-gradient(to bottom, #000000, #303233);
+  -webkit-border-radius: 4;
+  -moz-border-radius: 4;
+  border-radius: 4px;
+  text-shadow: 1px 1px 3px #666666;
+  font-family: Arial;
+  color: #ffffff;
+  font-size: 16px;
+  padding: 5px 10px 5px 10px;
+  text-decoration: none;
+}
+
+
+.returnCard, .sendResources, 
+.tradeCard, .confirmTradeToBank, .cancelTradeToBank,
+.chooseCardForYearOfPlenty, .confirmChoosenCardForYearOfPlenty, 
+.chooseResourceForMonopoly, .confirmChoosenResourceOfMonopoly {
+  width: 50px;
+  background: #000000;
+  background-image: -webkit-linear-gradient(top, #000000, #303233);
+  background-image: -moz-linear-gradient(top, #000000, #303233);
+  background-image: -ms-linear-gradient(top, #000000, #303233);
+  background-image: -o-linear-gradient(top, #000000, #303233);
+  background-image: linear-gradient(to bottom, #000000, #303233);
+  -webkit-border-radius: 4;
+  -moz-border-radius: 4;
+  border-radius: 4px;
+  text-shadow: 1px 1px 3px #666666;
+  font-family: Arial;
+  color: #ffffff;
+  font-size: 10px;
+  padding: 3px 5px 3px 5px;
+  text-decoration: none;
+}
+.resources {
+  color: black;
+  background-color: white;
+  text-align: center;
+}
+.thief_resources, .trading, .yearOfPlenty, .monopoly {
+  color: black;
+  background-color: white;
+  text-align: center;
+  width: 50%;
+  margin: auto;
+}
+.thief_resources, .trading, .yearOfPlenty, .monopoly {
+  transform: scale(1.5);
+}
+
+.resource {
+  width: 50px;
+  display: inline-table;
+}
+.lumberImage {
+  height: 80px;
+  background-image:url(assets/cards/lumber.jpg);
+  background-repeat: no-repeat;
+  background-size: contain;
+}
+.bricksImage {
+  height: 80px;
+  background-image:url(assets/cards/bricks.jpg);
+  background-repeat: no-repeat;
+  background-size: contain;
+}
+.woolImage {
+  height: 80px;
+  background-image:url(assets/cards/wool.jpg);
+  background-repeat: no-repeat;
+  background-size: contain;
+}
+.grainImage {
+  height: 80px;
+  background-image:url(assets/cards/grains.jpg);
+  background-repeat: no-repeat;
+  background-size: contain;
+}
+.oreImage {
+  height: 80px;
+  background-image:url(assets/cards/ore.jpg);
+  background-repeat: no-repeat;
+  background-size: contain;
+}
+.devCardImage {
+  height: 80px;
+  background-image:url(assets/cards/devCard.png);
+  background-repeat: no-repeat;
+  background-size: contain;
+}
+.remainingText {
+  font-weight: 200;
+}
+/* The Modal (background) */
+.modal {
+  display: none; /* Hidden by default */
+  position: fixed; /* Stay in place */
+  z-index: 1; /* Sit on top */
+  width: 100%; /* Full width */
+  height: 100%; /* Full height */
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  overflow: auto; /* Enable scroll if needed */
+  background-color: rgb(0,0,0); /* Fallback color */
+  background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+}
+.modal-header {
+  float: top;
+  width: 100%;
+  background: #000000;
+  background-image: -webkit-linear-gradient(top, #000000, #303233);
+  background-image: -moz-linear-gradient(top, #000000, #303233);
+  background-image: -ms-linear-gradient(top, #000000, #303233);
+  background-image: -o-linear-gradient(top, #000000, #303233);
+  background-image: linear-gradient(to bottom, #000000, #303233);
+  text-shadow: 1px 1px 3px #666666;
+  font-family: Arial;
+  color: #ffffff;
+  font-size: 10px;
+}
+/* Modal Content/Box */
+.modal-content {
+  margin: 15% auto; /* 15% from the top and centered */
+  padding: 20px;
+  width: 60%; /* Could be more or less, depending on screen size */
+}
+
+.dices {
+  display: -webkit-inline-box; 
+  padding-top: 5px;
+  padding-left: 45px;
+}
+.dices > * {
+  margin: 5px;
+}
+.dice1 {
+  height: 40px; width: 40px;
+  background-image:url(assets/dice/Alea_1.png);
+  background-repeat:no-repeat;
+  background-size: contain;
+}
+.dice2 {
+  height: 40px; width: 40px;
+  background-image:url(assets/dice/Alea_2.png);
+  background-repeat:no-repeat;
+  background-size: contain;
+}
+.dice3 {
+  height: 40px; width: 40px;
+  background-image:url(assets/dice/Alea_3.png);
+  background-repeat:no-repeat;
+  background-size: contain;
+}
+.dice4 {
+  height: 40px; width: 40px;
+  background-image:url(assets/dice/Alea_4.png);
+  background-repeat:no-repeat;
+  background-size: contain;
+}
+.dice5 {
+  height: 40px; width: 40px;
+  background-image:url(assets/dice/Alea_5.png);
+  background-repeat:no-repeat;
+  background-size: contain;
+}
+.dice6 {
+  height: 40px; width: 40px;
+  background-image:url(assets/dice/Alea_6.png);
+  background-repeat:no-repeat;
+  background-size: contain;
+}
+.tooltip_templates { display: none; }

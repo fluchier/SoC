@@ -1,0 +1,336 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>SoC</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" type="text/css" href="tooltipster/dist/css/tooltipster.bundle.min.css" />
+  <link rel="stylesheet" type="text/css" href="tooltipster/dist/css/plugins/tooltipster/sideTip/themes/tooltipster-sideTip-noir.min.css" />
+
+  <script>
+    $(document).ready(function() {
+      $('.tooltip').tooltipster();
+    });
+  </script>
+</head>
+<body>
+   
+<div class="tooltip_templates">
+  <div id="helpModal" class="modal">
+    <!-- HELP Modal content -->
+    <div class="modal-content">
+      <div id="buildingCosts">
+        <img src="assets/tooltips/buildingCosts.jpg" />
+      </div>
+    </div>
+  </div>
+</div>
+
+  <div id="monopolyModal" class="modal">
+    <!-- MONOPOLY Modal content -->
+    <div class="modal-content">
+        <div class="monopoly">
+          <div class="modal-header">
+            <h4 class="modal-title">Monopoly</h4>
+          </div>
+          <div class="resource">
+            <div class="lumberImage"></div>
+            <div class="lumberText">0</div>
+            <button class="chooseResourceForMonopoly" data-rsc="lumber" placeholder="lumber">Choose</button>
+          </div>
+          <div class="resource">
+            <div class="bricksImage"></div>
+            <div class="bricksText">0</div>
+            <button class="chooseResourceForMonopoly" data-rsc="bricks" placeholder="bricks">Choose</button>
+          </div>
+          <div class="resource">
+            <div class="woolImage"></div>
+            <div class="woolText">0</div>
+            <button class="chooseResourceForMonopoly" data-rsc="wool" placeholder="wool">Choose</button>
+          </div>
+          <div class="resource">
+            <div class="grainImage"></div>
+            <div class="grainText">0</div>
+            <button class="chooseResourceForMonopoly" data-rsc="grain" placeholder="grain">Choose</button>
+          </div>
+          <div class="resource">
+            <div class="oreImage"></div>
+            <div class="oreText">0</div>
+            <button class="chooseResourceForMonopoly" data-rsc="ore" placeholder="ore">Choose</button>
+          </div>
+          <div class="resource">
+            <div class="devCardImage"></div>
+            <div class="remainingText">&nbsp;</div>
+            <button class="confirmChoosenResourceOfMonopoly" placeholder="Confirm">Confirm</button>
+          </div>
+        </div>
+    </div>
+  </div>
+
+  <div id="yearOfPlentyModal" class="modal">
+    <!-- YEAR OF PLENTY Modal content -->
+    <div class="modal-content">
+        <div class="yearOfPlenty">
+          <div class="modal-header">
+            <h4 class="modal-title">Year Of Plenty</h4>
+          </div>
+          <div class="resource">
+            <div class="lumberImage"></div>
+            <div class="lumberText">0</div>
+            <button class="chooseCardForYearOfPlenty" data-rsc="lumber" placeholder="lumber">+ 0</button>
+          </div>
+          <div class="resource">
+            <div class="bricksImage"></div>
+            <div class="bricksText">0</div>
+            <button class="chooseCardForYearOfPlenty" data-rsc="bricks" placeholder="bricks">+ 0</button>
+          </div>
+          <div class="resource">
+            <div class="woolImage"></div>
+            <div class="woolText">0</div>
+            <button class="chooseCardForYearOfPlenty" data-rsc="wool" placeholder="wool">+ 0</button>
+          </div>
+          <div class="resource">
+            <div class="grainImage"></div>
+            <div class="grainText">0</div>
+            <button class="chooseCardForYearOfPlenty" data-rsc="grain" placeholder="grain">+ 0</button>
+          </div>
+          <div class="resource">
+            <div class="oreImage"></div>
+            <div class="oreText">0</div>
+            <button class="chooseCardForYearOfPlenty" data-rsc="ore" placeholder="ore">+ 0</button>
+          </div>
+          <div class="resource">
+            <div class="devCardImage"></div>
+            <div class="remainingText">&nbsp;</div>
+            <button class="confirmChoosenCardForYearOfPlenty" placeholder="Confirm">Confirm</button>
+          </div>
+        </div>
+    </div>
+  </div>
+
+  <div id="tradeModal" class="modal">
+    <!-- TRADING Modal content -->
+    <div class="modal-content">
+        <div class="trading">
+          <div class="modal-header">
+            <h4 class="modal-title">Trading</h4>
+          </div>
+          <div class="resource">
+            <div class="lumberImage"></div>
+            <div class="lumberText">0</div>
+            <button class="tradeCard" data-rsc="lumber" placeholder="lumber">x4</button>
+          </div>
+          <div class="resource">
+            <div class="bricksImage"></div>
+            <div class="bricksText">0</div>
+            <button class="tradeCard" data-rsc="bricks" placeholder="bricks">x4</button>
+          </div>
+          <div class="resource">
+            <div class="woolImage"></div>
+            <div class="woolText">0</div>
+            <button class="tradeCard" data-rsc="wool" placeholder="wool">x4</button>
+          </div>
+          <div class="resource">
+            <div class="grainImage"></div>
+            <div class="grainText">0</div>
+            <button class="tradeCard" data-rsc="grain" placeholder="grain">x4</button>
+          </div>
+          <div class="resource">
+            <div class="oreImage"></div>
+            <div class="oreText">0</div>
+            <button class="tradeCard" data-rsc="ore" placeholder="ore">x4</button>
+          </div>
+          <div class="resource">
+            <div id="lumberImage" class="devCardImage"></div>
+            <div class="remainingText">0</div>
+            <button class="confirmTradeToBank" placeholder="Trade">Trade</button>
+            <button class="cancelTradeToBank" placeholder="Cancel">Cancel</button>
+          </div>
+        </div>
+    </div>
+  </div>
+
+  <div id="thiefResourcesModal" class="modal">
+    <!-- THIEF Modal content -->
+    <div class="modal-content">
+        <div class="thief_resources">
+          <div class="modal-header">
+            <h4 class="modal-title">Select the cards to be returned</h4>
+          </div>
+          <div class="resource">
+            <div class="lumberImage"></div>
+            <div class="lumberText">0</div>
+            <button class="returnCard" data-rsc="lumber" placeholder="lumber">&#x2193;</button>
+            <div class="lumberReturnedText">0</div>
+            <div class="lumberImage"></div>
+          </div>
+          <div class="resource">
+            <div class="bricksImage"></div>
+            <div class="bricksText">0</div>
+            <button class="returnCard" data-rsc="bricks" placeholder="bricks">&#x2193;</button>
+            <div class="bricksReturnedText">0</div>
+            <div class="bricksImage"></div>
+          </div>
+          <div class="resource">
+            <div class="woolImage"></div>
+            <div class="woolText">0</div>
+            <button class="returnCard" data-rsc="wool" placeholder="wool">&#x2193;</button>
+            <div class="woolReturnedText">0</div>
+            <div class="woolImage"></div>
+          </div>
+          <div class="resource">
+            <div class="grainImage"></div>
+            <div class="grainText">0</div>
+            <button class="returnCard" data-rsc="grain" placeholder="grain">&#x2193;</button>
+            <div class="grainReturnedText">0</div>
+            <div class="grainImage"></div>
+          </div>
+          <div class="resource">
+            <div class="oreImage"></div>
+            <div class="oreText">0</div>
+            <button class="returnCard" data-rsc="ore" placeholder="ore">&#x2193;</button>
+            <div class="oreReturnedText">0</div>
+            <div class="oreImage"></div>
+          </div>
+          <div class="resource">
+            <div class="devCardImage"></div>
+            <div class="remainingText">0</div>
+            <button class="sendResources" placeholder="Send">Send</button>
+            <div class="returnedText">0</div>
+            <div class="devCardImage"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  <ul class="pages">
+    
+    <li class="game page">
+
+      <div class="gameAndRooms">
+        <div class='gameMgmtButtons'>
+          <button class='createGame' placeholder="Create Game">Create Game</button>
+          <button class='leaveGame' placeholder="Leave Game" disabled>Leave Game</button>
+        </div>
+        <div class="rooms"><br>No games in progress! Create yours.</div>
+        <div class='devOptions'>
+          <div class="turn">Dev. Options</div>
+          <div>
+            <input type="checkbox" id="allowOnePlayer" name="allowOnePlayer" checked>
+            <label for="allowOnePlayer">Allow to start a game with 1 player</label>
+          </div>
+        </div>
+      </div>
+      
+      <div class="rightPanel">
+
+        <div class="twoColumns">
+            <div id="playerPanel" class="playerPanel">
+            
+              <div class="turn">Turn &nbsp;<span>1</span></div>
+              <div class="myScore">Score &nbsp;<span>0</span></div>
+              <div class="chrono">Game:&nbsp;<span class="general">00:00</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;My turn:&nbsp;<span class="myTurn">00:00</span></div>
+              <div class="infosAndDices">
+                <div class="infos">
+                  <div class="knight">Knight: &nbsp;<span>0</span></div>
+                  <div class="victoryPoint">Victory Point: &nbsp;<span>0</span></div>
+                  <div class="longestRoad">Longest Road: &nbsp;<span>0</span></div>
+                </div>
+                <div class="dices">
+                  <div id="dice1" class="dice1"></div> <div id="dice2" class="dice1"></div>
+                </div>
+              </div>
+              <div class="resources">
+                <div class="resource">
+                  <div class="lumberImage tooltip" title="Lumber"></div>
+                  <div class="lumberText">0</div>
+                </div>
+                <div class="resource">
+                  <div class="bricksImage tooltip" title="Bricks"></div>
+                  <div class="bricksText">0</div>
+                </div>
+                <div class="resource">
+                  <div class="woolImage tooltip" title="Wool"></div>
+                  <div class="woolText">0</div>
+                </div>
+                <div class="resource">
+                  <div class="grainImage tooltip" title="Grain"></div>
+                  <div class="grainText">0</div>
+                </div>
+                <div class="resource">
+                  <div class="oreImage tooltip" title="Ore"></div>
+                  <div class="oreText">0</div>
+                </div>
+              </div>
+    
+              <hr class="hr8">
+    
+              <div class="gameButtons">
+    
+                <div class="buttonsTitle">Turn Management</div>
+                <button class='rollDice' placeholder="Roll Dice" disabled>Roll Dice</button>
+                <button class='endTrading' placeholder="End Trading" disabled>End Trading</button>
+                <button class='endTurn' placeholder="End Turn" disabled>End Turn</button>
+    
+                <div class="buttonsTitle">Trading &amp; Building</div>
+    
+                <button class='openTradingBank tooltip' title="Open Trading Window" placeholder="Trade with Bank" disabled>Trade with Bank</button>
+                <button class='openTradingPlayers tooltip' title="Open Trading Window (NOT YET IMPLEMENTED)" placeholder="Trade with Players" disabled>Trade with Players</button>
+                
+                <button class='build tooltip' data-tooltip-content="#buildingCosts" placeholder="Build" disabled>Build</button>
+                <button class='buyDevCard' placeholder="Buy Card" disabled>Buy Card</button>
+    
+                <div class="buttonsTitle">Development Cards</div>
+                <button class="play_knight" placeholder="Play a knight" disabled>Play a knight (0)</button>
+                <button class="play_victoryPoint" placeholder="Play a victory point" disabled>Play a victory point (0)</button>
+                <button class="play_roadBuilding" placeholder="Place 2 roads" disabled>Place 2 roads (0)</button>
+                <button class="play_monopoly" placeholder="Play monopoly" disabled>Play monopoly (0)</button>
+                <button class="play_yearOfPlenty" placeholder="Play years of plenty" disabled>Play years of plenty (0)</button>
+              </div>
+    
+            </div>
+            <div id="allPlayers" class="allPlayers"></div>
+        </div>
+        <input class="inputMessage" placeholder="Type here..."/>
+      
+      </div>
+
+      <canvas id="canvas_world" width="800" height="620">Your browser doesn't support canvas</canvas>
+
+      <div class='row'>
+
+        <div class="chatGameArea">
+          <ul class="gameMessages"></ul>
+        </div>
+
+        <div class="chatArea">
+          <ul class="messages"></ul>
+        </div>
+  
+        <div class="logs"></div> 
+
+      </div>
+  
+
+    </li>
+     
+    <li class="login page">
+      <span style="color:darkgrey">SoC (BETA 0.1 - 2019/04/03)</span>
+      <div class="form">
+        <h1 class="title">SoC</h1>
+        <br>
+        <br>
+        <h3 class="title">What's your nickname?</h3>
+        <input class="usernameInput" type="text" maxlength="14" />
+      </div>
+    </li>
+
+  </ul>
+
+  <script type="text/javascript" src="https://code.jquery.com/jquery-1.10.2.min.js"></script>
+  <script type="text/javascript" src="tooltipster/dist/js/tooltipster.bundle.min.js"></script>
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="/main.js"></script>
+  <script src="/node_modules/fabric/dist/fabric.js"></script>
+</body>
+</html>
