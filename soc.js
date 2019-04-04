@@ -1,4 +1,4 @@
-var Catan = function(game, options) {
+var Soc = function(game, options) {
   this.game = game;
   this.options = options;
   this.currentTurn = {
@@ -1285,4 +1285,4 @@ var Catan = function(game, options) {
   }
 
 };
-module.exports = Catan;
+module.exports = Soc;
