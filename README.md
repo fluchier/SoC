@@ -9,7 +9,6 @@ To install:
 npm install
 
 node index.js
-
 ```
 
 To run locally, go to [http://localhost:3000](http://localhost:3000)
@@ -23,7 +22,30 @@ BETA version playable at [https://free-soc.herokuapp.com/](https://free-soc.hero
 * Development option to “Allow to start a game with 1 player“
 * Not implemented: trading with the other players
 
-## Game rules
+## Description of sources
+
+### Client side
+
+* index.html
+* style.css
+* main.js - The main client script:
+    * to connect to the server with socket.io
+    * for login and chat management
+    * to create, join or quit a game
+    * to manage an ongoing game
+* [jquery 1.10.2](https://code.jquery.com/jquery-1.10.2.min.js)
+* [tooltipster](http://iamceege.github.io/tooltipster/) - An embed library to manage tooltips
+* [fabric.js](http://fabricjs.com/) - An embed library to manage objects a the canvas
+
+### Server side
+
+* index.js - The server with [express](https://expressjs.com/) and socket.io
+* soc.js - The game engine with the model and the main functions:
+    * init (_players_, _options_)
+    * canPlay (_player_, _action_, _data_)
+    * play (_player_, _action_, _data_)
+
+## Game Rules
 
 The object of the game is to be the first player to get 10 Victory Points (VP).
 
@@ -31,7 +53,7 @@ The object of the game is to be the first player to get 10 Victory Points (VP).
 
 The classic game starts by having each player place two settlements and a road connected to each settlement.
 
-#### Game play
+#### Game Play
 
 1. You must roll for resource production (the result applies to all players).
 2. You may trade resources with other players or bank.
@@ -140,5 +162,5 @@ You may play any number of Victory Point Cards during your turn, even during the
 
 If you have 10 or more victory points during your turn the game ends and you are the winner! If you reach 10 points when it is not your turn, the game continues until any player (including you) has 10 points on his turn.
 
-## &nbsp;
-_Florian Luchier (March 2019)_
+___
+_Florian Luchier - March 2019_
