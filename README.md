@@ -95,7 +95,7 @@ Now you can build. Through building, you can increase your victory points, expan
 
 To build, you must pay specific combinations of _Resource Cards_ (see the Building Costs Card). Take the appropriate number of roads, settlements, and/or cities from your supply and place them on the game board. Keep Development Cards hidden in your hand.
 
-You cannot build more pieces than what is available in your pool—a maximum of 5 settlements, 4 cities, and 15 roads.
+You cannot build more pieces than what is available in your pool a maximum of 5 settlements, 4 cities, and 15 roads.
 
 ##### Road
 _Requires: Brick & Lumber_
