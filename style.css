@@ -256,7 +256,22 @@ button[disabled]{
   background-image: -o-linear-gradient(top, #999999, #98a2a7);
   background-image: linear-gradient(to bottom, #999999, #98a2a7);
 }
+.playerPanelStatus {
 
+  text-align: center;
+  font-size: 16;
+  font-weight: 400;
+  color: #000000;
+  background-color: #cccccc;
+}
+.myPlayerPanelStatus {
+
+  text-align: center;
+  font-size: 16;
+  font-weight: 400;
+  color: antiquewhite;
+  background-color: darkred;
+}
 /* Input */
 
 .inputMessage {
@@ -446,13 +461,19 @@ button[disabled]{
   color: black;
   background-color: white;
   text-align: center;
-  width: 50%;
+  min-width: 50%;
   margin: auto;
+}
+.thief_resources, .trading {
+  width: 600px;
 }
 .thief_resources, .trading, .yearOfPlenty, .monopoly {
   transform: scale(1.5);
 }
 
+.buildingCosts {    
+  margin: 20px 20px 20px 0;
+}
 .resource {
   width: 50px;
   display: inline-table;
@@ -529,6 +550,24 @@ button[disabled]{
   margin: 15% auto; /* 15% from the top and centered */
   padding: 20px;
   width: 60%; /* Could be more or less, depending on screen size */
+}
+.modal-title{
+  padding: 10px;
+}
+.tradeContent, .thiefContent {
+  display: -webkit-inline-box;
+}
+.tradeResourcePanel {
+  margin-top: 60px
+}
+.thiefResourcePanel {
+  margin-top: 40px
+}
+#tradeImage {
+  opacity: .7;
+}
+#tradeImage:hover {
+  opacity: 1;
 }
 
 .dices {

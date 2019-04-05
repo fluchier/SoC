@@ -23,6 +23,7 @@ $(function() {
 
   // DEV
   var $allowOnePlayer = $('#allowOnePlayer');
+  var $autoRollDice = $('#autoRollDice');
 
 
   var canvas = new fabric.Canvas('canvas_world'),
@@ -93,6 +94,14 @@ $(function() {
   var turnIntervalId = null;
 
   // game buttons
+
+  // My Panel infos
+  var $turnText = $('.turn > span')
+  var $myScoreText = $('.myScore > span');
+  var $myKnightText = $('.knight > span');
+  var $myVictoryPointText = $('.victoryPoint > span');
+  var $myLongestRoadText = $('.longestRoad > span');
+    // My Panel buttons
   var $rollDice = $('.rollDice');
   var $openTradingCard = $('.openTradingBank');
   var $endTrading = $('.endTrading');
@@ -104,13 +113,6 @@ $(function() {
   var $playMonopoly = $('.play_monopoly');
   var $playYearOfPlenty = $('.play_yearOfPlenty');
   var $endTurn = $('.endTurn')
-
-  // My Panel
-  var $turnText = $('.turn > span')
-  var $myScoreText = $('.myScore > span');
-  var $myKnightText = $('.knight > span');
-  var $myVictoryPointText = $('.victoryPoint > span');
-  var $myLongestRoadText = $('.longestRoad > span');
   
   // All players Panel
   var $playerPanel = $('#allPlayers');
@@ -464,7 +466,7 @@ $(function() {
   socket.on('login', function (data) {
     connected = true;
     // Display the welcome message
-    var message = "Welcome to the Game Server of SoC (BETA 0.1 - 2019/04/03)";
+    var message = "Welcome to the Game Server of Free-SoC 1.0.0 (BETA) - 2019/04/03";
     log(message, {
       prepend: true
     });
@@ -680,7 +682,7 @@ $(function() {
 
     // Update turn display et Players panel
     $turnText.text(catan.currentTurn.turn);
-    updatePlayersPanels(data.playersInfos);
+    updatePlayersPanels(data.playersInfos, gameAction, catan.currentTurn);
 
     // Update model of world
     for (var i=0; i<catan.world.tiles.length; i++) {
@@ -711,6 +713,7 @@ $(function() {
         switch (catan.currentTurn.phase) {
           case "ROLL_DICE": 
             $rollDice.prop('disabled', false);
+            if ($autoRollDice.is(':checked')) rollDice();
           break;
           case "TRADING": 
             $openTradingCard.prop('disabled', false);
@@ -1038,8 +1041,8 @@ canvas.on('mouse:over', function(options) {
         if (isMyTurn() && tg._data.player.index == -1)
           if ( (catan.build && (gameAction.todo == "ROAD" || gameAction.todo == "PLAY")) || gameAction.todo == "SPECIAL_ROAD_1" || gameAction.todo == "SPECIAL_ROAD_2") {
             tg.set('stroke', getUsernameColor(username));
-            tg.set('opacity', .8);
-            tg.set('strokeWidth', 8);
+            //tg.set('opacity', .8);
+            tg.set('strokeWidth', 11);
           }
         break;
       default:
@@ -1062,7 +1065,7 @@ canvas.on('mouse:out', function(options) {
         break;
       case "road":
         if (tg._data.player.index == -1) {
-          tg.set('stroke', 'rgba(0,0,0,0)');
+          tg.set('stroke', 'rgba(250,250,250,0)');
         }
         else {
           tg.set('stroke', getUsernameColor(tg._data.player.username));
@@ -1294,7 +1297,7 @@ function drawRoad (size, x1, y1, x2, y2, road) {
     dx2 = dx2 - lsize;
 
   var line = new fabric.Line([ dx1, dy1, dx2, dy2 ], {
-      stroke: 'rgba(0,0,0,0)', strokeWidth: 8,
+      stroke: 'rgba(250,250,250,0)', strokeWidth: 12,
       selectable: false, objectCaching: false,
       originX: 'center', originY: 'center',
     });
@@ -1514,15 +1517,15 @@ function createPlayersPanels(players) {
     var $scoreDiv = $('<div class="_score tooltip" title="Score of the player"><span>0</span></div>');
     var $scoreAndInfos = $('<div class="scoreAndInfos"></div ')
       .append($scoreDiv, $infosDiv);
-
+    var $more = $('<div class="playerPanelStatus"></div>');
     var $onePlayerPanel = $('<div class="onePlayer"/>')
       .addClass('_p_' + players[p].username)
-      .append($usernameDiv, $hr, $scoreAndInfos);
-    
+      .append($usernameDiv, $hr, $scoreAndInfos, $more);
+        
     $playerPanel.append($onePlayerPanel);
   }
 }
-function updatePlayersPanels(players) {
+function updatePlayersPanels(players, currentAction, currentTurn) {
   if (players) {
     console.log(JSON.stringify(players));
     for (var p=0; p<players.length; p++) {
@@ -1531,10 +1534,32 @@ function updatePlayersPanels(players) {
       $current.find('._knight > span').text(players[p].knight);
       $current.find('._victoryPoint > span').text(players[p].victoryPoint);
       $current.find('._longestRoad > span').text(players[p].longestRoad);
+      var $status = $current.find('.playerPanelStatus');
+      $status.removeClass('myPlayerPanelStatus').empty();
+      if (players[p].username==currentAction.to.username) {
+        $status.text(getStringAction(currentAction.todo, currentTurn));
+        if (currentAction.to.username == username)
+          $status.addClass('myPlayerPanelStatus');
+      }
+     
     }
   }
 }
-
+function getStringAction(action, turn) {
+  switch (action) {
+    case 'ROAD': return "Place a road";
+    case 'SETTLEMENT': return "Place a settlement";
+    case 'CITY': return "Place a city";
+    case 'MOVE_ROBBER': return "Move the robber";
+    case 'ROLL_DICE': return "Roll the dice";
+    default: 
+      switch (turn.phase) {
+        case "TRADING": return "Trading...";
+        case "BUILDING": return "Building...";
+        default: "";
+      }
+  }
+}
 // Game utils
 
 function nodeIsAtRight(i, j) {

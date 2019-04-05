@@ -1,7 +1,7 @@
 # Free-SoC
 Match-making server using _node.js_ and _socket.io_
 
-![](./documentation/screenshoot1.png)
+![](./docs/screenshoot1.png)
 
 ## Install and run
 
@@ -35,8 +35,7 @@ BETA version playable at [https://free-soc.herokuapp.com/](https://free-soc.hero
     * for login and chat management
     * to create, join or quit a game
     * to manage an ongoing game
-* [jquery 1.10.2](https://code.jquery.com/jquery-1.10.2.min.js)
-* [tooltipster](http://iamceege.github.io/tooltipster/) - An embed library to manage tooltips
+* [jquery](https://code.jquery.com/jquery-1.10.2.min.js)
 * [fabric.js](http://fabricjs.com/) - An node module to manage objects a the canvas
 
 ### Server side
@@ -89,6 +88,10 @@ __Important:__ The 4:1 trade is always possible, even if you do not have a settl
 
 #### 3. Build
 Now you can build. Through building, you can increase your victory points, expand your road network, improve your resource production, and/or buy useful Development Cards.
+
+<center>
+![](./assets/tooltips/buildingCosts.jpg)
+</center>
 
 To build, you must pay specific combinations of _Resource Cards_ (see the Building Costs Card). Take the appropriate number of roads, settlements, and/or cities from your supply and place them on the game board. Keep Development Cards hidden in your hand.
 

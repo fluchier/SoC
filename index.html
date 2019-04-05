@@ -4,14 +4,6 @@
   <meta charset="UTF-8">
   <title>SoC</title>
   <link rel="stylesheet" href="style.css">
-  <link rel="stylesheet" type="text/css" href="tooltipster/dist/css/tooltipster.bundle.min.css" />
-  <link rel="stylesheet" type="text/css" href="tooltipster/dist/css/plugins/tooltipster/sideTip/themes/tooltipster-sideTip-noir.min.css" />
-
-  <script>
-    $(document).ready(function() {
-      $('.tooltip').tooltipster();
-    });
-  </script>
 </head>
 <body>
    
@@ -111,97 +103,113 @@
   <div id="tradeModal" class="modal">
     <!-- TRADING Modal content -->
     <div class="modal-content">
-        <div class="trading">
-          <div class="modal-header">
-            <h4 class="modal-title">Trading</h4>
+      <div class="trading">
+        <div class="modal-header">
+          <h4 class="modal-title">Trading</h4>
+        </div>
+
+        <div class="tradeContent">
+          <div class="buildingCosts">
+            <img src="assets/tooltips/buildingCosts.jpg" width="200px" />
           </div>
-          <div class="resource">
-            <div class="lumberImage"></div>
-            <div class="lumberText">0</div>
-            <button class="tradeCard" data-rsc="lumber" placeholder="lumber">x4</button>
-          </div>
-          <div class="resource">
-            <div class="bricksImage"></div>
-            <div class="bricksText">0</div>
-            <button class="tradeCard" data-rsc="bricks" placeholder="bricks">x4</button>
-          </div>
-          <div class="resource">
-            <div class="woolImage"></div>
-            <div class="woolText">0</div>
-            <button class="tradeCard" data-rsc="wool" placeholder="wool">x4</button>
-          </div>
-          <div class="resource">
-            <div class="grainImage"></div>
-            <div class="grainText">0</div>
-            <button class="tradeCard" data-rsc="grain" placeholder="grain">x4</button>
-          </div>
-          <div class="resource">
-            <div class="oreImage"></div>
-            <div class="oreText">0</div>
-            <button class="tradeCard" data-rsc="ore" placeholder="ore">x4</button>
-          </div>
-          <div class="resource">
-            <div id="lumberImage" class="devCardImage"></div>
-            <div class="remainingText">0</div>
-            <button class="confirmTradeToBank" placeholder="Trade">Trade</button>
-            <button class="cancelTradeToBank" placeholder="Cancel">Cancel</button>
+  
+          <div class="tradeResourcePanel">
+            <div class="resource">
+              <div class="lumberImage"></div>
+              <div class="lumberText">0</div>
+              <button class="tradeCard" data-rsc="lumber" placeholder="lumber">x4</button>
+            </div>
+            <div class="resource">
+              <div class="bricksImage"></div>
+              <div class="bricksText">0</div>
+              <button class="tradeCard" data-rsc="bricks" placeholder="bricks">x4</button>
+            </div>
+            <div class="resource">
+              <div class="woolImage"></div>
+              <div class="woolText">0</div>
+              <button class="tradeCard" data-rsc="wool" placeholder="wool">x4</button>
+            </div>
+            <div class="resource">
+              <div class="grainImage"></div>
+              <div class="grainText">0</div>
+              <button class="tradeCard" data-rsc="grain" placeholder="grain">x4</button>
+            </div>
+            <div class="resource">
+              <div class="oreImage"></div>
+              <div class="oreText">0</div>
+              <button class="tradeCard" data-rsc="ore" placeholder="ore">x4</button>
+            </div>
+            <div class="resource">
+              <div id="tradeImage" class="devCardImage"></div>
+              <div class="remainingText">0</div>
+              <button class="confirmTradeToBank" placeholder="Trade">Trade</button>
+              <button class="cancelTradeToBank" placeholder="Cancel">Cancel</button>
+            </div>
           </div>
         </div>
+      </div>
     </div>
   </div>
 
   <div id="thiefResourcesModal" class="modal">
     <!-- THIEF Modal content -->
     <div class="modal-content">
-        <div class="thief_resources">
-          <div class="modal-header">
-            <h4 class="modal-title">Select the cards to be returned</h4>
-          </div>
-          <div class="resource">
-            <div class="lumberImage"></div>
-            <div class="lumberText">0</div>
-            <button class="returnCard" data-rsc="lumber" placeholder="lumber">&#x2193;</button>
-            <div class="lumberReturnedText">0</div>
-            <div class="lumberImage"></div>
-          </div>
-          <div class="resource">
-            <div class="bricksImage"></div>
-            <div class="bricksText">0</div>
-            <button class="returnCard" data-rsc="bricks" placeholder="bricks">&#x2193;</button>
-            <div class="bricksReturnedText">0</div>
-            <div class="bricksImage"></div>
-          </div>
-          <div class="resource">
-            <div class="woolImage"></div>
-            <div class="woolText">0</div>
-            <button class="returnCard" data-rsc="wool" placeholder="wool">&#x2193;</button>
-            <div class="woolReturnedText">0</div>
-            <div class="woolImage"></div>
-          </div>
-          <div class="resource">
-            <div class="grainImage"></div>
-            <div class="grainText">0</div>
-            <button class="returnCard" data-rsc="grain" placeholder="grain">&#x2193;</button>
-            <div class="grainReturnedText">0</div>
-            <div class="grainImage"></div>
-          </div>
-          <div class="resource">
-            <div class="oreImage"></div>
-            <div class="oreText">0</div>
-            <button class="returnCard" data-rsc="ore" placeholder="ore">&#x2193;</button>
-            <div class="oreReturnedText">0</div>
-            <div class="oreImage"></div>
-          </div>
-          <div class="resource">
-            <div class="devCardImage"></div>
-            <div class="remainingText">0</div>
-            <button class="sendResources" placeholder="Send">Send</button>
-            <div class="returnedText">0</div>
-            <div class="devCardImage"></div>
+      <div class="thief_resources">
+        <div class="modal-header">
+          <h4 class="modal-title">Select the cards to be returned</h4>
+        </div>
+        <div class="thiefContent">
+          <div class="buildingCosts">
+            <img src="assets/tooltips/buildingCosts.jpg" width="200px" />
+          </div>    
+          <div class="thiefResourcePanel">
+            <div class="resource">
+              <div class="lumberImage"></div>
+              <div class="lumberText">0</div>
+              <button class="returnCard" data-rsc="lumber" placeholder="lumber">&#x2193;</button>
+              <div class="lumberReturnedText">0</div>
+              <div class="lumberImage"></div>
+            </div>
+            <div class="resource">
+              <div class="bricksImage"></div>
+              <div class="bricksText">0</div>
+              <button class="returnCard" data-rsc="bricks" placeholder="bricks">&#x2193;</button>
+              <div class="bricksReturnedText">0</div>
+              <div class="bricksImage"></div>
+            </div>
+            <div class="resource">
+              <div class="woolImage"></div>
+              <div class="woolText">0</div>
+              <button class="returnCard" data-rsc="wool" placeholder="wool">&#x2193;</button>
+              <div class="woolReturnedText">0</div>
+              <div class="woolImage"></div>
+            </div>
+            <div class="resource">
+              <div class="grainImage"></div>
+              <div class="grainText">0</div>
+              <button class="returnCard" data-rsc="grain" placeholder="grain">&#x2193;</button>
+              <div class="grainReturnedText">0</div>
+              <div class="grainImage"></div>
+            </div>
+            <div class="resource">
+              <div class="oreImage"></div>
+              <div class="oreText">0</div>
+              <button class="returnCard" data-rsc="ore" placeholder="ore">&#x2193;</button>
+              <div class="oreReturnedText">0</div>
+              <div class="oreImage"></div>
+            </div>
+            <div class="resource">
+              <div class="devCardImage"></div>
+              <div class="remainingText">0</div>
+              <button class="sendResources" placeholder="Send">Send</button>
+              <div class="returnedText">0</div>
+              <div class="devCardImage"></div>
+            </div>
           </div>
         </div>
       </div>
     </div>
+  </div>
 
   <ul class="pages">
     
@@ -218,6 +226,10 @@
           <div>
             <input type="checkbox" id="allowOnePlayer" name="allowOnePlayer" checked>
             <label for="allowOnePlayer">Allow to start a game with 1 player</label>
+          </div>
+          <div>
+            <input type="checkbox" id="autoRollDice" name="autoRollDice" checked>
+            <label for="autoRollDice">Auto roll dice</label>
           </div>
         </div>
       </div>
@@ -242,23 +254,23 @@
               </div>
               <div class="resources">
                 <div class="resource">
-                  <div class="lumberImage tooltip" title="Lumber"></div>
+                  <div class="lumberImage" title="Lumber"></div>
                   <div class="lumberText">0</div>
                 </div>
                 <div class="resource">
-                  <div class="bricksImage tooltip" title="Bricks"></div>
+                  <div class="bricksImage" title="Bricks"></div>
                   <div class="bricksText">0</div>
                 </div>
                 <div class="resource">
-                  <div class="woolImage tooltip" title="Wool"></div>
+                  <div class="woolImage" title="Wool"></div>
                   <div class="woolText">0</div>
                 </div>
                 <div class="resource">
-                  <div class="grainImage tooltip" title="Grain"></div>
+                  <div class="grainImage" title="Grain"></div>
                   <div class="grainText">0</div>
                 </div>
                 <div class="resource">
-                  <div class="oreImage tooltip" title="Ore"></div>
+                  <div class="oreImage" title="Ore"></div>
                   <div class="oreText">0</div>
                 </div>
               </div>
@@ -315,7 +327,7 @@
     </li>
      
     <li class="login page">
-      <span style="color:darkgrey">SoC (BETA 0.1 - 2019/04/03)</span>
+      <span style="color:darkgrey">Free-SoC 1.0.0 (BETA) - 2019/04/03</span>
       <div class="form">
         <h1 class="title">SoC</h1>
         <br>
@@ -328,7 +340,6 @@
   </ul>
 
   <script type="text/javascript" src="https://code.jquery.com/jquery-1.10.2.min.js"></script>
-  <script type="text/javascript" src="tooltipster/dist/js/tooltipster.bundle.min.js"></script>
   <script src="/socket.io/socket.io.js"></script>
   <script src="/main.js"></script>
   <script src="/node_modules/fabric/dist/fabric.js"></script>
