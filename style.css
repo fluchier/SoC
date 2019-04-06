@@ -81,7 +81,15 @@ ul {
   letter-spacing: 3px;
 }
 
-.login.page .title, .login.page .usernameInput {
+.login.page .rememberMe {
+  padding-top: 10px;
+  font-size: 100%;
+  text-align: center;
+}
+
+.login.page .title, 
+.login.page .usernameInput,
+.login.page .rememberMe {
   color: #fff;
   font-weight: 100;
 }
@@ -265,7 +273,13 @@ button[disabled]{
   background-color: #cccccc;
 }
 .myPlayerPanelStatus {
-
+  text-align: center;
+  font-size: 16;
+  font-weight: 400;
+  color: antiquewhite;
+  background-color: #00F;
+}
+.disconnectedPlayer {
   text-align: center;
   font-size: 16;
   font-weight: 400;

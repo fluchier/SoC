@@ -19,12 +19,6 @@ BETA version playable at [https://free-soc.herokuapp.com/](https://free-soc.hero
 
 ## Versions
 
-##### 1.0.0 (BETA) - 2019/04/05
-* Playable
-* Development option to “Auto roll dice“
-* Players panel displays current action
-* Not implemented: trading with the other players
-
 ##### BETA 0.1 - 2019/04/03
 * Playable
 * Development option to “Allow to start a game with 1 player“
@@ -95,11 +89,13 @@ __Important:__ The 4:1 trade is always possible, even if you do not have a settl
 #### 3. Build
 Now you can build. Through building, you can increase your victory points, expand your road network, improve your resource production, and/or buy useful Development Cards.
 
+<center>
 ![](./assets/tooltips/buildingCosts.jpg)
+</center>
 
 To build, you must pay specific combinations of _Resource Cards_ (see the Building Costs Card). Take the appropriate number of roads, settlements, and/or cities from your supply and place them on the game board. Keep Development Cards hidden in your hand.
 
-You cannot build more pieces than what is available in your pool a maximum of 5 settlements, 4 cities, and 15 roads.
+You cannot build more pieces than what is available in your pool—a maximum of 5 settlements, 4 cities, and 15 roads.
 
 ##### Road
 _Requires: Brick & Lumber_

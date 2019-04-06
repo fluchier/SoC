@@ -249,9 +249,9 @@ var Soc = function(game, options) {
                 return ele.x === tile.x && ele.y === tile.y;
               });
               if (neighbouringTile) {// the tile exists
-                console.log("neighbouringTile exists: " + neighbouringTile.x + ", " + neighbouringTile.y);// LOG
+                //console.log("neighbouringTile exists: " + neighbouringTile.x + ", " + neighbouringTile.y);// LOG
               }
-              else {
+              else {// the tile doesn't exist
                 node.tiles.push({
                   x: tile.x, 
                   y: tile.y
