@@ -86,10 +86,12 @@ $(function() {
         { x: -4, y:  4, type: "SEA",       value:  0, harbor: "ore"     },
         { x: -2, y:  5, type: "SEA",       value:  0, harbor: "no"      },
       ]
-    }
+    },
   };
   var playerDeck;
   var gameAction;
+  var disconnectedPlayers = [];
+  var disconnectedPlayerTimer = [];
   var gameIntervalId = null;
   var turnIntervalId = null;
 
@@ -137,6 +139,11 @@ $(function() {
 
   // COM
   var socket = io();
+
+  if (localStorage.getItem('Free-SoC-autologin')) {
+    $usernameInput.val(localStorage.getItem('Free-SoC-autologin'));
+    //socket.emit('add user', localStorage.getItem('Free-SoC-autologin')); 
+  }
 
   function addParticipantsMessage (data) {
     var message = '';
@@ -461,6 +468,11 @@ $(function() {
 
 
   // Socket events
+ 
+  socket.on('automatic join game', function (data) {
+    //alert("Joining... " + data);
+    //socket.emit('join room', data);
+  });
 
   // Whenever the server emits 'login', log the login message
   socket.on('login', function (data) {
@@ -471,6 +483,7 @@ $(function() {
       prepend: true
     });
     addParticipantsMessage(data);
+    if ($('#rememberMe').is(':checked')) localStorage.setItem('Free-SoC-autologin', username);
   });
 
   // Whenever the server emits 'new message', update the chat body
@@ -570,6 +583,30 @@ $(function() {
     $leaveGame.prop('disabled', true);
     log('Leaving Game ' + data.gameId);
   });
+
+  socket.on('player disconnect', function (data) {
+    //alert(data.player + " is disconnected!");
+    var start = Date.now();
+    disconnectedPlayers[data.player] = start;
+    $playerPanel.find('._p_' + data.player).find('.playerPanelStatus')
+        .addClass('disconnectedPlayer')
+        .text("DISCONNECTED");
+    disconnectedPlayerTimer[data.player] = setInterval(function() {
+      $playerPanel.find('._p_' + data.player).find('.playerPanelStatus')
+          .text("DISCONNECTED " + getElapsedTime(start));
+    }, 1000);
+
+  });
+
+  socket.on('player reconnect', function (data) {
+    //alert(data.player + " is connected!");
+    delete disconnectedPlayers[data.player];
+    $playerPanel.find('._p_' + data.player).find('.playerPanelStatus')
+        .removeClass('disconnectedPlayer')
+        .text("");
+    clearTimeout(disconnectedPlayerTimer[data.player]);
+  });
+
   socket.on('notInGame', function () {
     log('You are not currently in a Game.');
   });
@@ -593,7 +630,13 @@ $(function() {
   });
   function updateGameChrono() {
     // Game Chrono
-    var elapsed = Math.floor((Date.now() - catan.gameStartTime) / 1000);
+    $(".chrono > .general").text( getElapsedTime(catan.gameStartTime) );
+    // Turn Chrono
+    if (isMyTurn())
+      $(".chrono > .myTurn").text( getElapsedTime(catan.turnStartTime) );
+  }
+  function getElapsedTime(from) {
+    var elapsed = Math.floor((Date.now() - from) / 1000);
     var text = "";
     var h = Math.floor(elapsed / 3600);
     var m = Math.floor((elapsed % 3600) / 60);
@@ -601,19 +644,7 @@ $(function() {
     if (h>0) text = h + ":";
     if (m<10) text = text + "0" + m + ":"; else text = text + m + ":";
     if (s<10) text = text + "0" + s; else text = text + s;
-    $(".chrono > .general").text(text);
-    // Turn Chrono
-    if (isMyTurn()) {
-      elapsed = Math.floor((Date.now() - catan.turnStartTime) / 1000);
-      text = "";
-      h = Math.floor(elapsed / 3600);
-      m = Math.floor((elapsed % 3600) / 60);
-      s = elapsed - 3600 * h - 60 * m;
-      if (h>0) text = h + ":";
-      if (m<10) text = text + "0" + m + ":"; else text = text + m + ":";
-      if (s<10) text = text + "0" + s; else text = text + s;
-      $(".chrono > .myTurn").text(text);
-    }
+    return text;
   }
 
   socket.on('rulesAndGame', function (data) {
@@ -679,6 +710,11 @@ $(function() {
     catan.world = data.world; 
     catan.currentTurn = data.currentTurn;
     gameAction = data.currentAction;
+
+    console.log("====== gameData ======");
+    console.log(JSON.stringify(data.playersInfos));
+    console.log(JSON.stringify(gameAction));
+    console.log(JSON.stringify(catan.currentTurn));
 
     // Update turn display et Players panel
     $turnText.text(catan.currentTurn.turn);
@@ -1529,14 +1565,17 @@ function updatePlayersPanels(players, currentAction, currentTurn) {
   if (players) {
     console.log(JSON.stringify(players));
     for (var p=0; p<players.length; p++) {
-      $current = $playerPanel.find('._p_' + players[p].username);
+      var $current = $playerPanel.find('._p_' + players[p].username);
       $current.find('._score > span').text(players[p].score);
       $current.find('._knight > span').text(players[p].knight);
       $current.find('._victoryPoint > span').text(players[p].victoryPoint);
       $current.find('._longestRoad > span').text(players[p].longestRoad);
       var $status = $current.find('.playerPanelStatus');
-      $status.removeClass('myPlayerPanelStatus').empty();
-      if (players[p].username==currentAction.to.username) {
+      $status.removeClass('myPlayerPanelStatus').removeClass('disconnectedPlayer').empty();
+      if (players[p].username in disconnectedPlayers) {
+        //$status.addClass('disconnectedPlayer').text("DISCONNECTED");
+      }
+      else if (players[p].username==currentAction.to.username) {
         $status.text(getStringAction(currentAction.todo, currentTurn));
         if (currentAction.to.username == username)
           $status.addClass('myPlayerPanelStatus');
@@ -1545,6 +1584,7 @@ function updatePlayersPanels(players, currentAction, currentTurn) {
     }
   }
 }
+
 function getStringAction(action, turn) {
   switch (action) {
     case 'ROAD': return "Place a road";
@@ -1560,6 +1600,7 @@ function getStringAction(action, turn) {
       }
   }
 }
+
 // Game utils
 
 function nodeIsAtRight(i, j) {
@@ -1572,6 +1613,6 @@ function nodeIsAtRight(i, j) {
 }
 
 function isMyTurn() {
-  return gameAction.to.username == username;
+  return gameAction && gameAction.to.username == username;
 }
 });
