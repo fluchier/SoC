@@ -1,7 +1,6 @@
 // Setup basic express server
 var express = require('express');
 var app = express();
-//var fs = require('fs');
 var server = require('http').createServer(app);
 var io = require('socket.io')(server);
 var port = process.env.PORT || 3000;
@@ -9,7 +8,6 @@ var Soc = require('./soc');
 
 server.listen(port, function () {
   console.log('Server listening at port %d', port);// LOG
-  //fs.writeFile(__dirname + '/start.log', 'started'); 
 });
 
 // Routing
@@ -18,7 +16,6 @@ app.use(express.static(__dirname));
 // Entire GameCollection Object holds all games and info
 
 var gameCollection = new function() {
-
   this.totalGameCount = 0,
   this.gameList = [],
   this.gameData = {}
@@ -45,7 +42,7 @@ io.on('connection', function (socket) {
     socket.join("/"+room);
     //socket.broadcast.to("/"+room).emit('gameMessage', "You are in the game room. Let's play !");
     var game = getGameOfPlayer(socket.username);
-    if (game != null){
+    if (game){
       game.inRoom++;
       // All players in game room ?
       if (game.inRoom==game.playerCount) {
@@ -65,13 +62,47 @@ io.on('connection', function (socket) {
         });
         // send action to do
         io.to("/"+room).emit('gameData',  { 
-          world: gameData.world, currentTurn: gameData.currentTurn, currentAction: gameData.currentAction 
+          world: gameData.world, 
+          currentTurn: gameData.currentTurn, currentAction: 
+          gameData.currentAction ,
+          playersInfos: gameData.getPlayersInfos()
         });
       }
       console.log("in room " +  game.inRoom + "/" + game.playerCount);// LOG
     }
   });
-
+  // once a client has reconnected, we expect to get a ping from them saying what room they want to join
+  socket.on('join room', function(room) {
+    console.log(socket.username + " join room /" + room);// LOG
+    socket.join("/"+room);
+    var game = getGame(room);
+    var gameData = gameCollection.gameData[room];
+    console.log("Game: " + JSON.stringify(game));// LOG
+    if (game){
+      var n = game.playerCount;
+      game.players[n] = createPlayer(socket.username);
+      game.playerCount++;
+      sendOpenedGameList();
+      // send rules et games
+      gameData.startTime = Date.now();
+      socket.emit('rulesAndGame', { 
+        rules: gameData.rules, 
+        world: gameData.world, 
+        currentTurn: gameData.currentTurn,
+        startTime: gameData.startTime,
+        playersInfos: gameData.getPlayersInfos()
+      });
+      // send action to do
+      socket.emit('gameData',  { 
+        world: gameData.world, 
+        currentTurn: gameData.currentTurn, currentAction: 
+        gameData.currentAction ,
+        playersInfos: gameData.getPlayersInfos()
+      });
+      // Alert other players
+      io.to("/"+room).emit('player reconnect', {gameId: room, player: socket.username });
+    }
+  });
   // when the client emits 'game message', this listens and executes
   socket.on('gameMessage', function (data) {
     // we tell the client to execute 'new message'
@@ -127,6 +158,10 @@ io.on('connection', function (socket) {
       numUsers: numUsers
     });
     sendOpenedGameList();
+    // check if the user in in a game
+    var processingGameID = getProcessingGameOf(username);
+    console.log("processingGameID " + processingGameID);// LOG
+    if (processingGameID) socket.emit('automatic join game', processingGameID);
   });
 
   // when the client emits 'typing', we broadcast it to others
@@ -152,16 +187,21 @@ io.on('connection', function (socket) {
       var game = getGameOfPlayer(socket.username);
       if (game != null) {
         var i = 0
-        for (i=0; i<game.playerCount; i++) {
+        for (i=0; i<game.playerCount; i++) 
           if (game.players[i].username == socket.username) break;
-        }
         game.players.splice(i, 1);
         game.playerCount--;
         console.log("w/ " + game.id + " " + socket.username + " leave game.");// LOG
         socket.emit('leftGame', { gameId: game['id'] });
         if (game.playerCount == 0) {
+          // No players in the game: destroy it
           destroyGame(game);
           io.emit('gameDestroyed', {gameId: game['id'], gameOwner: socket.username });
+        }
+        else {
+          // Alert other players 
+          console.log("w/ " + game.id + " " + socket.username + " 'player disconnect'");// LOG
+          io.to("/"+game.id).emit('player disconnect', {gameId: game.id, player: socket.username });
         }
         sendOpenedGameList();
       }
@@ -184,7 +224,7 @@ io.on('connection', function (socket) {
         var tempName = gameCollection.gameList[i]['gameObject'].players[p].username;
         if (tempName == socket.username){
           noGamesFound = false;
-          console.log("This User already has a Game!");// LOG
+          console.log("This user already has a Game!");// LOG
           socket.emit('alreadyJoined', {
             gameId: gameCollection.gameList[i]['gameObject']['id']
           });
@@ -226,7 +266,7 @@ io.on('connection', function (socket) {
     }
     // no ?
     if (alreadyInGame == false){
-      var gameObject = getGame(data);
+      var gameObject = getGame(data.id);
       joinGame(socket.username, gameObject);
       socket.emit('joinSuccess', {
         gameId: gameObject['id'],
@@ -265,7 +305,7 @@ io.on('connection', function (socket) {
 
   socket.on('launchGame', function(data) {
     console.log("w/" + data.id + " " + socket.username + " wants to start game.");// LOG
-    var game = getGame(data);
+    var game = getGame(data.id);
     if (game.canBeLaunch) {
       game.canBeLaunch = false;
       game.launched = true;
@@ -311,11 +351,8 @@ io.on('connection', function (socket) {
       game.play(data.user, data.gameAction, data.target);
 
       // Update each deck of the players
-      for (var key in game.players) {
-        if (key in clients){
-          clients[key].emit('myDeck', game.players[key]);
-        }
-      }
+      for (var key in game.players) 
+        if (key in clients) clients[key].emit('myDeck', game.players[key]);
 
       // Broadcast "Dice result"
       if (game.currentAction.todo == "PLAY" || game.currentAction.todo == "THIEF" || game.currentAction.todo == "MOVE_ROBBER") {
@@ -402,10 +439,17 @@ function destroyGame(game) {
   gameCollection.gameData[game.id] = null;
   console.log(gameCollection.gameList);// LOG
 }
-function getGame(data) {
+function getGame(id) {
   for (var i=0; i<gameCollection.totalGameCount; i++)
-    if (gameCollection.gameList[i]['gameObject'].id==data.id)
+    if (gameCollection.gameList[i]['gameObject'].id==id)
       return gameCollection.gameList[i]['gameObject'];
+  return null;
+}
+function getProcessingGameOf(username) {
+  for (var gameId in gameCollection.gameData)
+    if (gameCollection.gameData[gameId])
+      for (var playername in gameCollection.gameData[gameId].players)
+        if (playername == username) return gameId;
   return null;
 }
 

@@ -256,7 +256,7 @@ $(function() {
     for (var i=0; i<data.maxPlayerCount; i++) {
       var $player = $('<span class="player username" />').text("Free place").css('color', 'gray').css('font-style', 'italic');
       if (i<data.playerCount) {
-        $player.text("Player "+(i+1)+" : "+data.players[i].username)
+        $player.text("Player : "+data.players[i].username)
         .css('color', getUsernameColor(data.players[i].username)).css('font-style', 'normal');
         if (username == data.players[i].username) {
           mygame = data;
@@ -346,6 +346,7 @@ $(function() {
 
   // Gets the color of a username through our hash function
   function getUsernameColor (username) {
+    if (!username || username == "") username = "Undefined!";
     // Compute hash code
     var hash = 7;
     for (var i = 0; i < username.length; i++) {
@@ -471,7 +472,7 @@ $(function() {
  
   socket.on('automatic join game', function (data) {
     //alert("Joining... " + data);
-    //socket.emit('join room', data);
+    socket.emit('join room', data);
   });
 
   // Whenever the server emits 'login', log the login message
