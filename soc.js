@@ -52,7 +52,7 @@ var Soc = function(game, options) {
     resourceLimit: 7,
     victoryPoint: 10
   };  
-  
+  this.trades = {};
   this.currentStrongestKnight = {
     player: { username: "", index: -1},
     strength: 0,
@@ -210,6 +210,10 @@ var Soc = function(game, options) {
         resourceToReturnCount: 0,
         resourceLimit: this.rules.resourceLimit,
         trades: [], yearOfPlentyChoosenCards: [], monopoly: "",
+        exchange: {
+          given: { bricks: 0, lumber: 0, wool: 0, grain: 0, ore: 0 },
+          demanded: { bricks: 0, lumber: 0, wool: 0, grain: 0, ore: 0 },
+        },
         longestRoad: 0,
         resourceTradeCoef: { bricks: 4, lumber: 4, wool: 4, grain: 4, ore: 4 },
         devCards: {
@@ -229,8 +233,8 @@ var Soc = function(game, options) {
         }
       };
       // Calcul nodes from tiles
-      console.log("Set playerData for " +  beginningPlayers[p].username + "=>" + this.players[beginningPlayers[p].username].pieces.road + " roads...");// LOG
-      console.log("Building nodes... (" + this.world.tiles.length + ")");// LOG
+      this.log("Set playerData for " +  beginningPlayers[p].username + "=>" + this.players[beginningPlayers[p].username].pieces.road + " roads...");// LOG
+      this.log("Building nodes... (" + this.world.tiles.length + ")");// LOG
       
       this.shuffleTiles();
 
@@ -249,7 +253,7 @@ var Soc = function(game, options) {
                 return ele.x === tile.x && ele.y === tile.y;
               });
               if (neighbouringTile) {// the tile exists
-                //console.log("neighbouringTile exists: " + neighbouringTile.x + ", " + neighbouringTile.y);// LOG
+                //this.log("neighbouringTile exists: " + neighbouringTile.x + ", " + neighbouringTile.y);// LOG
               }
               else {// the tile doesn't exist
                 node.tiles.push({
@@ -280,7 +284,7 @@ var Soc = function(game, options) {
             }
           }
       }
-      console.log("Nodes built " + this.world.nodes.length);// LOG
+      this.log("Nodes built " + this.world.nodes.length);// LOG
       // place harbors
       this.placeHarbor( -1,  5, { type: "*", tradeCoef: 3} );
       this.placeHarbor(  1,  5, { type: "*", tradeCoef: 3} );
@@ -308,9 +312,9 @@ var Soc = function(game, options) {
         for (var i=0; i<count; i++)
           this.devCardStub.push(key);
       }
-      console.log("w/"+ this.game.id + " DevCard Stub: " + this.devCardStub);// LOG
+      this.log("w/"+ this.game.id + " DevCard Stub: " + this.devCardStub);// LOG
       this.shuffleArray(this.devCardStub);
-      console.log("w/"+ this.game.id + " DevCard Stub: " + this.devCardStub);// LOG
+      this.log("w/"+ this.game.id + " DevCard Stub: " + this.devCardStub);// LOG
     }
   };
   this.placeHarbor = function(i, j, harbor) {
@@ -362,15 +366,15 @@ var Soc = function(game, options) {
    * return: Boolean
    * */ 
   this.canPlaceRoad = function(player, road) {
-    console.log("w/"+ this.game.id + " Can the road be placed?");// LOG
+    this.log("w/"+ this.game.id + " Can the road be placed?");// LOG
     // SPECIAL TURN
     if (this.isSpecialTurn()) {
-      console.log("w/"+ this.game.id + " Can the road be placed in this special turn?");// LOG
+      this.log("w/"+ this.game.id + " Can the road be placed in this special turn?");// LOG
       var isolatedBuild = this.world.nodes.find( function( ele ) { 
         return ele.build.player.index == player.index && !ele.build.connected;
       });
       if (isolatedBuild) {
-        console.log("w/"+ this.game.id + " We found the build to connect this road.");// LOG
+        this.log("w/"+ this.game.id + " We found the build to connect this road.");// LOG
         if ((road.nodes[0].i == isolatedBuild.i && road.nodes[0].j == isolatedBuild.j)
          || (road.nodes[1].i == isolatedBuild.i && road.nodes[1].j == isolatedBuild.j)){
           isolatedBuild.build.connected = true;
@@ -381,7 +385,7 @@ var Soc = function(game, options) {
     }
     // NORMAL TURN
     else { // NEVER CALL
-      console.log("w/"+ this.game.id + " Can the road be placed in this normal turn?");// LOG
+      this.log("w/"+ this.game.id + " Can the road be placed in this normal turn?");// LOG
       return this.canPlaceRoadInNormalTurn(player, road);
     }
     return false;
@@ -392,10 +396,10 @@ var Soc = function(game, options) {
    * return: Boolean
    * */
   this.canPlaceSettlementOrCityInSpecialTurn = function(player, node) {
-    console.log("w/"+ this.game.id + " Can place settlement or city in special turn?" );// LOG
-    //console.log("build.type ", node.build.type);// LOG
-    //console.log("build.player ", node.build.player);// LOG
-    //console.log("knight.force ", node.knight.force);// LOG
+    this.log("w/"+ this.game.id + " Can place settlement or city in special turn?" );// LOG
+    //this.log("build.type ", node.build.type);// LOG
+    //this.log("build.player ", node.build.player);// LOG
+    //this.log("knight.force ", node.knight.force);// LOG
     // check if not other build or other owner or knight
     if (node.build.type != 0 || node.build.player.index != -1 || node.knight.force != 0)
       return false;
@@ -409,14 +413,14 @@ var Soc = function(game, options) {
    * return: Boolean
    * */
   this.canPlaceRoadInNormalTurn = function(player, userData) {
-    console.log("w/"+ this.game.id + " Can " + player.username + " place road in normal turn?");// LOG
+    this.log("w/"+ this.game.id + " Can " + player.username + " place road in normal turn?");// LOG
     for(var r=0; r<this.world.roads.length; r++) {
       var otherRoad = this.world.roads[r];
-      console.log("w/"+ this.game.id + " Other road ID " + otherRoad.id);// LOG
-      console.log("w/"+ this.game.id + " OtherRoad.player.index " + otherRoad.player.index);// LOG
-      console.log("w/"+ this.game.id + " OtherRoad.player " + otherRoad.player);// LOG
+      this.log("w/"+ this.game.id + " Other road ID " + otherRoad.id);// LOG
+      this.log("w/"+ this.game.id + " OtherRoad.player.index " + otherRoad.player.index);// LOG
+      this.log("w/"+ this.game.id + " OtherRoad.player " + otherRoad.player);// LOG
       if (this.isAdjacentRoad(otherRoad, userData) && otherRoad.player.index == player.index) {
-        console.log("w/"+ this.game.id + "YES" );// LOG
+        this.log("w/"+ this.game.id + "YES" );// LOG
         return true;
       }
     }
@@ -427,10 +431,10 @@ var Soc = function(game, options) {
    * return: Boolean
    * */
   this.canPlaceSettlementInNormalTurn = function(player, node) {
-    console.log("w/"+ this.game.id + " Can " + player.username + " place settlement in normal turn?");// LOG
-    //console.log("build.type ", node.build.type);// LOG
-    //console.log("build.player ", node.build.player);// LOG
-    //console.log("knight.force ", node.knight.force);// LOG
+    this.log("w/"+ this.game.id + " Can " + player.username + " place settlement in normal turn?");// LOG
+    //this.log("build.type ", node.build.type);// LOG
+    //this.log("build.player ", node.build.player);// LOG
+    //this.log("knight.force ", node.knight.force);// LOG
     // check if not other build or other owner or knight
     if (node.build.type != 0 || node.build.player.index != -1 || node.knight.force != 0)
       return false;
@@ -443,10 +447,24 @@ var Soc = function(game, options) {
    * return: Boolean
    * */
   this.canPlaceCityInNormalTurn = function(player, node) {
-    console.log("w/"+ this.game.id + " Can " + player.username + " place city in normal turn?");// LOG
+    this.log("w/"+ this.game.id + " Can " + player.username + " place city in normal turn?");// LOG
     return node.build.player.index == player.index && node.build.type == 1; 
   };
 
+  /** Can pay?
+   * obj: []
+   * username: string
+   * return: Boolean
+   * */
+  this.canPay = function(obj, username) {
+    this.log("w/"+ this.game.id + " " + username + "  has " + JSON.stringify(this.players[username].resources));// LOG
+    for(var key in obj) {
+      if (this.players[username].resources[key] < obj[key])
+        return false;
+    }
+    this.log("w/"+ this.game.id + " " + username + "  can buy " + JSON.stringify(obj));// LOG
+    return true;
+  };
   /** Can buy?
    * obj: string "road", "settlement", "city", "devCard", "boat", "knight", "cityWalls"
    * username: string
@@ -477,20 +495,44 @@ var Soc = function(game, options) {
       type: tg._type,
       data: tg._data
     }*/
-    console.log("Can '" + username + "' play? (" + userAction.todo + ")");// LOG
+    this.log("Can '" + username + "' play? (" + userAction.todo + ")");// LOG
+
+    if (userAction.turn != this.currentAction.turn) {
+      this.log("And no, " + username + ", you can't (no good turn).");// LOG
+      return false;
+    }
+
     var player = this.players[username];
+    // THIEF ?
     if (this.currentAction.todo == "THIEF" && userAction.todo == "SEND_RSRC_TO_BANK" && userAction.turn == this.currentAction.turn) {
       return true;
     }
-    if (username != this.currentAction.to.username || userAction.turn != this.currentAction.turn) {
-      console.log("And no, " + username + ", you can't.");// LOG
+    // TRADE WITH PLAYERS
+    if (userAction.todo == 'OFFER_EXCHANGE') {
+      this.log("userAction: " + JSON.stringify(userAction));// LOG
+      return this.currentTurn.phase == 'TRADING' && this.canPay(userAction.offer.given, userAction.from);
+    }
+    else if (userAction.todo == 'ACCEPT_EXCHANGE') {      
+      this.log("userAction: " + JSON.stringify(userAction));// LOG
+      return this.currentTurn.phase == 'TRADING' && this.canPay(userAction.trade.offer.demanded, userAction.from);
+    }
+    else if (userAction.todo == "REFUSE_EXCHANGE") {      
+      return this.currentTurn.phase == 'TRADING';
+    }
+    else if (userAction.todo == "CONFIRME_EXCHANGE") {      
+      this.log("userAction: " + JSON.stringify(userAction));// LOG
+      return this.currentTurn.phase == 'TRADING' && this.canPay(userAction.trade.offer.given, userAction.from);
+    }
+    if (username != this.currentAction.to.username) {
+      this.log("And no, " + username + ", you can't.");// LOG
       return false;
     }
+    // ACTION FOR CURRENT PLAYER: SPECIAL & NORMAL TURN
     // SPECIAL TURN
     if (this.isSpecialTurn()) {
-      console.log("w/"+ this.game.id + " SPECIAL TURN");// LOG
+      this.log("w/"+ this.game.id + " SPECIAL TURN");// LOG
       if (userAction.todo != this.currentAction.todo) {
-        console.log("And no, " + username + ", you can't.");// LOG
+        this.log("And no, " + username + ", you can't.");// LOG
         return false;
       }
       switch(userAction.todo) {
@@ -501,9 +543,9 @@ var Soc = function(game, options) {
             return ele.i === userData.data.i && ele.j === userData.data.j;
           });
           if (choosenNode) {// we found the node selected by the player
-            console.log("w/"+ this.game.id + " We found the node selected by the player " + choosenNode);// LOG
+            this.log("w/"+ this.game.id + " We found the node selected by the player " + choosenNode);// LOG
             if (this.canPlaceSettlementOrCityInSpecialTurn(player, choosenNode)) {
-              console.log("w/"+ this.game.id + "And we can place it!");// LOG
+              this.log("w/"+ this.game.id + "And we can place it!");// LOG
               // update model -> world -> nodes
               choosenNode.build.type = 1;
               choosenNode.build.player.index = player.index;
@@ -518,14 +560,14 @@ var Soc = function(game, options) {
                   if(tile){ // a matched tile pour this player
                     var value = 0 ;
                     if (userAction.todo == "SETTLEMENT") value = this.rules.harvest.settlement; else if (userAction.todo == "CITY") value = this.rules.harvest.city;
-                    console.log("w/"+ this.game.id + " Tile for haverst found: " + tile.type + " -> " + value);// LOG
+                    this.log("w/"+ this.game.id + " Tile for haverst found: " + tile.type + " -> " + value);// LOG
                     this.harvest(player, tile, value);
                   }
                 }
               }
               return true;
             }
-            console.log("w/"+ this.game.id + " Ho! We can't!");// LOG
+            this.log("w/"+ this.game.id + " Ho! We can't!");// LOG
           }
           return false;
         case "ROAD":
@@ -535,7 +577,7 @@ var Soc = function(game, options) {
                 && ele.nodes[1].i === userData.data.nodes[1].i && ele.nodes[1].j === userData.data.nodes[1].j;
           });
           if (choosenRoad) {// we found the road selected by the player
-            console.log("w/"+ this.game.id + " We found the road selected by the player.");// LOG
+            this.log("w/"+ this.game.id + " We found the road selected by the player.");// LOG
             if (this.canPlaceRoad(player, choosenRoad)) {
               // update model -> world -> roads
               choosenRoad.player.index = player.index;
@@ -548,10 +590,10 @@ var Soc = function(game, options) {
     }
     // NORMAL TURN
     else {
-      console.log("w/"+ this.game.id + " NORMAL TURN");// LOG
-      console.log("w/"+ this.game.id + " this.currentTurn.phase: " + this.currentTurn.phase);// LOG
-      console.log("w/"+ this.game.id + " this.currentAction.todo: " + this.currentAction.todo);// LOG
-      console.log("w/"+ this.game.id + " userAction.todo: " + userAction.todo);// LOG
+      this.log("w/"+ this.game.id + " NORMAL TURN");// LOG
+      this.log("w/"+ this.game.id + " this.currentTurn.phase: " + this.currentTurn.phase);// LOG
+      this.log("w/"+ this.game.id + " this.currentAction.todo: " + this.currentAction.todo);// LOG
+      this.log("w/"+ this.game.id + " userAction.todo: " + userAction.todo);// LOG
       switch (userAction.todo) {
         case "PLAY_KNIGHT": 
            return (this.currentTurn.phase == "ROLL_DICE" || this.currentTurn.phase == "TRADING" || this.currentTurn.phase == "BUILDING" )
@@ -599,14 +641,14 @@ var Soc = function(game, options) {
    * userData: obj
    * */
   this.play = function(username, userAction, userData) {
-    console.log("w/"+ this.game.id + " '" + username + "' is playing " + userAction.todo);// LOG
+    this.log("w/"+ this.game.id + " '" + username + "' is playing " + userAction.todo);// LOG
     var player = this.players[username];
     // SPECIAL TURN
     if (this.isSpecialTurn()) {
       if (userAction.todo == "ROAD") { this.players[username].pieces.road--; }// The road has been placed in the function canPlay()
       else if (userAction.todo == "SETTLEMENT") { this.players[username].pieces.settlement--; }// The settlement has been placed in the function canPlay()
       else if (userAction.todo == "CITY") { this.players[username].pieces.city--; }// The city has been placed in the function canPlay()
-      console.log("w/"+ this.game.id + " '" + username + "' place " + userAction.todo + " at " + userData.data.i + "," + userData.data.j);// LOG
+      this.log("w/"+ this.game.id + " '" + username + "' place " + userAction.todo + " at " + userData.data.i + "," + userData.data.j);// LOG
       var turn = this.currentTurn.turn;
       var specialTurnRule = this.rules.specialTurns[turn - 1];
       var currentActionFound = false;
@@ -614,7 +656,7 @@ var Soc = function(game, options) {
       for (t; t<specialTurnRule.toPlace.length; t++) {
         if (this.currentAction.todo == specialTurnRule.toPlace[t]) {
           // current action found
-          console.log("w/"+ this.game.id + " Current action found: " + this.currentAction.todo);// LOG
+          this.log("w/"+ this.game.id + " Current action found: " + this.currentAction.todo);// LOG
           currentActionFound = true;
           break;
         }
@@ -623,11 +665,11 @@ var Soc = function(game, options) {
         // End of special turn for this user ?
         if (t == specialTurnRule.toPlace.length - 1) {
           // YES
-          console.log("w/"+ this.game.id + " End of special turn? => YES" );// LOG
+          this.log("w/"+ this.game.id + " End of special turn? => YES" );// LOG
           // Is a next player exist for this turn?
           var nextPlayerIndex = this.currentTurn.player + specialTurnRule.sens;
           if (nextPlayerIndex == -1 || nextPlayerIndex == this.playerCount) {
-            console.log("w/"+ this.game.id + " No next player for this run => nextTurn" );// LOG
+            this.log("w/"+ this.game.id + " No next player for this run => nextTurn" );// LOG
             this.currentTurn.turn++;
             this.currentAction.turn = this.currentTurn.turn;
             // no need change player
@@ -642,11 +684,11 @@ var Soc = function(game, options) {
 
           }
           else {
-            console.log("w/"+ this.game.id + " There is a next player for this run => nextPlayer" );// LOG
+            this.log("w/"+ this.game.id + " There is a next player for this run => nextPlayer" );// LOG
             this.currentTurn.player = this.currentTurn.player + specialTurnRule.sens;
             this.currentAction.todo = specialTurnRule.toPlace[0];
             for (var key in this.players) {
-              console.log("w/"+ this.game.id + " key => " + key + "(TODO: do a function)");// LOG
+              this.log("w/"+ this.game.id + " key => " + key + "(TODO: do a function)");// LOG
               if (this.players[key].index == this.currentTurn.player){
                 this.currentAction.to = this.players[key];
                 break;
@@ -657,20 +699,20 @@ var Soc = function(game, options) {
         }
         else {
           // NO => no change player, just set next action 
-          console.log("w/"+ this.game.id + " End of special turn? => NO" );// LOG
+          this.log("w/"+ this.game.id + " End of special turn? => NO" );// LOG
           this.currentAction.todo = specialTurnRule.toPlace[t + 1];
-          console.log("w/"+ this.game.id + " Next todo for " + username + " => " + this.currentAction.todo);// LOG
+          this.log("w/"+ this.game.id + " Next todo for " + username + " => " + this.currentAction.todo);// LOG
         }
 
       }
     }
     // NORMAL TURN
     else {
-      console.log("w/"+ this.game.id + " this.currentAction.todo = " + this.currentAction.todo);// LOG
+      this.log("w/"+ this.game.id + " this.currentAction.todo = " + this.currentAction.todo);// LOG
       if (this.currentAction.todo == 'THIEF' && userAction.todo == 'SEND_RSRC_TO_BANK') {
         player.resourcesToReturn = userAction.resourcesToReturn;
-        console.log("w/"+ this.game.id + " " + username + " with rsrc " + JSON.stringify(player.resources));// LOG
-        console.log("w/"+ this.game.id + " " + username + " send rsrc " + JSON.stringify(player.resourcesToReturn));// LOG
+        this.log("w/"+ this.game.id + " " + username + " with rsrc " + JSON.stringify(player.resources));// LOG
+        this.log("w/"+ this.game.id + " " + username + " send rsrc " + JSON.stringify(player.resourcesToReturn));// LOG
         for (var rsc in player.resourcesToReturn) {
           var count = player.resourcesToReturn[rsc];
           player.resources[rsc] = player.resources[rsc] - count;
@@ -680,7 +722,7 @@ var Soc = function(game, options) {
           if (player.resourceToReturnCount == 0) break; // in case where the plaayer sended too rsrc
         }
         player.resourceToReturnCount = 0;
-        console.log("w/"+ this.game.id + " " + username + " has rsrc  " + JSON.stringify(player.resources));// LOG
+        this.log("w/"+ this.game.id + " " + username + " has rsrc  " + JSON.stringify(player.resources));// LOG
         // check if other player have to send resources
         var canContinue = true;
         for (var usr in this.players) {
@@ -700,7 +742,7 @@ var Soc = function(game, options) {
       else if (this.currentAction.todo == 'CHOOSE_MONOPOLY' && userAction.todo == 'SEND_CHOOSEN_RESOURCE_OF_MONOPOLY') {
         this.playMonopoly(player, userAction.monopolyChoosenResource);
         this.currentAction.todo = 'PLAY';
-        console.log("w/"+ this.game.id + " " + username + " MONOPOLY:  +" + userAction.monopolyChoosenResource);// LOG
+        this.log("w/"+ this.game.id + " " + username + " MONOPOLY:  +" + userAction.monopolyChoosenResource);// LOG
       }
       else {
         switch (userAction.todo) {
@@ -713,17 +755,17 @@ var Soc = function(game, options) {
             if (dice == 7) {
               this.currentAction.todo = 'MOVE_ROBBER';
               // THIEF
-              console.log("w/"+ this.game.id + " THIEF." );// LOG
+              this.log("w/"+ this.game.id + " THIEF." );// LOG
               // Calculate resourceToReturnCount for each player
               for (var key in this.players) {
                 var _player = this.players[key];
-                console.log("w/"+ this.game.id + " " + _player.username + " (" + _player.resourceCount + ">" + _player.resourceLimit + ")");// LOG
+                this.log("w/"+ this.game.id + " " + _player.username + " (" + _player.resourceCount + ">" + _player.resourceLimit + ")");// LOG
                 _player.resourceToReturnCount = 0;
                 if (_player.resourceCount > _player.resourceLimit) {
                   _player.resourceToReturnCount = Math.floor(_player.resourceCount / 2);
                   this.currentAction.todo = 'THIEF';
                 }
-                console.log("w/"+ this.game.id + " " + _player.username + " resourceToReturnCount:" + _player.resourceToReturnCount);
+                this.log("w/"+ this.game.id + " " + _player.username + " resourceToReturnCount:" + _player.resourceToReturnCount);
               }
             }
             else {
@@ -733,14 +775,14 @@ var Soc = function(game, options) {
             break;
           case "MOVE_ROBBER":
             if (userAction.todo == 'MOVE_ROBBER') {
-              console.log("w/"+ this.game.id + " New position for robber: " + JSON.stringify(userData));// LOG
+              this.log("w/"+ this.game.id + " New position for robber: " + JSON.stringify(userData));// LOG
               this.world.robber.x = userData.data.x;
               this.world.robber.y = userData.data.y;
               this.currentAction.todo = 'PLAY';
               if (this.currentTurn.phase == "ROLL_DICE") this.currentAction.todo = 'ROLL_DICE';
               // Pickup or not pickup
               var otherPlayers = this.getOthersPlayersOnTile(this.players[username].index, userData.data);
-              console.log("w/"+ this.game.id + " Players available to pickup " + JSON.stringify(otherPlayers));// LOG
+              this.log("w/"+ this.game.id + " Players available to pickup " + JSON.stringify(otherPlayers));// LOG
               if (otherPlayers.length == 1) 
                 this.pickup(this.players[username], otherPlayers[0]);
               else if (otherPlayers.length > 1) 
@@ -768,12 +810,74 @@ var Soc = function(game, options) {
                   player.resourceCount = player.resourceCount - count + 1;
                 }
               }
-              // TODO: save trades in historic?
+              // TODO: save player trades in historic?
               player.trades = [];
             break;
-          case "END_TRADING":
-              this.currentTurn.phase = this.rules.normalTurn[2];
-              console.log("w/"+ this.game.id + " this.currentTurn.phase = " + this.currentTurn.phase);// LOG
+
+            case "OFFER_EXCHANGE":
+                this.log("OFFER_EXCHANGE : " + JSON.stringify(userAction.offer));
+                //if (username != this.currentAction.to.username)
+                var trade = {
+                  id: "Trade_" + (Math.random()+1).toString(36).slice(2, 18),
+                  turn: this.currentTurn.turn,
+                  from: userAction.from,
+                  offer: userAction.offer
+                }
+                this.trades[trade.id] = trade;
+                this.log(JSON.stringify(trade));
+                this.log(JSON.stringify(this.trades));
+                break;
+            case "ACCEPT_EXCHANGE":
+                this.log("ACCEPT_EXCHANGE : " + JSON.stringify(userAction.trade));
+                var trade = this.trades[userAction.trade.id];
+                if (trade) {
+                  trade.offer.acceptedBy[userAction.from] = Date.now();
+                  this.log(JSON.stringify(trade));
+                }
+                this.log(JSON.stringify(this.trades));
+                break;
+            case "REFUSE_EXCHANGE":
+              this.log("ACCEPT_EXCHANGE : " + JSON.stringify(userAction.trade));
+              var trade = this.trades[userAction.trade.id];
+              if (trade) {
+                trade.offer.refusedBy[userAction.from] = Date.now();
+                // If everybody refused offer, delete it
+                if (Object.keys(trade.offer.refusedBy).length == this.playerCount - 1) delete this.trades[userAction.trade.id]
+                this.log(JSON.stringify(trade));
+              }
+              this.log(JSON.stringify(this.trades));
+              break;
+              case "CONFIRME_EXCHANGE":
+                this.log("CONFIRME_EXCHANGE : " + JSON.stringify(userAction.trade));
+                var trade = this.trades[userAction.trade.id];
+                if (trade) {
+                  // Finalize the trade
+                  var _from = this.players[userAction.from];
+                  var _to = this.players[userAction.to];
+                  for (var rsc in trade.offer.given) {
+                    var count = trade.offer.given[rsc];
+                    _from.resources[rsc] = _from.resources[rsc] - count;
+                    _from.resourceCount = _from.resourceCount - count;
+                    _to.resources[rsc] = _to.resources[rsc] + count;
+                    _to.resourceCount = _to.resourceCount + count;
+                  }
+                  for (var rsc in trade.offer.demanded) {
+                    var count = trade.offer.demanded[rsc];
+                    _from.resources[rsc] = _from.resources[rsc] + count;
+                    _from.resourceCount = _from.resourceCount + count;
+                    _to.resources[rsc] = _to.resources[rsc] - count;
+                    _to.resourceCount = _to.resourceCount - count;
+                  }
+                  // And delete it
+                  delete this.trades[userAction.trade.id]
+                  this.log(JSON.stringify(trade));
+                }
+                this.log(JSON.stringify(this.trades));
+                break;
+              case "END_TRADING":
+              this.trades = {}; // Reset trades (TODO: transfert to history)
+              this.currentTurn.phase = this.rules.normalTurn[2]; // Next phase of normal turn
+              this.log("w/"+ this.game.id + " this.currentTurn.phase = " + this.currentTurn.phase);// LOG
             break;
           case "BUY_ROAD":
               this.buy("road", username);
@@ -849,21 +953,21 @@ var Soc = function(game, options) {
   }
 
   this.harvestAll = function(dice){
-    console.log("w/"+ this.game.id + " HARVEST for dice result: " + dice);// LOG
+    this.log("w/"+ this.game.id + " HARVEST for dice result: " + dice);// LOG
     for (var key in this.players) {
       var _player = this.players[key];
-      console.log("w/"+ this.game.id + " HARVEST of: " + _player.username + ' (' + _player.index + ')');// LOG
+      this.log("w/"+ this.game.id + " HARVEST of: " + _player.username + ' (' + _player.index + ')');// LOG
       for (var n=0; n<this.world.nodes.length; n++) { // loop over all nodes
         var node = this.world.nodes[n];
         if (node.build.type == 0 || node.build.player.index != _player.index) continue; // if no build ot not mine continue
-        console.log("w/"+ this.game.id + " HARVEST for node: " + JSON.stringify(node));// LOG
+        this.log("w/"+ this.game.id + " HARVEST for node: " + JSON.stringify(node));// LOG
         for (var t=0; t<node.tiles.length; t++) {
           var tile = this.world.tiles.find( function( ele ) { 
             return ele.x === node.tiles[t].x && ele.y === node.tiles[t].y /*&& ele.value === dice*/; // TODO: check if tile is not stolen
           });
           if(tile){ // a matched tile pour this player and this value
             if (tile.value == dice) {
-              console.log("w/"+ this.game.id + " Tile for haverst found: " + tile.type + "-" + tile.value);// LOG
+              this.log("w/"+ this.game.id + " Tile for haverst found: " + tile.type + "-" + tile.value);// LOG
               this.harvest(_player, tile, node.build.type);
             }
           }
@@ -902,8 +1006,8 @@ var Soc = function(game, options) {
   };
 
   this.getOthersPlayersOnTile = function(playerIndex, data) {
-    console.log("w/"+ this.game.id + " get OthersPlayersOnTile for playerIndex " + playerIndex);// LOG
-    console.log("w/"+ this.game.id + " on the tile " + JSON.stringify(data));// LOG
+    this.log("w/"+ this.game.id + " get OthersPlayersOnTile for playerIndex " + playerIndex);// LOG
+    this.log("w/"+ this.game.id + " on the tile " + JSON.stringify(data));// LOG
     var _otherPlayers = [];
     for (var n=0; n<this.world.nodes.length; n++) {
       var node = this.world.nodes[n];
@@ -927,24 +1031,24 @@ var Soc = function(game, options) {
    * from: int
    */
   this.pickup = function(to, from) {
-    console.log("w/"+ this.game.id + " Pickup to " + to.index + " from " + from);// LOG
+    this.log("w/"+ this.game.id + " Pickup to " + to.index + " from " + from);// LOG
     if (to.index == from) return; // to=from! 
     var otherPlayer;
     for (var key in this.players) {
       otherPlayer = this.players[key];
       if (otherPlayer.index == from) break;// we found the other player
     }
-    console.log("w/"+ this.game.id + " cards of  " + otherPlayer.username + " : " + JSON.stringify(otherPlayer.resources));// LOG
+    this.log("w/"+ this.game.id + " cards of  " + otherPlayer.username + " : " + JSON.stringify(otherPlayer.resources));// LOG
     if (otherPlayer.resourceCount == 0) return; // no cards to pickup!
     var rscs = [];
     for (var r in otherPlayer.resources) {
       if (otherPlayer.resources[r] > 0) rscs.push(r); // get no empty resource
     }
-    console.log("w/"+ this.game.id + " cards of  " + otherPlayer.username + " : " + JSON.stringify(rscs));// LOG
+    this.log("w/"+ this.game.id + " cards of  " + otherPlayer.username + " : " + JSON.stringify(rscs));// LOG
     if (rscs.length > 0) {
       this.shuffleArray(rscs);
       var rsc = rscs[0];
-      console.log("w/"+ this.game.id + " " + to.username + " pickup " + rsc);// LOG
+      this.log("w/"+ this.game.id + " " + to.username + " pickup " + rsc);// LOG
       // remove resource from
       otherPlayer.resources[rsc]--;
       otherPlayer.resourceCount--;
@@ -968,14 +1072,14 @@ var Soc = function(game, options) {
   }
   /** Next player in a normal turn */
   this.nextPlayer = function() {
-    console.log("w/"+ this.game.id + " Next player." );// LOG
+    this.log("w/"+ this.game.id + " Next player." );// LOG
     this.currentTurn.player++;
     if (this.currentTurn.player == this.playerCount) {
       this.currentTurn.player = 0;
       this.currentTurn.turn++;
     }
     for (var key in this.players) {
-      console.log("w/"+ this.game.id + " key => " + key + "(TODO: do a function)");// LOG
+      this.log("w/"+ this.game.id + " key => " + key + "(TODO: do a function)");// LOG
       if (this.players[key].index == this.currentTurn.player){
         this.currentAction.to = this.players[key];
         this.players[key].devCards.playedThisTurnCount = 0;
@@ -985,7 +1089,7 @@ var Soc = function(game, options) {
     this.currentAction.turn = this.currentTurn.turn;
     this.currentAction.player = this.currentTurn.player;
 
-    console.log("w/"+ this.game.id + " " + this.currentAction.to.username + " is new player." );// LOG
+    this.log("w/"+ this.game.id + " " + this.currentAction.to.username + " is new player." );// LOG
   }
   /** */
   this.hasRobber = function(tile) {
@@ -1005,12 +1109,12 @@ var Soc = function(game, options) {
   }
   /** Get all neighboring nodes */
   this.getNodeNeighbours = function(_node) {
-    console.log("===> Check neighbours of " + _node.i + "," + _node.j);// LOG
+    this.log("===> Check neighbours of " + _node.i + "," + _node.j);// LOG
     var neighbours = [];
     for (var n=0; n<this.world.nodes.length; n++) {
       var node = this.world.nodes[n];
       if (this.hasTwoTilesInCommon(_node, node)) {
-        console.log("---> Found " + node.i + "," + node.j);// LOG
+        this.log("---> Found " + node.i + "," + node.j);// LOG
         neighbours.push(node);
         if (neighbours.length == 3) break;
       }
@@ -1065,12 +1169,12 @@ var Soc = function(game, options) {
   }
   /**  */
   this.isOnRoad = function (player, node) {
-    console.log("w/"+ this.game.id + " ===> isOnRoad of " + JSON.stringify(node));// LOG
+    this.log("w/"+ this.game.id + " ===> isOnRoad of " + JSON.stringify(node));// LOG
     for (var r=0; r<this.world.roads.length; r++) {
       var road = this.world.roads[r];
       if (road.player.index == player.index)
         if ((road.nodes[0].i == node.i && road.nodes[0].j == node.j) || (road.nodes[1].i == node.i && road.nodes[1].j == node.j)) {
-          console.log("w/"+ this.game.id + " YES");
+          this.log("w/"+ this.game.id + " YES");
           return true;
         }
     }
@@ -1081,7 +1185,7 @@ var Soc = function(game, options) {
    * username: string
    * */
   this.buy = function(obj, username) {
-    console.log("w/"+ this.game.id + " " + username + " buy " + obj + " in normal turn.");// LOG
+    this.log("w/"+ this.game.id + " " + username + " buy " + obj + " in normal turn.");// LOG
     var player = this.players[username];
     for(var key in this.rules.costs[obj]) {
       var count = this.rules.costs[obj][key];
@@ -1095,7 +1199,7 @@ var Soc = function(game, options) {
    * username: string
    * */
   this.place = function(obj, username, userData) {
-    console.log("w/"+ this.game.id + " " + username + " place " + obj + " in normal turn. " + JSON.stringify(userData));// LOG
+    this.log("w/"+ this.game.id + " " + username + " place " + obj + " in normal turn. " + JSON.stringify(userData));// LOG
     switch (obj) {
       case "road":
         var choosenRoad = null;
@@ -1159,14 +1263,14 @@ var Soc = function(game, options) {
   };
   this.addChoosenResources = function (player, resources) {
     for (var r=0; r<Math.min(2, resources.length); r++) {
-      console.log("w/"+ this.game.id + " " + player.username + " YEAR_OF_PLENTY: " + resources[r]);// LOG
+      this.log("w/"+ this.game.id + " " + player.username + " YEAR_OF_PLENTY: " + resources[r]);// LOG
       player.resources[resources[r]]++;
       player.resourceCount++;
     }
     player.yearOfPlentyChoosenCards = [];
   }
   this.playMonopoly = function (player, choosenRsc) {
-    console.log("w/"+ this.game.id + " " + player.username + " MONOPOLY: " + choosenRsc);// LOG
+    this.log("w/"+ this.game.id + " " + player.username + " MONOPOLY: " + choosenRsc);// LOG
     var sum = 0;
     for (var key in this.players) {
       var _player = this.players[key];
@@ -1180,20 +1284,20 @@ var Soc = function(game, options) {
     player.resourceCount = player.resourceCount + sum;
   }
   this.changePlayerTradeCoefs = function (player, node) {
-    console.log("w/"+ this.game.id + " change PlayerTradeCoefs of " + player.username + " with rsrc " + JSON.stringify(player.changePlayerTradeCoefs));// LOG
+    this.log("w/"+ this.game.id + " change PlayerTradeCoefs of " + player.username + " with rsrc " + JSON.stringify(player.changePlayerTradeCoefs));// LOG
     if (node.harbor.type == "*") 
       for (var rsc in player.resourceTradeCoef)
         player.resourceTradeCoef[rsc] = node.harbor.tradeCoef;
     else
       player.resourceTradeCoef[node.harbor.type] = node.harbor.tradeCoef;
-    console.log("w/"+ this.game.id + " changed PlayerTradeCoefs of " + player.username + " with rsrc " + JSON.stringify(player.changePlayerTradeCoefs));// LOG  
+    this.log("w/"+ this.game.id + " changed PlayerTradeCoefs of " + player.username + " with rsrc " + JSON.stringify(player.changePlayerTradeCoefs));// LOG  
   }
   this.calculateLongestRoadOfPlayers = function() {
-    console.log("w/"+ this.game.id + " calculateLongestRoadOfPlayers");// LOG 
+    this.log("w/"+ this.game.id + " calculateLongestRoadOfPlayers");// LOG 
     for (var key in this.players) this.calculateLongestRoadOf(this.players[key]); 
   }
   this.calculateLongestRoadOf = function (player) {
-    console.log("w/"+ this.game.id + " calculateLongestRoadOfPlayer " + player.username);// LOG 
+    this.log("w/"+ this.game.id + " calculateLongestRoadOfPlayer " + player.username);// LOG 
     var roads = this.getAllRoadOf(player);
     var maxLength = 0;
     for (var r=0; r<roads.length; r++) {
@@ -1206,7 +1310,7 @@ var Soc = function(game, options) {
     } 
     
     player.longestRoad = maxLength;
-    console.log("w/"+ this.game.id + " -> " + player.longestRoad );// LOG 
+    this.log("w/"+ this.game.id + " -> " + player.longestRoad );// LOG 
   }
   this.processRoad = function (roads, road, length) {
     if (this.roadHasNext(roads, road)) {
@@ -1233,7 +1337,7 @@ var Soc = function(game, options) {
     for (var n=0; n<this.world.nodes.length; n++) {
       var node = this.world.nodes[n];
       if (node.build.type == 0) continue;
-      console.log("w/"+ this.game.id + " Build found: " + node.build.player.username);// LOG
+      this.log("w/"+ this.game.id + " Build found: " + node.build.player.username);// LOG
       var player = this.players[node.build.player.username];
       var type = types[node.build.type];
       player.score = player.score + this.rules.points[type];
@@ -1283,6 +1387,25 @@ var Soc = function(game, options) {
       });
     return playersInfos
   }
+  this.getCurrentTrades = function() {
+    return this.trades;
+    /*var currentTrades = [];
+    this.log(JSON.stringify(this.trades));
+    if (this.currentTurn.phase != 'TRADING') return currentTrades;
+    for (var t=this.trades.length-1; t>=0; t--) {
+      var trade = this.trades[t];
+      if (trade.turn == this.currentTurn.turn)
+        currentTrades.push(trade);
+      else break;
+    }
+    return currentTrades;*/
+  }
 
+  this.log = function(text, param) {
+    if (false) {
+      if (param) console.log(text, param); else console.log(text);
+    }
+  }
+  
 };
 module.exports = Soc;

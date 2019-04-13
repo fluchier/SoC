@@ -7,7 +7,7 @@ var port = process.env.PORT || 3000;
 var Soc = require('./soc');
 
 server.listen(port, function () {
-  console.log('Server listening at port %d', port);// LOG
+  log('Server listening at port %d', port);// LOG
 });
 
 // Routing
@@ -38,7 +38,7 @@ io.on('connection', function (socket) {
 
   // once a client has connected, we expect to get a ping from them saying what room they want to join
   socket.on('room', function(room) {
-    console.log(socket.username + " join room /" + room);// LOG
+    log(socket.username + " join room /" + room);// LOG
     socket.join("/"+room);
     //socket.broadcast.to("/"+room).emit('gameMessage', "You are in the game room. Let's play !");
     var game = getGameOfPlayer(socket.username);
@@ -68,16 +68,16 @@ io.on('connection', function (socket) {
           playersInfos: gameData.getPlayersInfos()
         });
       }
-      console.log("in room " +  game.inRoom + "/" + game.playerCount);// LOG
+      log("in room " +  game.inRoom + "/" + game.playerCount);// LOG
     }
   });
   // once a client has reconnected, we expect to get a ping from them saying what room they want to join
   socket.on('join room', function(room) {
-    console.log(socket.username + " join room /" + room);// LOG
+    log(socket.username + " join room /" + room);// LOG
     socket.join("/"+room);
     var game = getGame(room);
     var gameData = gameCollection.gameData[room];
-    console.log("Game: " + JSON.stringify(game));// LOG
+    log("Game: " + JSON.stringify(game));// LOG
     if (game){
       var n = game.playerCount;
       game.players[n] = createPlayer(socket.username);
@@ -160,7 +160,7 @@ io.on('connection', function (socket) {
     sendOpenedGameList();
     // check if the user in in a game
     var processingGameID = getProcessingGameOf(username);
-    console.log("processingGameID " + processingGameID);// LOG
+    log("processingGameID " + processingGameID);// LOG
     if (processingGameID) socket.emit('automatic join game', processingGameID);
   });
 
@@ -191,7 +191,7 @@ io.on('connection', function (socket) {
           if (game.players[i].username == socket.username) break;
         game.players.splice(i, 1);
         game.playerCount--;
-        console.log("w/ " + game.id + " " + socket.username + " leave game.");// LOG
+        log("w/ " + game.id + " " + socket.username + " leave game.");// LOG
         socket.emit('leftGame', { gameId: game['id'] });
         if (game.playerCount == 0) {
           // No players in the game: destroy it
@@ -200,7 +200,7 @@ io.on('connection', function (socket) {
         }
         else {
           // Alert other players 
-          console.log("w/ " + game.id + " " + socket.username + " 'player disconnect'");// LOG
+          log("w/ " + game.id + " " + socket.username + " 'player disconnect'");// LOG
           io.to("/"+game.id).emit('player disconnect', {gameId: game.id, player: socket.username });
         }
         sendOpenedGameList();
@@ -216,7 +216,7 @@ io.on('connection', function (socket) {
 
   //when the client requests to make a Game
   socket.on('makeGame', function (data) {
-    console.log(JSON.stringify(gameCollection.gameList));// LOG
+    log(JSON.stringify(gameCollection.gameList));// LOG
     var noGamesFound = true;
     for(var i = 0; i < gameCollection.totalGameCount; i++){
       var playerCount = gameCollection.gameList[i]['gameObject'].playerCount;
@@ -224,7 +224,7 @@ io.on('connection', function (socket) {
         var tempName = gameCollection.gameList[i]['gameObject'].players[p].username;
         if (tempName == socket.username){
           noGamesFound = false;
-          console.log("This user already has a Game!");// LOG
+          log("This user already has a Game!");// LOG
           socket.emit('alreadyJoined', {
             gameId: gameCollection.gameList[i]['gameObject']['id']
           });
@@ -239,7 +239,7 @@ io.on('connection', function (socket) {
       gameObject.index = gameCollection.totalGameCount;
       gameCollection.totalGameCount ++;
       gameCollection.gameList.push({gameObject});
-      console.log("w/" +  gameObject.id + " " + " created by "+ socket.username);// LOG
+      log("w/" +  gameObject.id + " " + " created by "+ socket.username);// LOG
       io.emit('gameCreated', {
         username: socket.username,
         gameId: gameObject.id
@@ -249,7 +249,7 @@ io.on('connection', function (socket) {
   });
 
   socket.on('joinGame', function (data){
-    console.log(socket.username + " wants to join a game");// LOG
+    log(socket.username + " wants to join a game");// LOG
     if (gameCollection.totalGameCount == 0 ) {
       socket.emit('noGameOpened');
       return;
@@ -258,7 +258,7 @@ io.on('connection', function (socket) {
     // already In Game ?
     var game = getGameOfPlayer(socket.username);
     if (game != null) {
-      console.log(socket.username + " already has a Game!");// LOG
+      log(socket.username + " already has a Game!");// LOG
       socket.emit('alreadyJoined', {
         gameId: game['id']
       });
@@ -292,7 +292,7 @@ io.on('connection', function (socket) {
         }
         game.players.splice(i, 1);
         game.playerCount--;
-        console.log("w/" + game['id'] + " " + socket.username + " leave game.");// LOG
+        log("w/" + game['id'] + " " + socket.username + " leave game.");// LOG
         socket.emit('leftGame', { gameId: game['id'] });
         if (game.playerCount == 0) {
           destroyGame(game);
@@ -304,7 +304,7 @@ io.on('connection', function (socket) {
   });
 
   socket.on('launchGame', function(data) {
-    console.log("w/" + data.id + " " + socket.username + " wants to start game.");// LOG
+    log("w/" + data.id + " " + socket.username + " wants to start game.");// LOG
     var game = getGame(data.id);
     if (game.canBeLaunch) {
       game.canBeLaunch = false;
@@ -313,13 +313,13 @@ io.on('connection', function (socket) {
       io.emit('launchedGame', game);
     }
     else {
-      console.log("w/" + data.id + "  Game can't be launched.");// LOG
+      log("w/" + data.id + "  Game can't be launched.");// LOG
     }
   });
 
   socket.on('getMyDeck', function(data) {
-    console.log("w/" + data.gameId + " " + data.user + " wants his material/");// LOG
-    console.log("Sending "+gameCollection.gameData[data.gameId].players[data.user].pieces.road+" roads... w/"+ data.gameId);// LOG
+    log("w/" + data.gameId + " " + data.user + " wants his material/");// LOG
+    log("Sending "+gameCollection.gameData[data.gameId].players[data.user].pieces.road+" roads... w/"+ data.gameId);// LOG
     socket.emit("myDeck", gameCollection.gameData[data.gameId].players[data.user]);
   });
 
@@ -333,14 +333,14 @@ io.on('connection', function (socket) {
       data: tg._data
     }*/
     var game = gameCollection.gameData[data.gameId];
-    console.log("w/" + data.gameId + " " + socket.username + " wants to play.");// LOG
+    log("w/" + data.gameId + " " + socket.username + " wants to play.");// LOG
 
     // Check if it is a valid action
     if (game.canPlay(data.user, data.gameAction, data.target)) {
       
       // Broadcast "Game Message"
       io.to("/"+data.gameId).emit('gameMessage', { username: "GAME", message: data.user + " played " + data.gameAction.todo });
-      console.log("w/" + data.gameId + " Playing...");// LOG
+      log("w/" + data.gameId + " Playing...");// LOG
       
       // Broadcast choose of a player
       if (data.gameAction.todo == "SEND_CHOOSEN_RESOURCE_OF_MONOPOLY") {
@@ -363,19 +363,20 @@ io.on('connection', function (socket) {
         io.to("/"+data.gameId).emit('VICTORY', {winner: game.getWinner()});
       }
 
-      console.log("w/" + data.gameId + " " + socket.username + " played.");// LOG
-      console.log("w/" + data.gameId + " Turn " + game.currentAction.turn + ": " + game.currentAction.to.username + " -> " + game.currentAction.todo);// LOG
+      log("w/" + data.gameId + " " + socket.username + " played.");// LOG
+      log("w/" + data.gameId + " Turn " + game.currentAction.turn + ": " + game.currentAction.to.username + " -> " + game.currentAction.todo);// LOG
       
       // Update all game data
       io.to("/"+data.gameId).emit('gameData', { 
         world: game.world, 
         currentTurn: game.currentTurn, 
         currentAction: game.currentAction,
-        playersInfos: game.getPlayersInfos()
+        playersInfos: game.getPlayersInfos(),
+        currentTrades: game.getCurrentTrades()
        });
     }
     else {
-      console.log("w/" + data.gameId + " " + data.user + " can't play :-(");// LOG
+      log("w/" + data.gameId + " " + data.user + " can't play :-(");// LOG
       socket.emit('gameMessage', { username: "GAME", message:  socket.username + ", you can't do it!" });
     }
   });
@@ -429,15 +430,15 @@ function joinGame(username, game) {
   game.playerCount++;
   game.canBeJoin = game.playerCount<game.maxPlayerCount;
   game.canBeLaunch = game.playerCount>=game.minPlayerCount && game.playerCount<=game.maxPlayerCount;
-  console.log("w/" + game.id + " " + username + " joined game." );// LOG
+  log("w/" + game.id + " " + username + " joined game." );// LOG
 }
 // Destroy a Game
 function destroyGame(game) {
   --gameCollection.totalGameCount;
-  console.log("Destroy the Game!");// LOG
+  log("Destroy the Game!");// LOG
   gameCollection.gameList.splice(game.index, 1);
   gameCollection.gameData[game.id] = null;
-  console.log(gameCollection.gameList);// LOG
+  log(gameCollection.gameList);// LOG
 }
 function getGame(id) {
   for (var i=0; i<gameCollection.totalGameCount; i++)
@@ -452,4 +453,8 @@ function getProcessingGameOf(username) {
         if (playername == username) return gameId;
   return null;
 }
-
+function log(text, param) {
+  if (false) {
+    if (param) console.log(text, param); else console.log(text);
+  }
+}

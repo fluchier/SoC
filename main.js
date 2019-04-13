@@ -43,48 +43,48 @@ $(function() {
     gameStartTime: 0,
     turnStartTime: 0,
     world: {
-      robber: { x: -4, y: 2},
+      robber: { x: 100, y: 0},
       tiles: [
-        { x:  0, y:  0, type: "PASTURE",   value: 11 },
+        { x:  0, y:  0, type: "PASTURE",   value: 0 },
         
-        { x:  0, y:  2, type: "FIELDS",    value:  6 },
-        { x:  2, y:  1, type: "PASTURE",   value:  5 },
-        { x:  2, y: -1, type: "HILLS",     value:  9 },
-        { x:  0, y: -2, type: "FOREST",    value:  4 },
-        { x: -2, y: -1, type: "MOUNTAINS", value:  3 },
-        { x: -2, y:  1, type: "PASTURE",   value: 10 },
+        { x:  0, y:  2, type: "FIELDS",    value: 0 },
+        { x:  2, y:  1, type: "PASTURE",   value: 0 },
+        { x:  2, y: -1, type: "HILLS",     value: 0 },
+        { x:  0, y: -2, type: "FOREST",    value: 0 },
+        { x: -2, y: -1, type: "MOUNTAINS", value: 0 },
+        { x: -2, y:  1, type: "PASTURE",   value: 0 },
         
-        { x:  0, y:  4, type: "HILLS",     value: 11 },
-        { x:  2, y:  3, type: "FIELDS",    value:  2 },
-        { x:  4, y:  2, type: "MOUNTAINS", value:  9 },
-        { x:  4, y:  0, type: "FIELDS",    value: 10 },
-        { x:  4, y: -2, type: "FOREST",    value:  8 },
-        { x:  2, y: -3, type: "PASTURE",   value:  3 },
-        { x:  0, y: -4, type: "FOREST",    value:  6 },
-        { x: -2, y: -3, type: "FIELDS",    value: 12 },
-        { x: -4, y: -2, type: "MOUNTAINS", value:  5 },
-        { x: -4, y:  0, type: "FOREST",    value:  8 },
-        { x: -4, y:  2, type: "DESERT",    value:  0 },
-        { x: -2, y:  3, type: "HILLS",     value:  4 }, 
+        { x:  0, y:  4, type: "HILLS",     value: 0 },
+        { x:  2, y:  3, type: "FIELDS",    value: 0 },
+        { x:  4, y:  2, type: "MOUNTAINS", value: 0 },
+        { x:  4, y:  0, type: "FIELDS",    value: 0 },
+        { x:  4, y: -2, type: "FOREST",    value: 0 },
+        { x:  2, y: -3, type: "PASTURE",   value: 0 },
+        { x:  0, y: -4, type: "FOREST",    value: 0 },
+        { x: -2, y: -3, type: "FIELDS",    value: 0 },
+        { x: -4, y: -2, type: "MOUNTAINS", value: 0 },
+        { x: -4, y:  0, type: "FOREST",    value: 0 },
+        { x: -4, y:  2, type: "DESERT",    value: 0 },
+        { x: -2, y:  3, type: "HILLS",     value: 0 }, 
   
-        { x:  0, y:  6, type: "SEA",       value:  0, harbor: "*"       },
-        { x:  2, y:  5, type: "SEA",       value:  0, harbor: "no"      },
-        { x:  4, y:  4, type: "SEA",       value:  0, harbor: "*"       },
-        { x:  6, y:  3, type: "SEA",       value:  0, harbor: "no"      },
-        { x:  6, y:  1, type: "SEA",       value:  0, harbor: "wool"    },
-        { x:  6, y: -1, type: "SEA",       value:  0, harbor: "no"      },
-        { x:  6, y: -3, type: "SEA",       value:  0, harbor: "*"       },
-        { x:  4, y: -4, type: "SEA",       value:  0, harbor: "no"      },
-        { x:  2, y: -5, type: "SEA",       value:  0, harbor: "grain"   },
-        { x:  0, y: -6, type: "SEA",       value:  0, harbor: "no"      },
-        { x: -2, y: -5, type: "SEA",       value:  0, harbor: "bricks"  },
-        { x: -4, y: -4, type: "SEA",       value:  0, harbor: "no"      },
-        { x: -6, y: -3, type: "SEA",       value:  0, harbor: "*"       },
-        { x: -6, y: -1, type: "SEA",       value:  0, harbor: "no"      },
-        { x: -6, y:  1, type: "SEA",       value:  0, harbor: "lumber"  },
-        { x: -6, y:  3, type: "SEA",       value:  0, harbor: "no"      },
-        { x: -4, y:  4, type: "SEA",       value:  0, harbor: "ore"     },
-        { x: -2, y:  5, type: "SEA",       value:  0, harbor: "no"      },
+        { x:  0, y:  6, type: "SEA",       value:  0, harbor: "no" },
+        { x:  2, y:  5, type: "SEA",       value:  0, harbor: "no" },
+        { x:  4, y:  4, type: "SEA",       value:  0, harbor: "no" },
+        { x:  6, y:  3, type: "SEA",       value:  0, harbor: "no" },
+        { x:  6, y:  1, type: "SEA",       value:  0, harbor: "no" },
+        { x:  6, y: -1, type: "SEA",       value:  0, harbor: "no" },
+        { x:  6, y: -3, type: "SEA",       value:  0, harbor: "no" },
+        { x:  4, y: -4, type: "SEA",       value:  0, harbor: "no" },
+        { x:  2, y: -5, type: "SEA",       value:  0, harbor: "no" },
+        { x:  0, y: -6, type: "SEA",       value:  0, harbor: "no" },
+        { x: -2, y: -5, type: "SEA",       value:  0, harbor: "no" },
+        { x: -4, y: -4, type: "SEA",       value:  0, harbor: "no" },
+        { x: -6, y: -3, type: "SEA",       value:  0, harbor: "no" },
+        { x: -6, y: -1, type: "SEA",       value:  0, harbor: "no" },
+        { x: -6, y:  1, type: "SEA",       value:  0, harbor: "no" },
+        { x: -6, y:  3, type: "SEA",       value:  0, harbor: "no" },
+        { x: -4, y:  4, type: "SEA",       value:  0, harbor: "no" },
+        { x: -2, y:  5, type: "SEA",       value:  0, harbor: "no" },
       ]
     },
   };
@@ -106,6 +106,7 @@ $(function() {
     // My Panel buttons
   var $rollDice = $('.rollDice');
   var $openTradingCard = $('.openTradingBank');
+  var $openTradingPlayers = $('.openTradingPlayers');
   var $endTrading = $('.endTrading');
   var $build = $('.build');
   var $buyDevCard = $('.buyDevCard');
@@ -122,6 +123,7 @@ $(function() {
   // modals
   var $thiefResourcesModal = $('#thiefResourcesModal');
   var $returnCard = $('.returnCard');
+  var $cancelReturnCard = $('.cancelReturnCard');
   var $sendResourcesToBank = $('.sendResources');
 
   var $tradeModal = $('#tradeModal');
@@ -136,6 +138,12 @@ $(function() {
   var $monopolyModal = $('#monopolyModal');
   var $chooseResourceForMonopoly = $('.chooseResourceForMonopoly');
   var $confirmChoosenResourceOfMonopoly = $('.confirmChoosenResourceOfMonopoly');
+
+  var $tradePlayersModal = $('#tradePlayersModal');
+  var $givesCard = $('.givesCard');
+  var $demandsCard = $('.demandsCard');
+  var $proposeExchange = $('.proposeExchange');
+  var $cancelTradeWithPlayers = $('.cancelTradeWithPlayers');
 
   // COM
   var socket = io();
@@ -406,6 +414,7 @@ $(function() {
   $sendResourcesToBank.click(function(){
     sendResourcesToBank();
     $returnCard.unbind("click");
+    $cancelReturnCard.unbind("click");
     $thiefResourcesModal.css('display', 'none');
   });
   var rscsClass = [ "lumber", "bricks", "wool", "grain", "ore"];
@@ -426,6 +435,17 @@ $(function() {
     $tradeModal.css('display', 'none');
     socket.emit('getMyDeck', {user: username, gameId: mygame.id});
   });
+  $proposeExchange.click(function(){
+    $givesCard.unbind( "click" );
+    $demandsCard.unbind( "click" );
+    $tradePlayersModal.css('display', 'none');
+    sendExchangeOffer();
+  });
+  $cancelTradeWithPlayers.click(function(){
+    $givesCard.unbind( "click" );
+    $demandsCard.unbind( "click" );
+    $tradePlayersModal.css('display', 'none');
+  });
   $confirmChoosenCardForYearOfPlenty.click(function(){
     sendChoosenCardOfYearOfPlenty();
     $chooseCardForYearOfPlenty.unbind("click");
@@ -441,6 +461,9 @@ $(function() {
   });
   $openTradingCard.click(function(){
     showTradePanel();
+  });
+  $openTradingPlayers.click(function(){
+    showTradeWithPlayersPanel();
   });
   $playKnight.click(function(){
     playKnight();
@@ -479,7 +502,7 @@ $(function() {
   socket.on('login', function (data) {
     connected = true;
     // Display the welcome message
-    var message = "Welcome to the Game Server of Free-SoC 1.0.0 (BETA) - 2019/04/03";
+    var message = "Welcome to the Game Server of Free-SoC 1.0.1 (BETA) - 2019/04/15";
     log(message, {
       prepend: true
     });
@@ -712,14 +735,12 @@ $(function() {
     catan.currentTurn = data.currentTurn;
     gameAction = data.currentAction;
 
-    console.log("====== gameData ======");
-    console.log(JSON.stringify(data.playersInfos));
-    console.log(JSON.stringify(gameAction));
-    console.log(JSON.stringify(catan.currentTurn));
+    //console.log("====== gameData ======");
+    console.log(JSON.stringify(data.currentTrades));
 
     // Update turn display et Players panel
     $turnText.text(catan.currentTurn.turn);
-    updatePlayersPanels(data.playersInfos, gameAction, catan.currentTurn);
+    updatePlayersPanels(data.playersInfos, gameAction, catan.currentTurn, data.currentTrades);
 
     // Update model of world
     for (var i=0; i<catan.world.tiles.length; i++) {
@@ -745,7 +766,7 @@ $(function() {
       if (isMyTurn()) {
         if (gameAction.todo == "SETTLEMENT" || gameAction.todo == "CITY" || gameAction.todo == "ROLL_DICE")
           catan.turnStartTime = Date.now();
-        addChatGameMessage({username: "TURN " + catan.currentTurn.turn , message: username + "! It's up to you to play: " + gameAction.todo});
+        addChatGameMessage({username: "TURN " + catan.currentTurn.turn , message: username + "! It's up to you to play: " + gameAction.todo + " (" + catan.currentTurn.phase + ")"});
         if (playerDeck) updateDevsCardsButtons(playerDeck.devCards.toPlay);
         switch (catan.currentTurn.phase) {
           case "ROLL_DICE": 
@@ -754,6 +775,8 @@ $(function() {
           break;
           case "TRADING": 
             $openTradingCard.prop('disabled', false);
+            $openTradingPlayers.prop('disabled', false);
+            $tradePlayersModal.find('.modal-title').text("Offer an exchange with other players");
             $endTrading.prop('disabled', false);
           break;
           case "BUILDING": 
@@ -796,6 +819,10 @@ $(function() {
         }
       }
       else {
+        if (catan.currentTurn.phase == 'TRADING') {
+          $tradePlayersModal.find('.modal-title').text("Offer an exchange with " + gameAction.to.username);
+          $openTradingPlayers.prop('disabled', false);
+        }
         addChatGameMessage({username: "TURN " + catan.currentTurn.turn, message: "It's up to " + gameAction.to.username + " to play..."});
         switch (gameAction.toto) {
           case "CHOOSE_MONOPOLY": 
@@ -832,41 +859,147 @@ $(function() {
     showMessage(data.username + " is the winner!", 50000);
   });
   
-  // Controllers
+  // Send Game Action
+
+  function rollDice() {
+    play({
+      turn: catan.currentTurn.turn,
+      from: username,
+      to: "GAME",
+      todo: "ROLL_DICE"
+    });
+  }
+
+  /* NORMAL TURN - PHASE 'ROLL_DICE' */
+
+  // When the dice result is 7, sometimes you have to send the half of your resource cards
+  function sendResourcesToBank() {
+    play({
+      turn: catan.currentTurn.turn,
+      from: username,
+      to: "BANK",
+      todo: "SEND_RSRC_TO_BANK",
+      resourcesToReturn: playerDeck.resourcesToReturn
+    });
+  }
+
+  /* NORMAL TURN - PHASE 'TRADING' */
+
+  // You trade with the bank
+  function sendTradeToBank() {
+    play({
+      turn: catan.currentTurn.turn,
+      from: username,
+      to: "BANK",
+      todo: "TRADE_RSRC_WITH_BANK",
+      trades: playerDeck.trades
+    });
+  }
+  // You offer a trade with the others players
+  function sendExchangeOffer() {
+    play({
+      turn: catan.currentTurn.turn,
+      from: username,
+      to: "*",
+      todo: "OFFER_EXCHANGE",
+      offer: playerDeck.exchange
+    });
+  }
+  // You accept a trade of a other player
+  function acceptTrade(trade) {
+    play({
+      turn: catan.currentTurn.turn,
+      from: username,
+      to: trade.from,
+      todo: "ACCEPT_EXCHANGE",
+      trade: trade
+    });
+  }
+  // You refuse a trade of a other player
+  function refuseTrade(trade) {
+    play({
+      turn: catan.currentTurn.turn,
+      from: username,
+      to: trade.from,
+      todo: "REFUSE_EXCHANGE",
+      trade: trade
+    });
+  }
+  // You confirm a trade accepted by a other player
+  function confirmTrade(trade, to) {
+    play({
+      turn: catan.currentTurn.turn,
+      from: username,
+      to: to,
+      todo: "CONFIRME_EXCHANGE",
+      trade: trade
+    });
+  }
+  // You close the phase 'TRADING' to go the phase 'BUILDING'
+  function endTrading() {
+    play({
+      turn: catan.currentTurn.turn,
+      from: username,
+      to: "GAME",
+      todo: "END_TRADING"
+    });
+  }
+
+  /* NORMAL TURN - PHASE 'BUILDING' */
 
   function buyDevCard() {
     play({
       turn: catan.currentTurn.turn,
       from: username,
-      to: "GAME",
+      to: "BANK",
       todo: "BUY_DEV_CARD"
     });
   }
-  function sendResourcesToBank() {
+  function endTurn() {
     play({
       turn: catan.currentTurn.turn,
       from: username,
       to: "GAME",
-      todo: "SEND_RSRC_TO_BANK",
-      resourcesToReturn: playerDeck.resourcesToReturn
+      todo: "END_TURN"
     });
   }
-  function sendTradeToBank() {
+
+  /* NORMAL TURN - YOU PLAY A DEV CARD */
+
+  // You play a dev card 'KNIGHT' 
+  function playKnight() {
     play({
       turn: catan.currentTurn.turn,
       from: username,
       to: "GAME",
-      todo: "TRADE_RSRC_WITH_BANK",
-      trades: playerDeck.trades
+      todo: "PLAY_KNIGHT"
+    });
+  }
+  // You play a dev card 'YEAR OF PLENTY' 
+  function playYearOfPlenty() {
+    play({
+      turn: catan.currentTurn.turn,
+      from: username,
+      to: "GAME",
+      todo: "PLAY_YEAR_OF_PLENTY"
     });
   }
   function sendChoosenCardOfYearOfPlenty() {
     play({
       turn: catan.currentTurn.turn,
       from: username,
-      to: "GAME",
+      to: "*",
       todo: "SEND_CHOOSEN_CARDS_OF_YEAR_OF_PLENTY",
       yearOfPlentyChoosenCards: playerDeck.yearOfPlentyChoosenCards
+    });
+  }
+  // You play a dev card 'MONOPOLY' 
+  function playMonopoly() {
+    play({
+      turn: catan.currentTurn.turn,
+      from: username,
+      to: "GAME",
+      todo: "PLAY_MONOPOLY"
     });
   }
   function sendChoosenResourceOfMonopoly() {
@@ -878,15 +1011,7 @@ $(function() {
       monopolyChoosenResource: playerDeck.monopoly
     });
   }
-  
-  function playKnight() {
-    play({
-      turn: catan.currentTurn.turn,
-      from: username,
-      to: "GAME",
-      todo: "PLAY_KNIGHT"
-    });
-  }
+  // You play a dev card 'ROAD BUILDING' 
   function playRoadBuilding() {
     play({
       turn: catan.currentTurn.turn,
@@ -895,52 +1020,13 @@ $(function() {
       todo: "PLAY_ROAD_BUILDING"
     });
   }
+  // You play a dev card 'VICTORY POINT' 
   function playVictoryPoint() {
     play({
       turn: catan.currentTurn.turn,
       from: username,
       to: "GAME",
       todo: "PLAY_VICTORY_POINT"
-    });
-  }
-  function playMonopoly() {
-    play({
-      turn: catan.currentTurn.turn,
-      from: username,
-      to: "GAME",
-      todo: "PLAY_MONOPOLY"
-    });
-  }
-  function playYearOfPlenty() {
-    play({
-      turn: catan.currentTurn.turn,
-      from: username,
-      to: "GAME",
-      todo: "PLAY_YEAR_OF_PLENTY"
-    });
-  }
-  function rollDice() {
-    play({
-      turn: catan.currentTurn.turn,
-      from: username,
-      to: "GAME",
-      todo: "ROLL_DICE"
-    });
-  }
-  function endTrading() {
-    play({
-      turn: catan.currentTurn.turn,
-      from: username,
-      to: "GAME",
-      todo: "END_TRADING"
-    });
-  }
-  function endTurn() {
-    play({
-      turn: catan.currentTurn.turn,
-      from: username,
-      to: "GAME",
-      todo: "END_TURN"
     });
   }
   function play(userAction) {
@@ -981,7 +1067,7 @@ canvas.on('mouse:down', function(options) {
         }
       });
     }
-    // NORAM TURN
+    // NORMAL TURN
     else {
       switch (tg._type) {
         case "tile":
@@ -993,11 +1079,11 @@ canvas.on('mouse:down', function(options) {
               type: tg._type,
               data: tg._data
             }
-        });
+          });
           break;
         case "road": 
           if(isMyTurn()){
-            if (gameAction.todo == "SPECIAL_ROAD_1" || gameAction.todo == "SPECIAL_ROAD_2"){
+            if (gameAction.todo == 'SPECIAL_ROAD_1' || gameAction.todo == 'SPECIAL_ROAD_2'){
               socket.emit('gameAction', {
                 user: username, 
                 gameId: mygame.id,
@@ -1008,7 +1094,7 @@ canvas.on('mouse:down', function(options) {
                 }
               });
             }
-            else if (catan.build) {
+            else if (catan.build && catan.currentTurn.phase == 'BUILDING') {
               $build.prop('disabled', false);
               gameAction.todo = "BUY_ROAD";
               socket.emit('gameAction', {
@@ -1026,7 +1112,7 @@ canvas.on('mouse:down', function(options) {
           }
           break;
         case "node": 
-          if(isMyTurn() && catan.build){
+          if(isMyTurn() && catan.build && catan.currentTurn.phase == 'BUILDING'){
             $build.prop('disabled', false);
             gameAction.todo == "";
             if (tg._data.build.type == 0) gameAction.todo = "BUY_SETTLEMENT";
@@ -1204,7 +1290,7 @@ function drawTile (size, _x, _y, tile) {
     gtile.add(seaHarbor);
   }
 
-  if (tile.type != 'DESERT' && tile.type != 'SEA') { // add token
+  if (tile.type != 'DESERT' && tile.type != 'SEA' && tile.value != 0) { // add token
     var circle = new fabric.Circle({
       radius: lsize / 2, stroke: 'black', fill: 'white', 
       originX: 'center', originY: 'center', opacity: .6,
@@ -1386,19 +1472,25 @@ function updateRoad(road) {
 // UI utils
 
 function updateResourcesPanel() {
-  var cards = playerDeck.resources;
   var sum = 0;
-  for (var rsc in cards) {
-    sum = sum + cards[rsc];
+  for (var rsc in playerDeck.resources) {
+    sum = sum + playerDeck.resources[rsc];
     if (sum > playerDeck.resourceLimit) $('.resources').css('color', 'red'); else $('.resources').css('color', 'black');
-    $('.'+rsc+"Text").text(cards[rsc]);
-    $('.'+rsc+"Image").css('opacity', cards[rsc] > 0 ? 1 : .7);
+    $('.'+rsc+"Text")
+      .text(playerDeck.resources[rsc])
+      .css('color', playerDeck.resources[rsc] == 0 ? 'grey' : 'black');
+    $('.'+rsc+"Image").css('opacity', playerDeck.resources[rsc] > 0 ? 1 : .7);
     //$("#playerPanel").find('.'+rsc+"Image").css({ opacity: 1 });
     // Thief modal buttons
-    $thiefResourcesModal.find("button[data-rsc='"+rsc+"']").attr("disabled", cards[rsc] == 0);
-    // Trade modal buttons
+    $('.'+rsc+"ReturnedImage")
+      .css('opacity', playerDeck.resourcesToReturn[rsc] > 0 ? 1 : .7);
+    $thiefResourcesModal.find("button[data-rsc='"+rsc+"']").filter(".returnCard").attr("disabled", playerDeck.resources[rsc] == 0);
+    $thiefResourcesModal.find("button[data-rsc='"+rsc+"']").filter(".cancelReturnCard").attr("disabled", playerDeck.resourcesToReturn[rsc] == 0);
+    // Trade with bank modal: texts and buttons
     $tradeModal.find("button[data-rsc='"+rsc+"']").text("x" + playerDeck.resourceTradeCoef[rsc]);
-    $tradeModal.find("button[data-rsc='"+rsc+"']").attr("disabled", cards[rsc] < playerDeck.resourceTradeCoef[rsc]);
+    $tradeModal.find("button[data-rsc='"+rsc+"']").attr("disabled", playerDeck.resources[rsc] < playerDeck.resourceTradeCoef[rsc]);
+    // Trade with other players modal: texts and buttons
+    $tradePlayersModal.find("button[data-rsc='"+rsc+"']").filter(".givesCard").attr("disabled", playerDeck.resources[rsc] == 0);
   }
 }
 function updateResourcesToReturnPanel(cards) {
@@ -1439,6 +1531,23 @@ function showThiefPanel() {
     if (playerDeck.resources[type] == 0)
       $(event.target).attr('disabled', true);
   });
+  $cancelReturnCard.click(function (event) {
+    var type = $(event.target).attr('placeholder');
+    if (playerDeck.resourcesToReturn[type] > 0) {
+      playerDeck.resourcesToReturn[type]--;
+      playerDeck.resources[type]++;
+      playerDeck.resourceCount++;
+      sum--;
+      updateResourcesPanel();
+      updateResourcesToReturnPanel(playerDeck.resourcesToReturn);
+      $(".remainingText").text(playerDeck.resourceCount);
+      $(".returnedText").text(sum);
+      if (sum < target) {
+        $sendResourcesToBank.attr("disabled", true);
+        $returnCard.attr("disabled", false);
+      }
+    }
+  });
   $thiefResourcesModal.css('display', 'block');
 }
 function showTradePanel() {
@@ -1456,11 +1565,63 @@ function showTradePanel() {
       updateResourcesPanel();
       $(".remainingText").text(playerDeck.resourceCount);
     }
-    if (playerDeck.resources[type] == 0)
-      $(event.target).attr('disabled', true);
+    //if (playerDeck.resources[type] == 0) $(event.target).attr('disabled', true);
   });
   
   $tradeModal.css('display', 'block');
+}
+function showTradeWithPlayersPanel() {
+  updateResourcesPanel();
+  playerDeck.exchange = {
+    given: { bricks: 0, lumber: 0, wool: 0, grain: 0, ore: 0 },
+    demanded: { bricks: 0, lumber: 0, wool: 0, grain: 0, ore: 0 },
+    proposedBy: username,
+    acceptedBy: {},
+    refusedBy: {}
+  };
+  updateTradePlayersPanel();
+
+  $givesCard.click(function (event) {
+    var type = $(event.target).attr('placeholder');
+    if (playerDeck.resources[type] > 0) {
+      playerDeck.resources[type]--;
+      playerDeck.resourceCount--;
+      playerDeck.exchange.given[type]++;
+      updateResourcesPanel();
+      updateTradePlayersPanel();
+    }
+  });
+
+  $demandsCard.click(function (event) {
+    var type = $(event.target).attr('placeholder');
+    playerDeck.exchange.demanded[type]++;
+    updateResourcesPanel();
+    updateTradePlayersPanel();
+  });
+  $tradePlayersModal.css('display', 'block');
+}
+
+function updateTradePlayersPanel() {
+  var totalGiven = 0;
+  for (var rsc in playerDeck.exchange.given) {
+    var given = playerDeck.exchange.given[rsc];
+    totalGiven += given;
+    $tradePlayersModal.find('.'+rsc+"GivenText")
+      .text(given).css('color', given == 0 ? 'grey' : 'black');
+  }
+  $tradePlayersModal.find('.totalGivenText')
+    .text(totalGiven).css('color', totalGiven == 0 ? 'grey' : 'black');
+  var totalDemanded = 0;
+  for (var rsc in playerDeck.exchange.demanded) {
+    var demanded = playerDeck.exchange.demanded[rsc];
+    totalDemanded += demanded;
+    $tradePlayersModal.find('.'+rsc+"RequestedText")
+      .text(demanded).css('color', demanded == 0 ? 'grey' : 'black');
+    $tradePlayersModal.find('.'+rsc+"RequestedImage")
+      .css('opacity', demanded > 0 ? 1 : .7);
+  }
+  $tradePlayersModal.find('.totalRequestedText')
+    .text(totalDemanded).css('color', totalDemanded == 0 ? 'grey' : 'black');
 }
 
 function openYearOfPlenty() {
@@ -1555,14 +1716,15 @@ function createPlayersPanels(players) {
     var $scoreAndInfos = $('<div class="scoreAndInfos"></div ')
       .append($scoreDiv, $infosDiv);
     var $more = $('<div class="playerPanelStatus"></div>');
+    var $trades = $('<div class="playerPanelTrades"></div>');
     var $onePlayerPanel = $('<div class="onePlayer"/>')
       .addClass('_p_' + players[p].username)
-      .append($usernameDiv, $hr, $scoreAndInfos, $more);
+      .append($usernameDiv, $hr, $scoreAndInfos, $more, $trades);
         
     $playerPanel.append($onePlayerPanel);
   }
 }
-function updatePlayersPanels(players, currentAction, currentTurn) {
+function updatePlayersPanels(players, currentAction, currentTurn, trades) {
   if (players) {
     console.log(JSON.stringify(players));
     for (var p=0; p<players.length; p++) {
@@ -1574,14 +1736,107 @@ function updatePlayersPanels(players, currentAction, currentTurn) {
       var $status = $current.find('.playerPanelStatus');
       $status.removeClass('myPlayerPanelStatus').removeClass('disconnectedPlayer').empty();
       if (players[p].username in disconnectedPlayers) {
-        //$status.addClass('disconnectedPlayer').text("DISCONNECTED");
+        $status.addClass('disconnectedPlayer').text("DISCONNECTED");
       }
       else if (players[p].username==currentAction.to.username) {
         $status.text(getStringAction(currentAction.todo, currentTurn));
         if (currentAction.to.username == username)
           $status.addClass('myPlayerPanelStatus');
       }
-     
+      // Trades
+      $trade = $current.find('.playerPanelTrades');
+      $trade.empty();
+      if (trades) {
+        for (var id in trades) {
+          var trade = trades[id];
+
+          // Create $offer..
+          var $given = $('<div class="given" title="Given"></div>');
+          for(var rsc in trade.offer.given){
+            for (var c=0; c<trade.offer.given[rsc]; c++) {
+              var $card = $('<div></div>');
+              $card.addClass(rsc + "Image" );
+              $card.addClass("miniCard");
+              $given.append($card);
+            }
+          }
+          var $demanded = $('<div class="demanded" title="Demanded"></div>');
+          for(var rsc in trade.offer.demanded){
+            for (var c=0; c<trade.offer.demanded[rsc]; c++) {
+              var $card = $('<div></div>');
+              $card.addClass(rsc + "Image");
+              $card.addClass("miniCard");
+              $demanded.append($card);
+            }
+          }
+
+          if (trade.from != username) {// ..done by another player..          
+            if (trade.from == players[p].username) {// ...done by the player of this panel...
+              // if i accepted this offer create status "waiting" (bouton ? disabled)
+              if (trade.offer.acceptedBy[username] != null){
+                var $button = $('<button class="tradeButton waiting" disabled></button>')
+                .text("?");
+                 // Display $offer & $buttons
+                 $trade.append($given, $demanded, $buttons);
+              }
+              // if i didn't refuse this offer: create buttons to accept/refuse
+              else if (trade.offer.refusedBy[username] == null) {
+                // ...create $buttons to answer
+                var $acceptButton = $('<button class="tradeButton accept"></button>')
+                    .data("trade", trade)
+                    .text("V")
+                    .click(function() {
+                      acceptTrade($(this).data("trade"));
+                    });
+                var $refuseButton = $('<button class="tradeButton refuse"></button>')
+                    .data("trade", trade)
+                    .text("X")
+                    .click(function() {
+                      refuseTrade($(this).data("trade"));
+                    });
+                var $buttons = $('<div class="tradeButtons"></div>')
+                    .append ($acceptButton, $refuseButton)
+                    .click(function() {
+                      //alert("unbind")
+                      $acceptButton.unbind("click");
+                      $refuseButton.unbind("click");
+                      $(this).unbind("click");
+                    });
+                // Display $offer & $buttons
+                $trade.append($given, $demanded, $buttons);
+              }
+            }
+          }
+          else if (trade.from == username) {// ..done by me! 
+            if (players[p].username != username) {// so for the panel of other players
+              // ...and status "waiting" (bouton ? disabled)
+              var $button = $('<button class="tradeButton waiting" disabled></button>')
+                    .text("?");
+              // But if the player accepted the trade, active the confim button...
+              if (trade.offer.acceptedBy[players[p].username]){
+                $button
+                    .attr("disabled", false)
+                    .data("trade", trade)
+                    .data("user", players[p].username)
+                    .text("V")
+                    .removeClass("waiting").addClass("accept")
+                    .click(function() {
+                      confirmTrade($(this).data("trade"), $(this).data("user"));
+                      $(this).unbind("click");
+                    });
+              }
+              // ...else if the player refused the trade, show the refuse status
+              else if (trade.offer.refusedBy[players[p].username]){
+                $button
+                    .text("X")
+                    .removeClass("waiting").addClass("refuse");
+              }
+              // Display offer & buttons
+              $trade.append($given, $demanded, $button);
+            }
+          }
+        }
+      }
     }
   }
 }

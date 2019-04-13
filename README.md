@@ -16,11 +16,15 @@ node index.js
 To run locally, go to [http://localhost:3000](http://localhost:3000)
 
 BETA version playable at [https://free-soc.herokuapp.com/](https://free-soc.herokuapp.com/)
-_Playable (Trading with the other players not implemented)_
 
-## Current Versions
+## Current Version
+
+##### 1.0.1 (BETA) - 2019/04/14
+_Playable_
+* Trading with the other players implemented
 
 ##### 1.0.0 (BETA) - 2019/04/05
+_Playable (Trading with the other players not implemented)_
 * Game option “Auto roll dice“
 * Players panel displays current action / disconnected status
 * Automatically joining the game after disconnection

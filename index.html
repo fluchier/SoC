@@ -91,6 +91,78 @@
     </div>
   </div>
 
+  <div id="tradePlayersModal" class="modal">
+      <!-- TRADE WITH PLAYERS Modal content -->
+      <div class="modal-content">
+        <div class="tradePlayers_resources">
+          <div class="modal-header">
+            <h4 class="modal-title">Offer an exchange with other players</h4>
+          </div>
+          <div class="tradePlayersContent">
+            <div class="buildingCosts">
+              <img src="assets/tooltips/buildingCosts.jpg" width="200px" />
+            </div>    
+            <div class="tradePlayersResourcePanel">
+              <div class="resource">
+                <div class="lumberImage"></div>
+                <div class="lumberText">0</div>
+                <button class="givesCard" data-rsc="lumber" placeholder="lumber">Give</button>
+                <div class="lumberGivenText">0</div>
+                <div class="lumberRequestedText">0</div>
+                <div class="lumberRequestedImage"></div>
+                <button class="demandsCard" data-rsc="lumber" placeholder="lumber">Demand</button>
+              </div>
+              <div class="resource">
+                <div class="bricksImage"></div>
+                <div class="bricksText">0</div>
+                <button class="givesCard" data-rsc="bricks" placeholder="bricks">Give</button>
+                <div class="bricksGivenText">0</div>
+                <div class="bricksRequestedText">0</div>
+                <div class="bricksRequestedImage"></div>
+                <button class="demandsCard" data-rsc="bricks" placeholder="bricks">Demand</button>
+              </div>
+              <div class="resource">
+                <div class="woolImage"></div>
+                <div class="woolText">0</div>
+                <button class="givesCard" data-rsc="wool" placeholder="wool">Give</button>
+                <div class="woolGivenText">0</div>
+                <div class="woolRequestedText">0</div>
+                <div class="woolRequestedImage"></div>
+                <button class="demandsCard" data-rsc="wool" placeholder="wool">Demand</button>
+              </div>
+              <div class="resource">
+                <div class="grainImage"></div>
+                <div class="grainText">0</div>
+                <button class="givesCard" data-rsc="grain" placeholder="grain">Give</button>
+                <div class="grainGivenText">0</div>
+                <div class="grainRequestedText">0</div>
+                <div class="grainRequestedImage"></div>
+                <button class="demandsCard" data-rsc="grain" placeholder="grain">Demand</button>
+              </div>
+              <div class="resource">
+                <div class="oreImage"></div>
+                <div class="oreText">0</div>
+                <button class="givesCard" data-rsc="ore" placeholder="ore">Give</button>
+                <div class="oreGivenText">0</div>
+                <div class="oreRequestedText">0</div>
+                <div class="oreRequestedImage"></div>
+                <button class="demandsCard" data-rsc="ore" placeholder="ore">Demand</button>
+              </div>
+              <div class="resource">
+                <div class="devCardImage"></div>
+                <div class="remainingText">0</div>
+                <button class="proposeExchange" placeholder="Propose">Propose</button>
+                <div class="totalGivenText">0</div>
+                <div class="totalRequestedText">0</div>
+                <div class="devCardImage"></div>
+                <button class="cancelTradeWithPlayers" placeholder="Cancel">Cancel</button>
+              </div>
+            </div>  
+          </div>
+        </div>
+      </div>
+    </div>
+
   <div id="tradeModal" class="modal">
     <!-- TRADING Modal content -->
     <div class="modal-content">
@@ -156,44 +228,50 @@
           <div class="thiefResourcePanel">
             <div class="resource">
               <div class="lumberImage"></div>
-              <div class="lumberText">0</div>
               <button class="returnCard" data-rsc="lumber" placeholder="lumber">&#x2193;</button>
+              <div class="lumberText">0</div>
               <div class="lumberReturnedText">0</div>
-              <div class="lumberImage"></div>
+              <button class="cancelReturnCard" data-rsc="lumber" placeholder="lumber">&#x2191;</button>
+              <div class="lumberReturnedImage"></div>
             </div>
             <div class="resource">
               <div class="bricksImage"></div>
-              <div class="bricksText">0</div>
               <button class="returnCard" data-rsc="bricks" placeholder="bricks">&#x2193;</button>
+              <div class="bricksText">0</div>
               <div class="bricksReturnedText">0</div>
-              <div class="bricksImage"></div>
+              <button class="cancelReturnCard" data-rsc="bricks" placeholder="bricks">&#x2191;</button>
+              <div class="bricksReturnedImage"></div>
             </div>
             <div class="resource">
               <div class="woolImage"></div>
-              <div class="woolText">0</div>
               <button class="returnCard" data-rsc="wool" placeholder="wool">&#x2193;</button>
+              <div class="woolText">0</div>
               <div class="woolReturnedText">0</div>
-              <div class="woolImage"></div>
+              <button class="cancelReturnCard" data-rsc="wool" placeholder="wool">&#x2191;</button>
+              <div class="woolReturnedImage"></div>
             </div>
             <div class="resource">
               <div class="grainImage"></div>
-              <div class="grainText">0</div>
               <button class="returnCard" data-rsc="grain" placeholder="grain">&#x2193;</button>
+              <div class="grainText">0</div>
               <div class="grainReturnedText">0</div>
-              <div class="grainImage"></div>
+              <button class="cancelReturnCard" data-rsc="grain" placeholder="grain">&#x2191;</button>
+              <div class="grainReturnedImage"></div>
             </div>
             <div class="resource">
               <div class="oreImage"></div>
-              <div class="oreText">0</div>
               <button class="returnCard" data-rsc="ore" placeholder="ore">&#x2193;</button>
+              <div class="oreText">0</div>
               <div class="oreReturnedText">0</div>
-              <div class="oreImage"></div>
+              <button class="cancelReturnCard" data-rsc="ore" placeholder="ore">&#x2191;</button>
+              <div class="oreReturnedImage"></div>
             </div>
             <div class="resource">
               <div class="devCardImage"></div>
-              <div class="remainingText">0</div>
               <button class="sendResources" placeholder="Send">Send</button>
+              <div class="remainingText">0</div>
               <div class="returnedText">0</div>
+              <button class="cancelReturnCard" data-rsc="all" placeholder="Cancel" disabled>Cancel</button>
               <div class="devCardImage"></div>
             </div>
           </div>
@@ -278,7 +356,7 @@
                 <div class="buttonsTitle">Trading &amp; Building</div>
     
                 <button class='openTradingBank tooltip' title="Open Trading Window" placeholder="Trade with Bank" disabled>Trade with Bank</button>
-                <button class='openTradingPlayers tooltip' title="Open Trading Window (NOT YET IMPLEMENTED)" placeholder="Trade with Players" disabled>Trade with Players</button>
+                <button class='openTradingPlayers tooltip' title="Open Trading Window" placeholder="Trade with Players" disabled>Trade with Players</button>
                 
                 <button class='build tooltip' data-tooltip-content="#buildingCosts" placeholder="Build" disabled>Build</button>
                 <button class='buyDevCard' placeholder="Buy Card" disabled>Buy Card</button>
@@ -318,7 +396,7 @@
     </li>
      
     <li class="login page">
-      <span style="color:darkgrey">Free-SoC 1.0.0 (BETA) - 2019/04/03</span>
+      <span style="color:darkgrey">Free-SoC 1.0.1 (BETA) - 2019/04/15</span>
       <div class="form">
         <h1 class="title">SoC</h1>
         <br>

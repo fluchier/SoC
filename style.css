@@ -445,8 +445,9 @@ button[disabled]{
 }
 
 
-.returnCard, .sendResources, 
+.returnCard, .cancelReturnCard, .sendResources, 
 .tradeCard, .confirmTradeToBank, .cancelTradeToBank,
+.givesCard, .demandsCard, .proposeExchange, .cancelTradeWithPlayers,
 .chooseCardForYearOfPlenty, .confirmChoosenCardForYearOfPlenty, 
 .chooseResourceForMonopoly, .confirmChoosenResourceOfMonopoly {
   width: 50px;
@@ -471,17 +472,17 @@ button[disabled]{
   background-color: white;
   text-align: center;
 }
-.thief_resources, .trading, .yearOfPlenty, .monopoly {
+.thief_resources, .trading, .yearOfPlenty, .monopoly, .tradePlayers_resources {
   color: black;
   background-color: white;
   text-align: center;
   min-width: 50%;
   margin: auto;
 }
-.thief_resources, .trading {
+.thief_resources, .trading, .tradePlayers_resources {
   width: 600px;
 }
-.thief_resources, .trading, .yearOfPlenty, .monopoly {
+.thief_resources, .trading, .yearOfPlenty, .monopoly, .tradePlayers_resources {
   transform: scale(1.5);
 }
 
@@ -492,31 +493,31 @@ button[disabled]{
   width: 50px;
   display: inline-table;
 }
-.lumberImage {
+.lumberImage, .lumberReturnedImage, .lumberRequestedImage {
   height: 80px;
   background-image:url(assets/cards/lumber.jpg);
   background-repeat: no-repeat;
   background-size: contain;
 }
-.bricksImage {
+.bricksImage, .bricksReturnedImage, .bricksRequestedImage {
   height: 80px;
   background-image:url(assets/cards/bricks.jpg);
   background-repeat: no-repeat;
   background-size: contain;
 }
-.woolImage {
+.woolImage, .woolReturnedImage, .woolRequestedImage {
   height: 80px;
   background-image:url(assets/cards/wool.jpg);
   background-repeat: no-repeat;
   background-size: contain;
 }
-.grainImage {
+.grainImage, .grainReturnedImage, .grainRequestedImage {
   height: 80px;
   background-image:url(assets/cards/grains.jpg);
   background-repeat: no-repeat;
   background-size: contain;
 }
-.oreImage {
+.oreImage, .oreReturnedImage, .oreRequestedImage {
   height: 80px;
   background-image:url(assets/cards/ore.jpg);
   background-repeat: no-repeat;
@@ -528,7 +529,93 @@ button[disabled]{
   background-repeat: no-repeat;
   background-size: contain;
 }
-.remainingText {
+.playerPanelTrades {
+  display: -webkit-inline-box;
+  width: 100%;
+  padding-top: 3px;
+}
+.given {
+  display: -webkit-inline-box;
+  border: 2px solid green;
+  margin-right: 3px; 
+}
+.demanded {
+  display: -webkit-inline-box;
+  border: 2px solid red;
+  margin-right: 3px; 
+}
+.miniCard {
+  width: 30px;
+  height: 45px;
+}
+.tradeButtons {
+  width: 20px;
+}
+.tradeButtons {
+  -webkit-border-radius: 8;
+  -moz-border-radius: 8;
+  border-radius: 8px;
+  font-family: Arial;
+  color: #ffffff;
+  font-size: 10px;
+  padding: 6px 8px 6px 8px;
+  text-decoration: none;
+}
+.waiting {
+  background: #331bbe;
+  background-image: -webkit-linear-gradient(top, #331bbe, #7d78c5);
+  background-image: -moz-linear-gradient(top, #331bbe, #7d78c5);
+  background-image: -ms-linear-gradient(top, #331bbe, #7d78c5);
+  background-image: -o-linear-gradient(top, #331bbe, #7d78c5);
+  background-image: linear-gradient(to bottom, #331bbe, #7d78c5);
+}
+.waiting:disabled,
+.waiting[disabled]{
+  color: #cccccc;
+}
+
+.accept {
+  background: #64c920;
+  background-image: -webkit-linear-gradient(top, #64c920, #aed48a);
+  background-image: -moz-linear-gradient(top, #64c920, #aed48a);
+  background-image: -ms-linear-gradient(top, #64c920, #aed48a);
+  background-image: -o-linear-gradient(top, #64c920, #aed48a);
+  background-image: linear-gradient(to bottom, #64c920, #aed48a);
+}
+.accept:hover {
+  background: #64c920;
+  background-image: -webkit-linear-gradient(top, #64c920, #283820);
+  background-image: -moz-linear-gradient(top, #64c920, #283820);
+  background-image: -ms-linear-gradient(top, #64c920, #283820);
+  background-image: -o-linear-gradient(top, #64c920, #283820);
+  background-image: linear-gradient(to bottom, #64c920, #283820);
+  text-decoration: none;
+}
+.refuse {
+  background: #d93442;
+  background-image: -webkit-linear-gradient(top, #d93442, #d6908b);
+  background-image: -moz-linear-gradient(top, #d93442, #d6908b);
+  background-image: -ms-linear-gradient(top, #d93442, #d6908b);
+  background-image: -o-linear-gradient(top, #d93442, #d6908b);
+  background-image: linear-gradient(to bottom, #d93442, #d6908b);
+}
+.refuse:hover {
+  background: #fa423c;
+  background-image: -webkit-linear-gradient(top, #fa423c, #472d2d);
+  background-image: -moz-linear-gradient(top, #fa423c, #472d2d);
+  background-image: -ms-linear-gradient(top, #fa423c, #472d2d);
+  background-image: -o-linear-gradient(top, #fa423c, #472d2d);
+  background-image: linear-gradient(to bottom, #fa423c, #472d2d);
+  text-decoration: none;
+}
+.lumberText, .bricksText, .woolText, .grainText, .oreText, .remainingText,
+.lumberReturnedText, .bricksReturnedText, .woolReturnedText, .grainReturnedText, .oreReturnedText,
+.lumberGivenText, .bricksGivenText, .woolGivenText, .grainGivenText, .oreGivenText, .totalGivenText,
+.lumberRequestedText, .bricksRequestedText, .woolRequestedText, .grainRequestedText, .oreRequestedText, .totalRequestedText
+{
+  font-size: 10px;
+}
+.remainingText, .totalGivenText, .totalRequestedText{
   font-weight: 200;
 }
 /* The Modal (background) */
@@ -568,14 +655,14 @@ button[disabled]{
 .modal-title{
   padding: 10px;
 }
-.tradeContent, .thiefContent {
+.tradeContent, .thiefContent, .tradePlayersContent {
   display: -webkit-inline-box;
 }
 .tradeResourcePanel {
   margin-top: 60px
 }
-.thiefResourcePanel {
-  margin-top: 40px
+.thiefResourcePanel, .tradePlayersResourcePanel {
+  margin-top: 25px
 }
 #tradeImage {
   opacity: .7;
