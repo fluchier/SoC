@@ -42,7 +42,7 @@ _Playable (Trading with the other players not implemented)_
     * to create, join or quit a game
     * to manage an ongoing game
 * [jquery](https://code.jquery.com/jquery-1.10.2.min.js)
-* [fabric.js](http://fabricjs.com/) - An node module to manage objects a the canvas
+* [fabric.js](http://fabricjs.com/) - An node module to manage objects on the canvas
 
 ### Server side
 
