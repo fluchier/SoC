@@ -1,21 +1,21 @@
 {
   "name": "free-soc",
-  "version": "1.0.0",
-  "description": "game server matchmaking demo made by Frakenmint with ♥️",
+  "version": "1.0.2",
+  "description": "Settlers of Catan game server matchmaking demo made by Florian with ♥️",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Frankenmint/mmserver.git"
+    "url": "git+https://github.com/fluchier/SoC.git"
   },
-  "author": "Frankenmint",
+  "author": "Florian",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/Frankenmint/mmserver/issues"
+    "url": "https://github.com/fluchier/SoC/issues"
   },
-  "homepage": "https://github.com/Frankenmint/mmserver#readme",
+  "homepage": "https://github.com/fluchier/SoC/blob/master/README.md",
   "dependencies": {
     "express": "^4.14.0",
     "fabric": "^2.7.0",

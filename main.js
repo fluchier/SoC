@@ -502,7 +502,7 @@ $(function() {
   socket.on('login', function (data) {
     connected = true;
     // Display the welcome message
-    var message = "Welcome to the Game Server of Free-SoC 1.0.1 (BETA) - 2019/04/15";
+    var message = "Welcome to the Game Server of Free-SoC 1.0.2 (BETA) - 2019/04/15";
     log(message, {
       prepend: true
     });
@@ -1206,21 +1206,22 @@ canvas.on('mouse:out', function(options) {
 
 function loadPattern(url, target, size) {
   fabric.Image.fromURL(url, function(img) {
-  img.scaleToWidth(size);
-  var patternSourceCanvas = new fabric.StaticCanvas();
+  img.scaleToWidth(2*size);
+  var patternSourceCanvas = new fabric.StaticCanvas(null, {enableRetinaScaling: false});
     patternSourceCanvas.add(img);
-    patternSourceCanvas.renderAll();
     var pattern = new fabric.Pattern({
       source: function() {
         patternSourceCanvas.setDimensions({
-          width: img.getScaledWidth() + 1 , height: img.getScaledHeight() + 1
+          width: img.getScaledWidth() + 1, height: img.getScaledHeight() + 1
         });
         patternSourceCanvas.renderAll();
         return patternSourceCanvas.getElement();
       },
-      repeat: 'repeat'
+      repeat: "no-repeat"
     });
-    target.set('fill', pattern);
+    target.set( { 
+      fill: pattern
+    });
     canvas.renderAll();
   });
 }
