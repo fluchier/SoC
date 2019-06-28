@@ -25,7 +25,6 @@ $(function() {
   var $allowOnePlayer = $('#allowOnePlayer');
   var $autoRollDice = $('#autoRollDice');
 
-
   var canvas = new fabric.Canvas('canvas_world'),
           f = fabric.Image.filters;;  
 
@@ -103,7 +102,7 @@ $(function() {
   var $myKnightText = $('.knight > span');
   var $myVictoryPointText = $('.victoryPoint > span');
   var $myLongestRoadText = $('.longestRoad > span');
-    // My Panel buttons
+  // My Panel buttons
   var $rollDice = $('.rollDice');
   var $openTradingCard = $('.openTradingBank');
   var $openTradingPlayers = $('.openTradingPlayers');
@@ -152,6 +151,11 @@ $(function() {
     $usernameInput.val(localStorage.getItem('Free-SoC-autologin'));
     //socket.emit('add user', localStorage.getItem('Free-SoC-autologin')); 
   }
+
+  // Sounds
+  createjs.Sound.alternateExtensions = ["mp3"];
+  createjs.Sound.registerSound({src:"./assets/sounds/house-building.mp3", id: "house-building"});
+  createjs.Sound.registerSound({src:"./assets/sounds/rolling-dice-2.wav", id: "dice-rolling"});
 
   function addParticipantsMessage (data) {
     var message = '';
@@ -868,6 +872,7 @@ $(function() {
       to: "GAME",
       todo: "ROLL_DICE"
     });
+    createjs.Sound.play("dice-rolling");
   }
 
   /* NORMAL TURN - PHASE 'ROLL_DICE' */
@@ -1449,6 +1454,7 @@ function updateNode(node) {
       gnode.item(1).set('fill', getUsernameColor(node.build.player.username)); 
       gnode.item(1).set('opacity', 1);
       gnode.item(1).set({ strokeWidth: 1, stroke: 'black' });
+      //createjs.Sound.play("house-building");
     }
     if (node.build.type == 2) {
       gnode.item(1).set('opacity', 0);
