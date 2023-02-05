@@ -1,43 +1,46 @@
-$(function() {
-  var FADE_TIME = 150; // ms
-  var TYPING_TIMER_LENGTH = 400; // ms
-  var COLORS = [
+
+$(function () {
+
+  const FADE_TIME = 150; // ms
+  const TYPING_TIMER_LENGTH = 400; // ms
+  const COLORS = [
     '#e21400', '#91580f', '#f8a700', '#f78b00',
     '#58dc00', '#287b00', '#a8f07a', '#4ae8c4',
     '#3b88eb', '#3824aa', '#a700ff', '#d300e7'
   ];
+  const rscsClass = [ "lumber", "bricks", "wool", "grain", "ore"];
 
   // Initialize variables
-  var $window = $(window);
-  var $usernameInput = $('.usernameInput'); // Input for username
-  var $messages = $('.messages'); // Messages area
-  var $gameMessages = $('.gameMessages'); // Game messages area
-  var $logs = $('.logs'); // Logs area
-  var $inputMessage = $('.inputMessage'); // Input message input box
+  let $window = $(window);
+  let $usernameInput = $('.usernameInput'); // Input for username
+  let $messages = $('.messages'); // Messages area
+  let $gameMessages = $('.gameMessages'); // Game messages area
+  let $logs = $('.logs'); // Logs area
+  let $inputMessage = $('.inputMessage'); // Input message input box
 
-  var $loginPage = $('.login.page'); // The login page
-  var $chatPage = $('.game.page'); // The chatroom page
-  var $createGame = $('.createGame'); 
-  var $leaveGame = $('.leaveGame');
-  var $rooms = $('.rooms');
+  let $loginPage = $('.login.page'); // The login page
+  let $chatPage = $('.game.page'); // The chatroom page
+  let $createGame = $('.createGame'); 
+  let $leaveGame = $('.leaveGame');
+  let $rooms = $('.rooms');
 
   // DEV
-  var $allowOnePlayer = $('#allowOnePlayer');
-  var $autoRollDice = $('#autoRollDice');
+  let $allowOnePlayer = $('#allowOnePlayer');
+  let $autoRollDice = $('#autoRollDice');
 
-  var canvas = new fabric.Canvas('canvas_world'),
-          f = fabric.Image.filters;;  
+  let canvas = new fabric.Canvas('canvas_world'),
+    f = fabric.Image.filters;
 
   // Prompt for setting a username
-  var username;
-  var connected = false;
-  var typing = false;
-  var mygame = null;
-  var lastTypingTime;
-  var $currentInput = $usernameInput.focus();
+  let username;
+  let connected = false;
+  let typing = false;
+  let mygame = null;
+  let lastTypingTime;
+  let $currentInput = $usernameInput.focus();
 
   // Game
-  var catan = {
+  let catan = {
     build: true,
     gameStartTime: 0,
     turnStartTime: 0,
@@ -87,65 +90,65 @@ $(function() {
       ]
     },
   };
-  var playerDeck;
-  var gameAction;
-  var disconnectedPlayers = [];
-  var disconnectedPlayerTimer = [];
-  var gameIntervalId = null;
-  var turnIntervalId = null;
+  let playerDeck;
+  let gameAction;
+  let disconnectedPlayers = [];
+  let disconnectedPlayerTimer = [];
+  let gameIntervalId = null;
+  let turnIntervalId = null;
 
   // game buttons
 
   // My Panel infos
-  var $turnText = $('.turn > span')
-  var $myScoreText = $('.myScore > span');
-  var $myKnightText = $('.knight > span');
-  var $myVictoryPointText = $('.victoryPoint > span');
-  var $myLongestRoadText = $('.longestRoad > span');
+  let $turnText = $('.turn > span')
+  let $myScoreText = $('.myScore > span');
+  let $myKnightText = $('.knight > span');
+  let $myVictoryPointText = $('.victoryPoint > span');
+  let $myLongestRoadText = $('.longestRoad > span');
   // My Panel buttons
-  var $rollDice = $('.rollDice');
-  var $openTradingCard = $('.openTradingBank');
-  var $openTradingPlayers = $('.openTradingPlayers');
-  var $endTrading = $('.endTrading');
-  var $build = $('.build');
-  var $buyDevCard = $('.buyDevCard');
-  var $playKnight = $('.play_knight');
-  var $playVictoryPoint = $('.play_victoryPoint');
-  var $playRoadBuilding = $('.play_roadBuilding');
-  var $playMonopoly = $('.play_monopoly');
-  var $playYearOfPlenty = $('.play_yearOfPlenty');
-  var $endTurn = $('.endTurn')
+  let $rollDice = $('.rollDice');
+  let $openTradingCard = $('.openTradingBank');
+  let $openTradingPlayers = $('.openTradingPlayers');
+  let $endTrading = $('.endTrading');
+  let $build = $('.build');
+  let $buyDevCard = $('.buyDevCard');
+  let $playKnight = $('.play_knight');
+  let $playVictoryPoint = $('.play_victoryPoint');
+  let $playRoadBuilding = $('.play_roadBuilding');
+  let $playMonopoly = $('.play_monopoly');
+  let $playYearOfPlenty = $('.play_yearOfPlenty');
+  let $endTurn = $('.endTurn')
   
   // All players Panel
-  var $playerPanel = $('#allPlayers');
+  let $playerPanel = $('#allPlayers');
 
   // modals
-  var $thiefResourcesModal = $('#thiefResourcesModal');
-  var $returnCard = $('.returnCard');
-  var $cancelReturnCard = $('.cancelReturnCard');
-  var $sendResourcesToBank = $('.sendResources');
+  let $thiefResourcesModal = $('#thiefResourcesModal');
+  let $returnCard = $('.returnCard');
+  let $cancelReturnCard = $('.cancelReturnCard');
+  let $sendResourcesToBank = $('.sendResources');
 
-  var $tradeModal = $('#tradeModal');
-  var $tradeCard = $('.tradeCard');
-  var $confirmTradeToBank = $('.confirmTradeToBank');
-  var $cancelTradeToBank = $('.cancelTradeToBank');
+  let $tradeModal = $('#tradeModal');
+  let $tradeCard = $('.tradeCard');
+  let $confirmTradeToBank = $('.confirmTradeToBank');
+  let $cancelTradeToBank = $('.cancelTradeToBank');
 
-  var $yearOfPlentyModal = $('#yearOfPlentyModal');
-  var $chooseCardForYearOfPlenty = $('.chooseCardForYearOfPlenty');
-  var $confirmChoosenCardForYearOfPlenty = $('.confirmChoosenCardForYearOfPlenty');
+  let $yearOfPlentyModal = $('#yearOfPlentyModal');
+  let $chooseCardForYearOfPlenty = $('.chooseCardForYearOfPlenty');
+  let $confirmChoosenCardForYearOfPlenty = $('.confirmChoosenCardForYearOfPlenty');
 
-  var $monopolyModal = $('#monopolyModal');
-  var $chooseResourceForMonopoly = $('.chooseResourceForMonopoly');
-  var $confirmChoosenResourceOfMonopoly = $('.confirmChoosenResourceOfMonopoly');
+  let $monopolyModal = $('#monopolyModal');
+  let $chooseResourceForMonopoly = $('.chooseResourceForMonopoly');
+  let $confirmChoosenResourceOfMonopoly = $('.confirmChoosenResourceOfMonopoly');
 
-  var $tradePlayersModal = $('#tradePlayersModal');
-  var $givesCard = $('.givesCard');
-  var $demandsCard = $('.demandsCard');
-  var $proposeExchange = $('.proposeExchange');
-  var $cancelTradeWithPlayers = $('.cancelTradeWithPlayers');
+  let $tradePlayersModal = $('#tradePlayersModal');
+  let $givesCard = $('.givesCard');
+  let $demandsCard = $('.demandsCard');
+  let $proposeExchange = $('.proposeExchange');
+  let $cancelTradeWithPlayers = $('.cancelTradeWithPlayers');
 
   // COM
-  var socket = io();
+  let socket = io();
 
   if (localStorage.getItem('Free-SoC-autologin')) {
     $usernameInput.val(localStorage.getItem('Free-SoC-autologin'));
@@ -154,11 +157,16 @@ $(function() {
 
   // Sounds
   createjs.Sound.alternateExtensions = ["mp3"];
-  createjs.Sound.registerSound({src:"./assets/sounds/house-building.mp3", id: "house-building"});
-  createjs.Sound.registerSound({src:"./assets/sounds/rolling-dice-2.wav", id: "dice-rolling"});
+  createjs.Sound.registerSound({ src:"./assets/sounds/house-building.mp3",  id: "house-building"});
+  createjs.Sound.registerSound({ src: "./assets/sounds/rolling-dice-2.wav", id: "dice-rolling" });
+  createjs.Sound.registerSound({ src: "./assets/sounds/nope.ogg", id: "nope" });
+  createjs.Sound.registerSound({ src: "./assets/sounds/go.wav", id: "go" });
+  createjs.Sound.registerSound({ src: "./assets/sounds/now-its-your-turn.wav", id: "your-turn" });
+  createjs.Sound.registerSound({ src: "./assets/sounds/move-the-robber.mp3", id: "move-the-robber" });
+  createjs.Sound.registerSound({ src: "./assets/sounds/messagesent01.wav", id: "messagesent" });
 
   function addParticipantsMessage (data) {
-    var message = '';
+    let message = '';
     if (data.numUsers === 1) {
       message += "It's Just YOU and ME -Robot";
     } else {
@@ -176,8 +184,8 @@ $(function() {
       socket.emit('add user', username); 
 
       // Draw decor island
-      var size = 50, dx = 360, dy = 5 * size + 17;
-      for (var t=0; t<catan.world.tiles.length; t++) {
+      let size = 50, dx = 360, dy = 5 * size + 17;
+      for (let t=0; t<catan.world.tiles.length; t++) {
         drawTile(
           size, 
           dx + catan.world.tiles[t].x * 0.75 * size, 
@@ -190,7 +198,7 @@ $(function() {
 
   // Sends a chat message
   function sendMessage () {
-    var message = $inputMessage.val();
+    let message = $inputMessage.val();
     // Prevent markup from being injected into the message
     message = cleanInput(message);
     // if there is a non-empty message and a socket connection
@@ -202,50 +210,53 @@ $(function() {
         message: message
       });
       // tell server to execute 'new message' and send along one parameter
-      if (mygame!=null && mygame.launch)
-        socket.emit('gameMessage', {
-          username: username,
-          message: message,
-          room: mygame.id
-        });
-      else
-        socket.emit('new message', message);
+        if (mygame != null && mygame.launch)
+            socket.emit('gameMessage', {
+                username: username,
+                message: message,
+                room: mygame.id
+            });
+        else {
+            socket.emit('new message', message);
+            createjs.Sound.play("messagesent");
+        }
+
     }
   }
   // Log a message
   function log (message, options) {
-    var $el = $('<li>').addClass('log').text(message);
+    let $el = $('<li>').addClass('log').text(message);
     addMessageElement($el, options, $logs);
   }
   // Adds the visual chat message to the message list
   function addChatMessage (data, options) {
     // Don't fade the message in if there is an 'X was typing'
-    var $typingMessages = getTypingMessages(data);
+    let $typingMessages = getTypingMessages(data);
     options = options || {};
     if ($typingMessages.length !== 0) {
       options.fade = false;
       $typingMessages.remove();
     }
 
-    var $usernameDiv = $('<span class="username"/>')
+    let $usernameDiv = $('<span class="username"/>')
       .text(data.username)
       .css('color', getUsernameColor(data.username));
 
-    var dt = new Date(data.time);
-    var $dtDiv = $('<span class="chatdate"/>').text( '@'
+    let dt = new Date(data.time);
+    let $dtDiv = $('<span class="chatdate"/>').text( '@'
       + (dt.getHours() < 10 ? '0' + dt.getHours() : dt.getHours()) + ':'
       + (dt.getMinutes() < 10 ? '0' + dt.getMinutes() : dt.getMinutes()) + ' ');
       
-    var $messageBodyDiv = $('<span class="messageBody">')
+    let $messageBodyDiv = $('<span class="messageBody">')
       .text(data.message);
 
-    var typingClass = data.typing ? 'typing' : '';
-    var $messageDiv = $('<li class="message"/>')
+    let typingClass = data.typing ? 'typing' : '';
+    let $messageDiv = $('<li class="message"/>')
       .data('username', data.username)
       .addClass(typingClass)
       .append($dtDiv, $usernameDiv, $messageBodyDiv);
 
-    addMessageElement($messageDiv, options, $messages);
+      addMessageElement($messageDiv, options, $messages);
   }
   // Adds the visual chat typing message
   function addChatTyping (data) {
@@ -263,10 +274,10 @@ $(function() {
   function addRoom (data, options) {
     options = options || {};
 
-    var $players = $('<div class="players"> </div>');
+    let $players = $('<div class="players"> </div>');
     mygame = null;
-    for (var i=0; i<data.maxPlayerCount; i++) {
-      var $player = $('<span class="player username" />').text("Free place").css('color', 'gray').css('font-style', 'italic');
+    for (let i=0; i<data.maxPlayerCount; i++) {
+      let $player = $('<span class="player username" />').text("Free place").css('color', 'gray').css('font-style', 'italic');
       if (i<data.playerCount) {
         $player.text("Player : "+data.players[i].username)
         .css('color', getUsernameColor(data.players[i].username)).css('font-style', 'normal');
@@ -278,7 +289,7 @@ $(function() {
       $players.append($player);
     }
 
-    var $joinOrLaunchGame = $('<button class="joinOrLaunchGame tooltip"/>').attr('title', 'Join this game').text("Join Game").click(function () {joinGame(data)});
+    let $joinOrLaunchGame = $('<button class="joinOrLaunchGame tooltip"/>').attr('title', 'Join this game').text("Join Game").click(function () {joinGame(data)});
     if (!data.canBeJoin || mygame!=null) {
       $joinOrLaunchGame.prop('disabled', true);
     }
@@ -289,7 +300,7 @@ $(function() {
         $joinOrLaunchGame.attr('title', 'This game has already started!').text("In progress");
       }
     }
-    var $messageDiv = $('<li class="room"/>')
+    let $messageDiv = $('<li class="room"/>')
       .data('room', data)
       .append("<span class='gameId'>"+data.id.substring(4)+"</span>", $joinOrLaunchGame, $players);
     addMessageElement($messageDiv, options, $rooms);
@@ -302,7 +313,7 @@ $(function() {
   // options.prepend - If the element should prepend
   //   all other messages (default = false)
   function addMessageElement (el, options, msgs) {
-    var $el = $(el);
+    let $el = $(el);
     // Setup default options
     if (!options) options = {};
     if (typeof options.fade === 'undefined') options.fade = true;
@@ -310,17 +321,18 @@ $(function() {
     // Apply options
     if (options.fade) $el.hide().fadeIn(FADE_TIME);
     if (options.prepend) msgs.prepend($el); else msgs.append($el);
-    msgs[0].scrollTop = msgs[0].scrollHeight;
+      msgs[0].scrollTop = msgs[0].scrollHeight;
+
   }
   function addChatGameMessage (data, options) {
-    var $usernameDiv = $('<span class="username"/>')
-      .text(data.username)
-      .css('color', getUsernameColor(data.username));
-    var $messageBodyDiv = $('<span class="messageBody">')
-      .text(data.message);
-    var $messageDiv = $('<li class="message"/>')
-      .data('username', data.username)
-      .append($usernameDiv, $messageBodyDiv);
+    let $usernameDiv = $('<span class="username"/>')
+        .text(data.username)
+        .css('color', getUsernameColor(data.username));
+    let $messageBodyDiv = $('<span class="messageBody">')
+        .text(data.message);
+    let $messageDiv = $('<li class="message"/>')
+        .data('username', data.username)
+        .append($usernameDiv, $messageBodyDiv);
     addMessageElement($messageDiv, options, $gameMessages);
   }
 
@@ -339,8 +351,8 @@ $(function() {
       lastTypingTime = (new Date()).getTime();
 
       setTimeout(function () {
-        var typingTimer = (new Date()).getTime();
-        var timeDiff = typingTimer - lastTypingTime;
+        let typingTimer = (new Date()).getTime();
+        let timeDiff = typingTimer - lastTypingTime;
         if (timeDiff >= TYPING_TIMER_LENGTH && typing) {
           socket.emit('stop typing');
           typing = false;
@@ -360,12 +372,12 @@ $(function() {
   function getUsernameColor (username) {
     if (!username || username == "") username = "Undefined!";
     // Compute hash code
-    var hash = 7;
-    for (var i = 0; i < username.length; i++) {
+    let hash = 7;
+    for (let i = 0; i < username.length; i++) {
        hash = username.charCodeAt(i) + (hash << 5) - hash;
     }
     // Calculate color
-    var index = Math.abs(hash % COLORS.length);
+    let index = Math.abs(hash % COLORS.length);
     return COLORS[index];
   }
 
@@ -421,9 +433,9 @@ $(function() {
     $cancelReturnCard.unbind("click");
     $thiefResourcesModal.css('display', 'none');
   });
-  var rscsClass = [ "lumber", "bricks", "wool", "grain", "ore"];
+
   $('#tradeImage').click(function(){
-    var rsc = rscsClass.shift();
+    let rsc = rscsClass.shift();
     $(this).removeClass(function() {
       return $( this ).attr( "class" );
     }).addClass(rsc + "Image").attr("data-rsc", rsc);
@@ -506,7 +518,7 @@ $(function() {
   socket.on('login', function (data) {
     connected = true;
     // Display the welcome message
-    var message = "Welcome to the Game Server of Free-SoC 1.0.2 (BETA) - 2019/04/15";
+    let message = "Welcome to the Game Server of Free-SoC 1.0.2 (BETA) - 2019/04/15";
     log(message, {
       prepend: true
     });
@@ -516,12 +528,20 @@ $(function() {
 
   // Whenever the server emits 'new message', update the chat body
   socket.on('new message', function (data) {
-    addChatMessage(data);
+      addChatMessage(data);
   });
 
   // Whenever the server emits 'new message', update the chat body
   socket.on('gameMessage', function (data) {
-    addChatGameMessage(data);
+      addChatGameMessage(data);
+      if (data.username == "GAME") {
+          if (data.message.indexOf("you can't do it!") != -1) {
+              createjs.Sound.play("nope");
+          }
+          else if (data.message.indexOf("You are in the game room. Let's play !") != -1) {
+              createjs.Sound.play("go");
+          }
+      }
   });
 
 
@@ -531,7 +551,7 @@ $(function() {
     alert("This username '" + data + "' already exists.");
   });
   socket.on('chatHistory', function(messages) {
-    for(var m=0; m<messages.length; m++)
+    for(let m=0; m<messages.length; m++)
       addChatMessage(messages[m]);
   });
   // Whenever the server emits 'username already exists', alert it
@@ -566,7 +586,7 @@ $(function() {
   // Client Controller
 
   function sendGame(){
-    var gameOptions = {};
+    let gameOptions = {};
     if ($allowOnePlayer.is(':checked')) {
       gameOptions = { minPlayerCount: 1 };
     }
@@ -585,7 +605,7 @@ $(function() {
     console.log(data.totalGameCount + " opened Game.");
     $rooms.empty().css('text-align', 'left');
     if (data.totalGameCount == 0) $rooms.text('No games in progress! Create yours.').prepend('<br>').css('text-align', 'center');
-    for (var i=0; i<data.totalGameCount; i++){
+    for (let i=0; i<data.totalGameCount; i++){
       console.log("Game: " + data.gameList[i]["gameObject"]);
       addRoom(data.gameList[i]["gameObject"]);
     }
@@ -614,7 +634,7 @@ $(function() {
 
   socket.on('player disconnect', function (data) {
     //alert(data.player + " is disconnected!");
-    var start = Date.now();
+    let start = Date.now();
     disconnectedPlayers[data.player] = start;
     $playerPanel.find('._p_' + data.player).find('.playerPanelStatus')
         .addClass('disconnectedPlayer')
@@ -648,7 +668,7 @@ $(function() {
   socket.on('launchedGame', function (data) {
     log('Launching Game ' + data.id);
     if (data.id == mygame.id) {
-      for(var i = 0; i < data.playerCount; i++){
+      for(let i = 0; i < data.playerCount; i++){
         if (data.players[i].username == username){
           $gameMessages.empty();
           socket.emit('room', data.id);
@@ -664,11 +684,11 @@ $(function() {
       $(".chrono > .myTurn").text( getElapsedTime(catan.turnStartTime) );
   }
   function getElapsedTime(from) {
-    var elapsed = Math.floor((Date.now() - from) / 1000);
-    var text = "";
-    var h = Math.floor(elapsed / 3600);
-    var m = Math.floor((elapsed % 3600) / 60);
-    var s = elapsed - 3600 * h - 60 * m;
+    let elapsed = Math.floor((Date.now() - from) / 1000);
+    let text = "";
+    let h = Math.floor(elapsed / 3600);
+    let m = Math.floor((elapsed % 3600) / 60);
+    let s = elapsed - 3600 * h - 60 * m;
     if (h>0) text = h + ":";
     if (m<10) text = text + "0" + m + ":"; else text = text + m + ":";
     if (s<10) text = text + "0" + s; else text = text + s;
@@ -686,8 +706,8 @@ $(function() {
 
     // Draw world
     canvas.clear();
-    var size = 50, dx = 360, dy = 5 * size + 17;
-    for (var t=0; t<catan.world.tiles.length; t++) {
+    let size = 50, dx = 360, dy = 5 * size + 17;
+    for (let t=0; t<catan.world.tiles.length; t++) {
       drawTile(
         size, 
         dx + catan.world.tiles[t].x * 0.75 * size, 
@@ -695,7 +715,7 @@ $(function() {
         catan.world.tiles[t]
       );
     }
-    for (var r=0; r<catan.world.roads.length; r++) {
+    for (let r=0; r<catan.world.roads.length; r++) {
       drawRoad(
         size,
         dx + catan.world.roads[r].nodes[0].i * 0.75 * size,
@@ -705,7 +725,7 @@ $(function() {
         catan.world.roads[r]
       );
     }
-    for (var n=0; n<catan.world.nodes.length; n++) {
+    for (let n=0; n<catan.world.nodes.length; n++) {
       drawNode(
         size, 
         dx + catan.world.nodes[n].i * 0.75 * size, 
@@ -747,13 +767,13 @@ $(function() {
     updatePlayersPanels(data.playersInfos, gameAction, catan.currentTurn, data.currentTrades);
 
     // Update model of world
-    for (var i=0; i<catan.world.tiles.length; i++) {
+    for (let i=0; i<catan.world.tiles.length; i++) {
       updateTile(catan.world.tiles[i]);
     }
-    for (var n=0; n<catan.world.nodes.length; n++) {
+    for (let n=0; n<catan.world.nodes.length; n++) {
       updateNode(catan.world.nodes[n]);
     }
-    for (var r=0; r<catan.world.roads.length; r++) {
+    for (let r=0; r<catan.world.roads.length; r++) {
       updateRoad(catan.world.roads[r]);
     }
     // and redraw world
@@ -768,8 +788,10 @@ $(function() {
     }
     else {
       if (isMyTurn()) {
-        if (gameAction.todo == "SETTLEMENT" || gameAction.todo == "CITY" || gameAction.todo == "ROLL_DICE")
-          catan.turnStartTime = Date.now();
+        if (gameAction.todo == "SETTLEMENT" || gameAction.todo == "CITY" || gameAction.todo == "ROLL_DICE") {
+            catan.turnStartTime = Date.now();
+            createjs.Sound.play("your-turn");
+        }
         addChatGameMessage({username: "TURN " + catan.currentTurn.turn , message: username + "! It's up to you to play: " + gameAction.todo + " (" + catan.currentTurn.phase + ")"});
         if (playerDeck) updateDevsCardsButtons(playerDeck.devCards.toPlay);
         switch (catan.currentTurn.phase) {
@@ -792,9 +814,10 @@ $(function() {
           break;
         }
         
-        if (gameAction.todo == "MOVE_ROBBER"){
+        if (gameAction.todo == "MOVE_ROBBER") {
           $(".gameButtons").find("button").prop('disabled', true);
           showMessage("You have to move the robber.", 3000);
+          createjs.Sound.play("move-the-robber"); 
         }
         else if (gameAction.todo == "CHOOSE_YEAR_OF_PLENTY") {
           $(".gameButtons").find("button").prop('disabled', true);
@@ -840,7 +863,7 @@ $(function() {
 
   socket.on('dice result', function (data) {
     catan.currentTurn = data.currentTurn;
-    var diceResult = catan.currentTurn.dice1 + catan.currentTurn.dice2;
+    let diceResult = catan.currentTurn.dice1 + catan.currentTurn.dice2;
     addChatGameMessage({username: "TURN " + catan.currentTurn.turn , message: "Dice result: " + diceResult});
     //showMessage(catan.currentTurn.dice1 + " & " + catan.currentTurn.dice2, 20000);
     $("#dice1").removeClass(function() {
@@ -858,7 +881,7 @@ $(function() {
 
   socket.on('VICTORY', function (data) {
     catan.currentTurn = data.currentTurn;
-    var diceResult = catan.currentTurn.dice1 + catan.currentTurn.dice2;
+    let diceResult = catan.currentTurn.dice1 + catan.currentTurn.dice2;
     addChatGameMessage({username: "GAME", message: data.username + " is the winner!"});
     showMessage(data.username + " is the winner!", 50000);
   });
@@ -1044,9 +1067,9 @@ $(function() {
 
   /*
   canvas.on('mouse:wheel', function(opt) {
-    var delta = opt.e.deltaY;
-    var pointer = canvas.getPointer(opt.e);
-    var zoom = canvas.getZoom();
+    let delta = opt.e.deltaY;
+    let pointer = canvas.getPointer(opt.e);
+    let zoom = canvas.getZoom();
     zoom = zoom + delta/200;
     if (zoom > 20) zoom = 20;
     if (zoom < 0.01) zoom = 0.01;
@@ -1057,7 +1080,7 @@ $(function() {
 */
 canvas.on('mouse:down', function(options) {
   if (options.target) {
-    var tg = options.target;
+    let tg = options.target;
     console.log("You're click on ", tg._type);
     console.log('data: ', tg._data);
     // SPECIAL TURN
@@ -1142,7 +1165,7 @@ canvas.on('mouse:down', function(options) {
 });
 canvas.on('mouse:over', function(options) {
   if (options.target) {
-    var tg = options.target;
+    let tg = options.target;
     //console.log("You're over a ", tg._type); console.log('data: ', tg._data);
     switch (tg._type) {
       case "tile":
@@ -1180,7 +1203,7 @@ canvas.on('mouse:over', function(options) {
 });
 canvas.on('mouse:out', function(options) {
   if (options.target) {
-    var tg = options.target;
+    let tg = options.target;
     //console.log("You're out a ", tg._type);  console.log('data: ', tg._data);
     switch (tg._type) {
       case "tile":
@@ -1212,9 +1235,9 @@ canvas.on('mouse:out', function(options) {
 function loadPattern(url, target, size) {
   fabric.Image.fromURL(url, function(img) {
   img.scaleToWidth(2*size);
-  var patternSourceCanvas = new fabric.StaticCanvas(null, {enableRetinaScaling: false});
+  let patternSourceCanvas = new fabric.StaticCanvas(null, {enableRetinaScaling: false});
     patternSourceCanvas.add(img);
-    var pattern = new fabric.Pattern({
+    let pattern = new fabric.Pattern({
       source: function() {
         patternSourceCanvas.setDimensions({
           width: img.getScaledWidth() + 1, height: img.getScaledHeight() + 1
@@ -1234,13 +1257,13 @@ function loadPattern(url, target, size) {
 function drawTile (size, _x, _y, tile) {
 
   // robber
-  var robber = new fabric.Circle({
+  let robber = new fabric.Circle({
     radius: size / 4, stroke: 'white', fill: 'black', opacity: 0,
     left: _x + size / 2, top: _y + size / 4,
     selectable: false, objectCaching: false 
   });
 
-  var robber2 = new fabric.Circle({
+  let robber2 = new fabric.Circle({
     radius: size / 4, stroke: 'black', fill: 'purple',
     left: size / 2, top: size / 4
   });
@@ -1248,7 +1271,7 @@ function drawTile (size, _x, _y, tile) {
     robber.set("opacity", 1);
   }
   // hex 
-  var hex = new fabric.Polygon([
+  let hex = new fabric.Polygon([
     {x: size * Math.cos(0 * 2 * Math.PI / 6), y: size * Math.sin(0 * 2 * Math.PI / 6)},
     {x: size * Math.cos(1 * 2 * Math.PI / 6), y: size * Math.sin(1 * 2 * Math.PI / 6)},
     {x: size * Math.cos(2 * 2 * Math.PI / 6), y: size * Math.sin(2 * 2 * Math.PI / 6)},
@@ -1270,7 +1293,7 @@ function drawTile (size, _x, _y, tile) {
     default: loadPattern('assets/test.jpg', hex, size); break;
   }
   // tile = hex & robber
-  var gtile = new fabric.Group([ hex/*, robber2*/], {
+  let gtile = new fabric.Group([ hex/*, robber2*/], {
     left: _x, top: _y,
     selectable: false, objectCaching: false
   });
@@ -1282,12 +1305,12 @@ function drawTile (size, _x, _y, tile) {
   robber.set('_data', tile);
   canvas.add(robber);
 
-  var lsize = size / 2;
-  var dx = _x + size - lsize / 2;
-  var dy = _y + size - 3 * lsize / 4;
+  let lsize = size / 2;
+  let dx = _x + size - lsize / 2;
+  let dy = _y + size - 3 * lsize / 4;
 
   if (tile.type == 'SEA' && tile.harbor != "no") {
-    var seaHarbor = new fabric.Circle({
+    let seaHarbor = new fabric.Circle({
       radius: lsize / 2, stroke: 'black', fill: 'white', opacity: .8,
       originX: 'center', originY: 'center'
     });
@@ -1297,11 +1320,11 @@ function drawTile (size, _x, _y, tile) {
   }
 
   if (tile.type != 'DESERT' && tile.type != 'SEA' && tile.value != 0) { // add token
-    var circle = new fabric.Circle({
+    let circle = new fabric.Circle({
       radius: lsize / 2, stroke: 'black', fill: 'white', 
       originX: 'center', originY: 'center', opacity: .6,
     });
-    var text = new fabric.Text(""+tile.value, {
+    let text = new fabric.Text(""+tile.value, {
       fontSize: 12, fontWeight: 200,
       strokeWidth: 1,
       color: 'black', stroke: 'black',
@@ -1335,7 +1358,7 @@ function drawTile (size, _x, _y, tile) {
         text.set('fontSize', 14);
 
     }
-    var token = new fabric.Group([ circle, text ], {
+    let token = new fabric.Group([ circle, text ], {
       left: dx, top: dy,
       selectable: false, objectCaching: false, evented: false
     });
@@ -1346,20 +1369,20 @@ function drawTile (size, _x, _y, tile) {
   }
 }
 function drawNode (size, _x, _y, node) {
-  var lsize = size / 2;
-  var dx = _x + size - 3 * lsize / 4;
-  var dy = _y + size - 5 * lsize / 4;
+  let lsize = size / 2;
+  let dx = _x + size - 3 * lsize / 4;
+  let dy = _y + size - 5 * lsize / 4;
   if (nodeIsAtRight(node.i, node.j))
     dx = dx + lsize / 2;
   else
     dx = dx - lsize / 2;
-  var nodeCircle = new fabric.Circle({
+  let nodeCircle = new fabric.Circle({
     radius: lsize / 2.5, fill: 'rgba(0,0,0,0)', stroke: 'black', strokeWidth: 0,
     originX: 'center', originY: 'center',
     selectable: false, objectCaching: false
   });
 
-  var gsettlement = new fabric.Polygon([
+  let gsettlement = new fabric.Polygon([
     {x: 0             , y: 1.2 * size / 3 },
     {x: 0             , y:  .6 * size / 3 },
     {x:  .5 * size / 3, y: 0                  },
@@ -1371,7 +1394,7 @@ function drawNode (size, _x, _y, node) {
   });
 
    //_dx = -size / 3; _dy = -2.2 * size / 6;
-  var gcity = new fabric.Polygon([
+  let gcity = new fabric.Polygon([
     {x: 0             , y: 1.2 * size / 3 },
     {x: 1   * size / 3, y: 1.2 * size / 3 },
     {x: 1   * size / 3, y:  .6 * size / 3 },
@@ -1384,12 +1407,12 @@ function drawNode (size, _x, _y, node) {
     selectable: false, objectCaching: false 
   });
 
-  var group = new fabric.Group([ nodeCircle, gsettlement, gcity ], {
+  let group = new fabric.Group([ nodeCircle, gsettlement, gcity ], {
     left: dx, top: dy,
     selectable: false, objectCaching: false,
   });
   if (node.harbor.type != "no") {
-    var harbor = new fabric.Circle({
+    let harbor = new fabric.Circle({
       radius: lsize / 3, fill: 'rgba(0,0,0,0.0)', stroke: "#666666", strokeWidth: 1,
       originX: 'center', originY: 'center', opacity: .8,
       selectable: false, objectCaching: false, evented: false
@@ -1406,39 +1429,55 @@ function drawNode (size, _x, _y, node) {
   canvas.add(group);
 
   if (false) {
-    var text = new fabric.Text(""+node.i+","+node.j, { fontSize: 18, stroke: 'purple', textBackgroundColor: 'white', left: dx, top: dy, selectable: false, objectCaching: false, evented: false});
+    let text = new fabric.Text(""+node.i+","+node.j, { fontSize: 18, stroke: 'purple', textBackgroundColor: 'white', left: dx, top: dy, selectable: false, objectCaching: false, evented: false});
     canvas.add(text);
   }
 }
 function drawRoad (size, x1, y1, x2, y2, road) {
-  var lsize = size / 4;
-  var dx1 = x1 + size ;
-  var dy1 = y1 + size - lsize / 2 ;
+  let lsize = size / 4;
+  let dx1 = x1 + size ;
+  let dy1 = y1 + size - lsize / 2 ;
   if (nodeIsAtRight(road.nodes[0].i, road.nodes[0].j))
     dx1 = dx1 + lsize;
     else
     dx1 = dx1 - lsize;
-  var dx2 = x2 + size ;
-  var dy2 = y2 + size - lsize / 2 ;
+  let dx2 = x2 + size ;
+  let dy2 = y2 + size - lsize / 2 ;
   if (nodeIsAtRight(road.nodes[1].i, road.nodes[1].j))
     dx2 = dx2 + lsize;
   else
     dx2 = dx2 - lsize;
 
-  var line = new fabric.Line([ dx1, dy1, dx2, dy2 ], {
-      stroke: 'rgba(250,250,250,0)', strokeWidth: 12,
-      selectable: false, objectCaching: false,
-      originX: 'center', originY: 'center',
-    });
-  line.set('_type', "road");
-  line.set('_data', road);
+/* 
+   let path = "M" + dx1 + " " + dy1 + "L" + dx2 + " " + dy2;
 
-  canvas.add(line);
+    var pathline = new fabric.Path(path, {
+        stroke: 'red', strokeWidth: 3,
+        selectable: false, objectCaching: false,
+        originX: 'center', originY: 'center',
+    });
+    pathline.set('_type', "road");
+    pathline.set('_data', road);
+    canvas.add(pathline);
+*/
+
+
+
+    let line = new fabric.Line([dx1, dy1, dx2, dy2], {
+        stroke: 'rgba(250,250,250,0)', strokeWidth: 12,
+        selectable: false, objectCaching: false,
+        originX: 'center', originY: 'center',
+    });
+    line.set('_type', "road");
+    line.set('_data', road);
+    canvas.add(line);
+
+
 }
 
 // Update word
 function updateTile(tile) {
-  var grobber = getFabricObject("robber", tile);
+  let grobber = getFabricObject("robber", tile);
   if (grobber != null){
     if (tile.x == catan.world.robber.x && tile.y == catan.world.robber.y)
       grobber.set("opacity", 1);
@@ -1447,14 +1486,30 @@ function updateTile(tile) {
   }
 }
 function updateNode(node) {
-  var gnode = getFabricObject("node", node);
+  let gnode = getFabricObject("node", node);
   if (gnode != null) {
     gnode.set('_data', node);
-    if (node.build.type > 0) {
-      gnode.item(1).set('fill', getUsernameColor(node.build.player.username)); 
-      gnode.item(1).set('opacity', 1);
-      gnode.item(1).set({ strokeWidth: 1, stroke: 'black' });
-      //createjs.Sound.play("house-building");
+    if (node.build.type == 0) {
+        if (test() && playerDeck && playerDeck.opts && playerDeck.opts.showPossibleBuilds) {
+            if (isMyTurn() && catan.build) {
+                if (gameAction.todo == "SETTLEMENT") {
+                    gnode.item(1).set('fill', "green");
+                    gnode.item(1).set('opacity', .8);
+                    gnode.item(1).set('strokeWidth', 1);
+                }
+                else if (gameAction.todo == "CITY") {
+                    gnode.item(2).set('fill', "green");
+                    gnode.item(2).set('opacity', .8);
+                    gnode.item(2).set('strokeWidth', 1);
+                }
+            }
+        }
+    }
+    else {
+        gnode.item(1).set('fill', getUsernameColor(node.build.player.username)); 
+        gnode.item(1).set('opacity', 1);
+        gnode.item(1).set({ strokeWidth: 1, stroke: 'black' });
+        //createjs.Sound.play("house-building");
     }
     if (node.build.type == 2) {
       gnode.item(1).set('opacity', 0);
@@ -1465,7 +1520,7 @@ function updateNode(node) {
   }
 }
 function updateRoad(road) {
-  var groad = getFabricObject("road", road);
+  let groad = getFabricObject("road", road);
   if (groad != null) {
     groad.set('_data', road);
     if (road.player.index != -1) {
@@ -1479,8 +1534,8 @@ function updateRoad(road) {
 // UI utils
 
 function updateResourcesPanel() {
-  var sum = 0;
-  for (var rsc in playerDeck.resources) {
+  let sum = 0;
+  for (let rsc in playerDeck.resources) {
     sum = sum + playerDeck.resources[rsc];
     if (sum > playerDeck.resourceLimit) $('.resources').css('color', 'red'); else $('.resources').css('color', 'black');
     $('.'+rsc+"Text")
@@ -1501,11 +1556,11 @@ function updateResourcesPanel() {
   }
 }
 function updateResourcesToReturnPanel(cards) {
-  for (var rsc in cards)
+  for (let rsc in cards)
     $('.'+rsc+"ReturnedText").text(cards[rsc]);
 }
 function updateDevsCardsButtons(cards) {
-  for (var devCard in playerDeck.devCards.toPlay) {
+  for (let devCard in playerDeck.devCards.toPlay) {
     $card = $('.play_'+devCard);
     $card.text($card.attr('placeholder') + " (" + cards[devCard] + ")");
     $card.prop('disabled', cards[devCard] == 0 || playerDeck.devCards.playedThisTurnCount >= catan.rules.maxDevCardByTurn);
@@ -1513,14 +1568,14 @@ function updateDevsCardsButtons(cards) {
 }
 function showThiefPanel() {
   $sendResourcesToBank.attr("disabled", true);
-  var sum = 0;
+  let sum = 0;
   updateResourcesPanel();
   updateResourcesToReturnPanel(playerDeck.resourcesToReturn);
   $(".remainingText").text(playerDeck.resourceCount);
   $(".returnedText").text(sum);
-  var target = Math.floor(playerDeck.resourceCount / 2);
+  let target = Math.floor(playerDeck.resourceCount / 2);
   $returnCard.click(function (event) {
-    var type = $(event.target).attr('placeholder');
+    let type = $(event.target).attr('placeholder');
     if (playerDeck.resources[type] > 0 && sum < target) {
       playerDeck.resources[type]--;
       playerDeck.resourceCount--;
@@ -1539,7 +1594,7 @@ function showThiefPanel() {
       $(event.target).attr('disabled', true);
   });
   $cancelReturnCard.click(function (event) {
-    var type = $(event.target).attr('placeholder');
+    let type = $(event.target).attr('placeholder');
     if (playerDeck.resourcesToReturn[type] > 0) {
       playerDeck.resourcesToReturn[type]--;
       playerDeck.resources[type]++;
@@ -1562,9 +1617,9 @@ function showTradePanel() {
   $(".remainingText").text(playerDeck.resourceCount);
 
   $tradeCard.click(function (event) {
-    var type = $(event.target).attr('placeholder');
-    var value = playerDeck.resourceTradeCoef[type];
-    var rscGetted = $("#tradeImage").attr("data-rsc");
+    let type = $(event.target).attr('placeholder');
+    let value = playerDeck.resourceTradeCoef[type];
+    let rscGetted = $("#tradeImage").attr("data-rsc");
     if (playerDeck.resources[type] >= value) {
       playerDeck.resources[type] = playerDeck.resources[type] - value;
       playerDeck.resourceCount = playerDeck.resourceCount - value;
@@ -1589,7 +1644,7 @@ function showTradeWithPlayersPanel() {
   updateTradePlayersPanel();
 
   $givesCard.click(function (event) {
-    var type = $(event.target).attr('placeholder');
+    let type = $(event.target).attr('placeholder');
     if (playerDeck.resources[type] > 0) {
       playerDeck.resources[type]--;
       playerDeck.resourceCount--;
@@ -1600,7 +1655,7 @@ function showTradeWithPlayersPanel() {
   });
 
   $demandsCard.click(function (event) {
-    var type = $(event.target).attr('placeholder');
+    let type = $(event.target).attr('placeholder');
     playerDeck.exchange.demanded[type]++;
     updateResourcesPanel();
     updateTradePlayersPanel();
@@ -1609,18 +1664,18 @@ function showTradeWithPlayersPanel() {
 }
 
 function updateTradePlayersPanel() {
-  var totalGiven = 0;
-  for (var rsc in playerDeck.exchange.given) {
-    var given = playerDeck.exchange.given[rsc];
+  let totalGiven = 0;
+  for (let rsc in playerDeck.exchange.given) {
+    let given = playerDeck.exchange.given[rsc];
     totalGiven += given;
     $tradePlayersModal.find('.'+rsc+"GivenText")
       .text(given).css('color', given == 0 ? 'grey' : 'black');
   }
   $tradePlayersModal.find('.totalGivenText')
     .text(totalGiven).css('color', totalGiven == 0 ? 'grey' : 'black');
-  var totalDemanded = 0;
-  for (var rsc in playerDeck.exchange.demanded) {
-    var demanded = playerDeck.exchange.demanded[rsc];
+  let totalDemanded = 0;
+  for (let rsc in playerDeck.exchange.demanded) {
+    let demanded = playerDeck.exchange.demanded[rsc];
     totalDemanded += demanded;
     $tradePlayersModal.find('.'+rsc+"RequestedText")
       .text(demanded).css('color', demanded == 0 ? 'grey' : 'black');
@@ -1637,15 +1692,15 @@ function openYearOfPlenty() {
   playerDeck.yearOfPlentyChoosenCards = [];
 
   $chooseCardForYearOfPlenty.click(function (event) {
-    var type = $(event.target).attr('placeholder');
+    let type = $(event.target).attr('placeholder');
     playerDeck.yearOfPlentyChoosenCards.push(type);
     if (playerDeck.yearOfPlentyChoosenCards.length > 2) playerDeck.yearOfPlentyChoosenCards.shift();
     updateYearOfPlenty();
   });
 }
 function updateYearOfPlenty() {
-  for (var rsc in playerDeck.resources) {
-    var value = 0;
+  for (let rsc in playerDeck.resources) {
+    let value = 0;
     if (playerDeck.yearOfPlentyChoosenCards[0] == rsc) value++;
     if (playerDeck.yearOfPlentyChoosenCards[1] == rsc) value++;
     $yearOfPlentyModal.find("button[data-rsc='"+rsc+"']").text("+ " + value).css('color', value == 0 ? "white" : "green");
@@ -1656,7 +1711,7 @@ function openMonopoly() {
   playerDeck.monopoly = "";
   updateMonopoly();
   $chooseResourceForMonopoly.click(function (event) {
-    var type = $(event.target).attr('placeholder');
+    let type = $(event.target).attr('placeholder');
     playerDeck.monopoly = type;
     updateMonopoly();
   });
@@ -1665,7 +1720,7 @@ function openMonopoly() {
 }
 function updateMonopoly() {
   $confirmChoosenResourceOfMonopoly.attr("disabled", playerDeck.monopoly == "")
-  for (var rsc in playerDeck.resources)
+  for (let rsc in playerDeck.resources)
     if (playerDeck.monopoly == rsc) 
       $monopolyModal.find("button[data-rsc='"+rsc+"']").text("Selected").css('color', "green");
     else 
@@ -1673,10 +1728,10 @@ function updateMonopoly() {
 }
 
 function showMessage(msg, duration) {
-  var text = new fabric.Text(msg, {
+  let text = new fabric.Text(msg, {
     fontSize: 20, fontFamily: 'Comic Sans', textBackgroundColor: "white"
   });
-  var group = new fabric.Group([ text ], {
+  let group = new fabric.Group([ text ], {
     left: 5, top: 150,
     selectable: false, objectCaching: false, evented: false
   });
@@ -1685,9 +1740,9 @@ function showMessage(msg, duration) {
 
 }
 function getFabricObject(type, data) {
-  var objs = canvas.getObjects();
-  for (var i=1; i<objs.length; i++) {
-    var obj = objs[i];
+  let objs = canvas.getObjects();
+  for (let i=1; i<objs.length; i++) {
+    let obj = objs[i];
     if (obj.hasOwnProperty('_type') && obj._type == type) {
       switch (type) {
         case "robber":
@@ -1712,19 +1767,19 @@ function getFabricObject(type, data) {
 function createPlayersPanels(players) {
   console.log(JSON.stringify(players));
   $playerPanel.empty();
-  for (var p=0; p<players.length; p++) {
+  for (let p=0; p<players.length; p++) {
     
-    var $usernameDiv = $('<span class="username"/>')
+    let $usernameDiv = $('<span class="username"/>')
       .text(players[p].username)
       .css('color', getUsernameColor(players[p].username)); 
-    var $hr = $('<hr>');
-    var $infosDiv = $('<div class="_infos"> <div class="_knight">Knight: &nbsp;<span>0</span></div> <div class="_victoryPoint">Victory Point: &nbsp;<span>0</span></div> <div class="_longestRoad">Longest Road: &nbsp;<span>0</span></div>  </div>');
-    var $scoreDiv = $('<div class="_score tooltip" title="Score of the player"><span>0</span></div>');
-    var $scoreAndInfos = $('<div class="scoreAndInfos"></div ')
+    let $hr = $('<hr>');
+    let $infosDiv = $('<div class="_infos"> <div class="_knight">Knight: &nbsp;<span>0</span></div> <div class="_victoryPoint">Victory Point: &nbsp;<span>0</span></div> <div class="_longestRoad">Longest Road: &nbsp;<span>0</span></div>  </div>');
+    let $scoreDiv = $('<div class="_score tooltip" title="Score of the player"><span>0</span></div>');
+    let $scoreAndInfos = $('<div class="scoreAndInfos"></div ')
       .append($scoreDiv, $infosDiv);
-    var $more = $('<div class="playerPanelStatus"></div>');
-    var $trades = $('<div class="playerPanelTrades"></div>');
-    var $onePlayerPanel = $('<div class="onePlayer"/>')
+    let $more = $('<div class="playerPanelStatus"></div>');
+    let $trades = $('<div class="playerPanelTrades"></div>');
+    let $onePlayerPanel = $('<div class="onePlayer"/>')
       .addClass('_p_' + players[p].username)
       .append($usernameDiv, $hr, $scoreAndInfos, $more, $trades);
         
@@ -1734,13 +1789,13 @@ function createPlayersPanels(players) {
 function updatePlayersPanels(players, currentAction, currentTurn, trades) {
   if (players) {
     console.log(JSON.stringify(players));
-    for (var p=0; p<players.length; p++) {
-      var $current = $playerPanel.find('._p_' + players[p].username);
+    for (let p=0; p<players.length; p++) {
+      let $current = $playerPanel.find('._p_' + players[p].username);
       $current.find('._score > span').text(players[p].score);
       $current.find('._knight > span').text(players[p].knight);
       $current.find('._victoryPoint > span').text(players[p].victoryPoint);
       $current.find('._longestRoad > span').text(players[p].longestRoad);
-      var $status = $current.find('.playerPanelStatus');
+      let $status = $current.find('.playerPanelStatus');
       $status.removeClass('myPlayerPanelStatus').removeClass('disconnectedPlayer').empty();
       if (players[p].username in disconnectedPlayers) {
         $status.addClass('disconnectedPlayer').text("DISCONNECTED");
@@ -1754,23 +1809,23 @@ function updatePlayersPanels(players, currentAction, currentTurn, trades) {
       $trade = $current.find('.playerPanelTrades');
       $trade.empty();
       if (trades) {
-        for (var id in trades) {
-          var trade = trades[id];
+        for (let id in trades) {
+          let trade = trades[id];
 
           // Create $offer..
-          var $given = $('<div class="given" title="Given"></div>');
-          for(var rsc in trade.offer.given){
-            for (var c=0; c<trade.offer.given[rsc]; c++) {
-              var $card = $('<div></div>');
+          let $given = $('<div class="given" title="Given"></div>');
+          for(let rsc in trade.offer.given){
+            for (let c=0; c<trade.offer.given[rsc]; c++) {
+              let $card = $('<div></div>');
               $card.addClass(rsc + "Image" );
               $card.addClass("miniCard");
               $given.append($card);
             }
           }
-          var $demanded = $('<div class="demanded" title="Demanded"></div>');
-          for(var rsc in trade.offer.demanded){
-            for (var c=0; c<trade.offer.demanded[rsc]; c++) {
-              var $card = $('<div></div>');
+          let $demanded = $('<div class="demanded" title="Demanded"></div>');
+          for(let rsc in trade.offer.demanded){
+            for (let c=0; c<trade.offer.demanded[rsc]; c++) {
+              let $card = $('<div></div>');
               $card.addClass(rsc + "Image");
               $card.addClass("miniCard");
               $demanded.append($card);
@@ -1781,7 +1836,7 @@ function updatePlayersPanels(players, currentAction, currentTurn, trades) {
             if (trade.from == players[p].username) {// ...done by the player of this panel...
               // if i accepted this offer create status "waiting" (bouton ? disabled)
               if (trade.offer.acceptedBy[username] != null){
-                var $button = $('<button class="tradeButton waiting" disabled></button>')
+                let $button = $('<button class="tradeButton waiting" disabled></button>')
                 .text("?");
                  // Display $offer & $buttons
                  $trade.append($given, $demanded, $buttons);
@@ -1789,19 +1844,19 @@ function updatePlayersPanels(players, currentAction, currentTurn, trades) {
               // if i didn't refuse this offer: create buttons to accept/refuse
               else if (trade.offer.refusedBy[username] == null) {
                 // ...create $buttons to answer
-                var $acceptButton = $('<button class="tradeButton accept"></button>')
+                let $acceptButton = $('<button class="tradeButton accept"></button>')
                     .data("trade", trade)
                     .text("V")
                     .click(function() {
                       acceptTrade($(this).data("trade"));
                     });
-                var $refuseButton = $('<button class="tradeButton refuse"></button>')
+                let $refuseButton = $('<button class="tradeButton refuse"></button>')
                     .data("trade", trade)
                     .text("X")
                     .click(function() {
                       refuseTrade($(this).data("trade"));
                     });
-                var $buttons = $('<div class="tradeButtons"></div>')
+                let $buttons = $('<div class="tradeButtons"></div>')
                     .append ($acceptButton, $refuseButton)
                     .click(function() {
                       //alert("unbind")
@@ -1817,7 +1872,7 @@ function updatePlayersPanels(players, currentAction, currentTurn, trades) {
           else if (trade.from == username) {// ..done by me! 
             if (players[p].username != username) {// so for the panel of other players
               // ...and status "waiting" (bouton ? disabled)
-              var $button = $('<button class="tradeButton waiting" disabled></button>')
+              let $button = $('<button class="tradeButton waiting" disabled></button>')
                     .text("?");
               // But if the player accepted the trade, active the confim button...
               if (trade.offer.acceptedBy[players[p].username]){

@@ -1,6 +1,11 @@
-var Soc = function(game, options) {
+let Utils = require('./utils');
+var Soc = function (game, options) {
+
   this.game = game;
   this.options = options;
+
+  this.utils = new Utils();
+
   this.currentTurn = {
     turn: 1,
     player: 0,
@@ -230,6 +235,9 @@ var Soc = function(game, options) {
             roadBuilding: 0, monopoly: 0, yearOfPlenty: 0
           },
           playedThisTurnCount: 0
+        },
+        opts: {
+          showPossibleBuilds: true
         }
       };
       // Calcul nodes from tiles
@@ -404,7 +412,7 @@ var Soc = function(game, options) {
     if (node.build.type != 0 || node.build.player.index != -1 || node.knight.force != 0)
       return false;
     // check neighbours
-    return this.allNeighboursAreFree(node);
+    return this.utils.allNeighboursAreFree(this.world, node);
   };
 
   /** Can place road in normal turn ?
@@ -435,11 +443,7 @@ var Soc = function(game, options) {
     //this.log("build.type ", node.build.type);// LOG
     //this.log("build.player ", node.build.player);// LOG
     //this.log("knight.force ", node.knight.force);// LOG
-    // check if not other build or other owner or knight
-    if (node.build.type != 0 || node.build.player.index != -1 || node.knight.force != 0)
-      return false;
-    // check neighbours
-    return this.allNeighboursAreFree(node) && this.isOnRoad(player, node);
+    return this.utils.canPlaceSettlementInNormalTurn(this.world, player, node);
   };
   /** Can place settlement in normal turn?
    * player: Player (not used)
@@ -1098,64 +1102,19 @@ var Soc = function(game, options) {
         return tile.x == this.world.robber.x && tile.y == this.world.robber.y;
     }
   }
-  /** All neighbours are free? */
-  this.allNeighboursAreFree = function (node) {
-    var neighbours = this.getNodeNeighbours(node);
-    for (var n=0; n<neighbours.length; n++) {
-      if (neighbours[n].build.type != 0) 
-        return false;
-    }
-    return true;
-  }
-  /** Get all neighboring nodes */
-  this.getNodeNeighbours = function(_node) {
-    this.log("===> Check neighbours of " + _node.i + "," + _node.j);// LOG
-    var neighbours = [];
-    for (var n=0; n<this.world.nodes.length; n++) {
-      var node = this.world.nodes[n];
-      if (this.hasTwoTilesInCommon(_node, node)) {
-        this.log("---> Found " + node.i + "," + node.j);// LOG
-        neighbours.push(node);
-        if (neighbours.length == 3) break;
-      }
-    }
-    return neighbours;
-  };
-  /** Has 2 tiles in common? */
-  this.hasTwoTilesInCommon = function (node1, node2) {
-    var inCommom = 0;
-    for (var n1=0; n1<node1.tiles.length; n1++) {
-      for (var n2=0; n2<node2.tiles.length; n2++) {
-        if (node1.tiles[n1].x == node2.tiles[n2].x && node1.tiles[n1].y == node2.tiles[n2].y) {
-          inCommom++;
-          break;
-        }
-      }
-    }
-    return inCommom == 2;
-  }
-  /** Is adjacent road? */
-  this.isAdjacentRoad = function(otherRoad, road) {
-    if (otherRoad.id == road.id) return false;
-    for (var n1=0; n1<2; n1++) {
-      for (var n2=0; n2<2; n2++) {
-        var node1 = otherRoad.nodes[n1], node2 = road.nodes[n2];
-        if (node1.i == node2.i && node1.j == node2.j) return true;
-      }
-    }
-  }
+
   this.adjacentRoads = function(roads, road) {
     var adjacentRoads = [];
     for (var r=0; r<roads.length; r++) {
       var otherRoad = roads[r];
-      if (this.isAdjacentRoad(otherRoad, road)) adjacentRoads.push(otherRoad);
+      if (this.utils.isAdjacentRoad(otherRoad, road)) adjacentRoads.push(otherRoad);
     }
     return adjacentRoads;
   }
   this.roadHasNext = function (roads, road) {
     for (var r=0; r<roads.length; r++) {
       var otherRoad = roads[r];
-      if (this.isAdjacentRoad(otherRoad, road) && !otherRoad.alreadyCounted) return true;
+      if (this.utils.isAdjacentRoad(otherRoad, road) && !otherRoad.alreadyCounted) return true;
     }
     return false;
   }
@@ -1163,21 +1122,9 @@ var Soc = function(game, options) {
     var nexts = [];
     for (var r=0; r<roads.length; r++) {
       var otherRoad = roads[r];
-      if (this.isAdjacentRoad(otherRoad, road) && !otherRoad.alreadyCounted) nexts.push(otherRoad);
+      if (this.utils.isAdjacentRoad(otherRoad, road) && !otherRoad.alreadyCounted) nexts.push(otherRoad);
     }
     return nexts;
-  }
-  /**  */
-  this.isOnRoad = function (player, node) {
-    this.log("w/"+ this.game.id + " ===> isOnRoad of " + JSON.stringify(node));// LOG
-    for (var r=0; r<this.world.roads.length; r++) {
-      var road = this.world.roads[r];
-      if (road.player.index == player.index)
-        if ((road.nodes[0].i == node.i && road.nodes[0].j == node.j) || (road.nodes[1].i == node.i && road.nodes[1].j == node.j)) {
-          this.log("w/"+ this.game.id + " YES");
-          return true;
-        }
-    }
   }
 
   /** Buy
@@ -1299,6 +1246,7 @@ var Soc = function(game, options) {
   this.calculateLongestRoadOf = function (player) {
     this.log("w/"+ this.game.id + " calculateLongestRoadOfPlayer " + player.username);// LOG 
     var roads = this.getAllRoadOf(player);
+    this.log(JSON.stringify(roads, null, 2));
     var maxLength = 0;
     for (var r=0; r<roads.length; r++) {
       var road = roads[r];
@@ -1402,9 +1350,13 @@ var Soc = function(game, options) {
   }
 
   this.log = function(text, param) {
-    if (false) {
+    if (true) {
       if (param) console.log(text, param); else console.log(text);
     }
+  }
+
+  this.getCost = function (type) {
+    return this.utils.getCosts(this.rules.costs, type);
   }
   
 };
