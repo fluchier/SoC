@@ -58,13 +58,10 @@ var Utils = function () {
     /** All neighbours are free? */
     this.allNeighboursAreFree = function (world, node) {
         var neighbours = this.getNodeNeighbours(world, node);
-        for (var n = 0; n < neighbours.length; n++) {
-            if (neighbours[n].build.type != 0)
-                return false;
-        }
+        for (var n = 0; n < neighbours.length; n++)
+            if (neighbours[n].build.type != 0) return false;
         return true;
     };
-
 
     /**  */
     this.isOnRoad = function (world, player, node) {

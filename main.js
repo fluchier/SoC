@@ -1485,12 +1485,54 @@ function updateTile(tile) {
       grobber.set("opacity", 0);
   }
 }
+/** Can place settlement or City
+* node: Node
+* return: Boolean
+* */
+function canPlaceSettlementOrCity(node) {
+    // check if not other build or other owner or knight
+    if (node.build.type != 0 || node.build.player.index != -1 || node.knight.force != 0)
+        return false;
+    // check neighbours
+    return allNeighboursAreFree(node);
+};
+/** All neighbours are free? */
+ function allNeighboursAreFree(_node) {
+     var neighbours = [];
+     for (var n = 0; n < catan.world.nodes.length; n++) {
+         var node = catan.world.nodes[n];
+         if (hasTwoTilesInCommon(_node, node)) {
+             //console.log("---> Found " + node.i + "," + node.j);// LOG
+             neighbours.push(node);
+             if (neighbours.length == 3) break;
+         }
+     }
+    for (var n = 0; n < neighbours.length; n++)
+       if (neighbours[n].build.type != 0) return false;
+    return true;
+    };
+ /** Has 2 tiles in common? */
+ function hasTwoTilesInCommon(node1, node2) {
+    var inCommom = 0;
+    for (var n1 = 0; n1 < node1.tiles.length; n1++) {
+        for (var n2 = 0; n2 < node2.tiles.length; n2++) {
+            if (node1.tiles[n1].x == node2.tiles[n2].x && node1.tiles[n1].y == node2.tiles[n2].y) {
+                inCommom++;
+                break;
+            }
+        }
+    }
+    return inCommom == 2;
+}
+
 function updateNode(node) {
   let gnode = getFabricObject("node", node);
   if (gnode != null) {
     gnode.set('_data', node);
-    if (node.build.type == 0) {
-        if (test() && playerDeck && playerDeck.opts && playerDeck.opts.showPossibleBuilds) {
+      if (node.build.type == 0) {
+        gnode.item(1).set('opacity', 0);
+        gnode.item(1).set('strokeWidth', 0);
+        if (playerDeck && playerDeck.opts && playerDeck.opts.showPossibleBuilds && canPlaceSettlementOrCity(node)) {
             if (isMyTurn() && catan.build) {
                 if (gameAction.todo == "SETTLEMENT") {
                     gnode.item(1).set('fill', "green");
@@ -1524,9 +1566,20 @@ function updateRoad(road) {
   if (groad != null) {
     groad.set('_data', road);
     if (road.player.index != -1) {
-      groad.set('stroke', getUsernameColor(road.player.username));
-      groad.set('opacity', 1);
-      groad.set('strokeWidth', 8);
+        groad.set('stroke', getUsernameColor(road.player.username));
+        groad.set('opacity', 1);
+        groad.set('strokeWidth', 8);
+    }
+    else {
+        groad.set('opacity', 0);
+        if (playerDeck && playerDeck.opts && playerDeck.opts.showPossibleBuilds) {
+            if (isMyTurn() && catan.build) {
+                if (gameAction.todo == "SPECIAL_ROAD_1") {
+                    groad.set('stroke', "green");
+                    groad.set('opacity', 0.8);
+                }
+            }
+        }
     }
   }
 }

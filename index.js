@@ -27,7 +27,7 @@ let history = [{
   time: Date.now(),
   username: "",
   message: "Server started."
-} ];
+}];
 
 // Chatroom
 
