@@ -18,7 +18,7 @@
   "homepage": "https://github.com/fluchier/SoC/blob/master/README.md",
   "dependencies": {
     "express": "^4.14.0",
-    "fabric": "^5.3.0",
+    "fabric": "^2.7.0",
     "nodemon": "^2.0.20",
     "socket.io": "^2.2.0",
     "soundjs": "^1.0.1"
