@@ -237,7 +237,7 @@ var Soc = function (game, options) {
           playedThisTurnCount: 0
         },
         opts: {
-          showPossibleBuilds: true
+          showPossibleBuilds: false
         }
       };
       // Calcul nodes from tiles

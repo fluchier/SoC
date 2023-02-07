@@ -157,6 +157,26 @@ io.on('connection', function (socket) {
                       case "citywalls":
                           result = game != null ? game.getCost("cityWalls") : "No game found!";
                           break;
+                      case "showpossiblebuilds":
+                      case "spb":
+                          if (game == null)
+                              result = "No game found!";
+                          else if (game.players && game.players[socket.username]) {
+                              game.players[socket.username].opts.showPossibleBuilds = true;
+                              result = game.players[socket.username].opts.showPossibleBuilds ? "Done." : "A problem occured.";
+                              socket.emit("myDeck", game.players[socket.username]);
+                          }                          
+                          break;
+                      case "hidepossiblebuilds":
+                      case "hpb":
+                          if (game == null)
+                              result = "No game found!";
+                          else if (game.players && game.players[socket.username]) {
+                              game.players[socket.username].opts.showPossibleBuilds = false;
+                              result = !game.players[socket.username].opts.showPossibleBuilds ? "Done." : "A problem occured.";
+                              socket.emit("myDeck", game.players[socket.username]);
+                          }
+                          break;
                   }
           }
           socket.emit('new message', {
