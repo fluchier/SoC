@@ -19,6 +19,11 @@ BETA version playable at [https://free-soc.herokuapp.com/](https://free-soc.hero
 
 ## Current Version
 
+##### 1.0.3 (BETA) - 2023/02/08
+_Playable_
+* add chat commands:
+    * date / time : get respectively serveur date / server time
+
 ##### 1.0.2 (BETA) - 2019/06/27
 _Playable_
 * Fixed a bug in the drawing of tiles for non-retina screens

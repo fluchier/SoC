@@ -1,43 +1,44 @@
 
 $(function () {
 
-  const FADE_TIME = 150; // ms
-  const TYPING_TIMER_LENGTH = 400; // ms
-  const COLORS = [
-    '#e21400', '#91580f', '#f8a700', '#f78b00',
-    '#58dc00', '#287b00', '#a8f07a', '#4ae8c4',
-    '#3b88eb', '#3824aa', '#a700ff', '#d300e7'
-  ];
-  const rscsClass = [ "lumber", "bricks", "wool", "grain", "ore"];
+    const FADE_TIME = 150; // ms
+    const TYPING_TIMER_LENGTH = 400; // ms
+    const COLORS = [
+        '#e21400', '#91580f', '#f8a700', '#f78b00',
+        '#58dc00', '#287b00', '#a8f07a', '#4ae8c4',
+        '#3b88eb', '#3824aa', '#a700ff', '#d300e7'
+    ];
+    const OPACITY_FOR_POSSIBLE_BUIDINGS = .6; 
+    const rscsClass = [ "lumber", "bricks", "wool", "grain", "ore"];
 
-  // Initialize variables
-  let $window = $(window);
-  let $usernameInput = $('.usernameInput'); // Input for username
-  let $messages = $('.messages'); // Messages area
-  let $gameMessages = $('.gameMessages'); // Game messages area
-  let $logs = $('.logs'); // Logs area
-  let $inputMessage = $('.inputMessage'); // Input message input box
+    // Initialize variables
+    let $window = $(window);
+    let $usernameInput = $('.usernameInput'); // Input for username
+    let $messages = $('.messages'); // Messages area
+    let $gameMessages = $('.gameMessages'); // Game messages area
+    let $logs = $('.logs'); // Logs area
+    let $inputMessage = $('.inputMessage'); // Input message input box
 
-  let $loginPage = $('.login.page'); // The login page
-  let $chatPage = $('.game.page'); // The chatroom page
-  let $createGame = $('.createGame'); 
-  let $leaveGame = $('.leaveGame');
-  let $rooms = $('.rooms');
+    let $loginPage = $('.login.page'); // The login page
+    let $chatPage = $('.game.page'); // The chatroom page
+    let $createGame = $('.createGame'); 
+    let $leaveGame = $('.leaveGame');
+    let $rooms = $('.rooms');
 
-  // DEV
-  let $allowOnePlayer = $('#allowOnePlayer');
-  let $autoRollDice = $('#autoRollDice');
+    // DEV
+    let $allowOnePlayer = $('#allowOnePlayer');
+    let $autoRollDice = $('#autoRollDice');
 
-  let canvas = new fabric.Canvas('canvas_world'),
-    f = fabric.Image.filters;
+    let canvas = new fabric.Canvas('canvas_world'),
+        f = fabric.Image.filters;
 
-  // Prompt for setting a username
-  let username;
-  let connected = false;
-  let typing = false;
-  let mygame = null;
-  let lastTypingTime;
-  let $currentInput = $usernameInput.focus();
+    // Prompt for setting a username
+    let username;
+    let connected = false;
+    let typing = false;
+    let mygame = null;
+    let lastTypingTime;
+    let $currentInput = $usernameInput.focus();
 
   // Game
   let catan = {
@@ -369,17 +370,20 @@ $(function () {
   }
 
   // Gets the color of a username through our hash function
-  function getUsernameColor (username) {
-    if (!username || username == "") username = "Undefined!";
+function getUsernameColor(_username) {
+    if (_username == username && playerDeck && playerDeck.opts && playerDeck.opts.mycolor != -1) {
+        return playerDeck.opts.mycolor;
+    }
+    if (!_username || _username == "") _username = "Undefined!";
     // Compute hash code
     let hash = 7;
-    for (let i = 0; i < username.length; i++) {
-       hash = username.charCodeAt(i) + (hash << 5) - hash;
+    for (let i = 0; i < _username.length; i++) {
+       hash = _username.charCodeAt(i) + (hash << 5) - hash;
     }
     // Calculate color
     let index = Math.abs(hash % COLORS.length);
     return COLORS[index];
-  }
+}
 
   // Keyboard events
 
@@ -492,7 +496,7 @@ $(function () {
     socket.on('login', function (data) {
         connected = true;
         // Display the welcome message
-        let message = "Welcome to the Game Server of Free-SoC 1.0.2 (BETA) - 2019/04/15";
+        let message = "Welcome to the Game Server of Free-SoC 1.0.3 (BETA) - 2019/04/15 - 2020/02/07";
         log(message, {
             prepend: true
         });
@@ -513,6 +517,10 @@ $(function () {
                 createjs.Sound.play("nope");
             else if (data.message.indexOf("You are in the game room. Let's play !") != -1)
                 createjs.Sound.play("go");
+            else if (data.message.indexOf("ROAD") != -1 || data.message.indexOf("BUY_ROAD") != -1)
+                createjs.Sound.play("house-building");
+            else if (data.message.indexOf("SETTLEMENT") != -1 || data.message.indexOf("CITY") != -1)
+                createjs.Sound.play("house-building");
         }
     });
 
@@ -1078,36 +1086,24 @@ $(function () {
             console.log("You're click on ", tg._type);
             console.log('data: ', tg._data);
             // SPECIAL TURN
-            if (catan.currentTurn.turn <= catan.rules.specialTurnCount && isMyTurn()) {
-                socket.emit('gameAction', {
-                    user: username, 
-                    gameId: mygame.id,
-                    gameAction: gameAction,
-                    target: {
-                        type: tg._type,
-                        data: tg._data
-                    }
-                });
-            }
-            // NORMAL TURN
-            else {
-                switch (tg._type) {
-                    case "tile":
-                        socket.emit('gameAction', {
-                        user: username, 
+            if (catan && catan.currentTurn) {
+                if (catan.currentTurn.turn <= catan.rules.specialTurnCount && isMyTurn()) {
+                    socket.emit('gameAction', {
+                        user: username,
                         gameId: mygame.id,
                         gameAction: gameAction,
                         target: {
                             type: tg._type,
                             data: tg._data
                         }
-                        });
-                    break;
-                case "road": 
-                    if(isMyTurn()){
-                        if (gameAction.todo == 'SPECIAL_ROAD_1' || gameAction.todo == 'SPECIAL_ROAD_2'){
+                    });
+                }
+                // NORMAL TURN
+                else {
+                    switch (tg._type) {
+                        case "tile":
                             socket.emit('gameAction', {
-                                user: username, 
+                                user: username,
                                 gameId: mygame.id,
                                 gameAction: gameAction,
                                 target: {
@@ -1115,44 +1111,58 @@ $(function () {
                                     data: tg._data
                                 }
                             });
-                        }
-                        else if (catan.build && catan.currentTurn.phase == 'BUILDING') {
-                            $build.prop('disabled', false);
-                            gameAction.todo = "BUY_ROAD";
-                            socket.emit('gameAction', {
-                                user: username, 
-                                gameId: mygame.id,
-                                gameAction: gameAction,
-                                target: {
-                                    type: tg._type,
-                                    data: tg._data
+                            break;
+                        case "road":
+                            if (isMyTurn()) {
+                                if (gameAction.todo == 'SPECIAL_ROAD_1' || gameAction.todo == 'SPECIAL_ROAD_2') {
+                                    socket.emit('gameAction', {
+                                        user: username,
+                                        gameId: mygame.id,
+                                        gameAction: gameAction,
+                                        target: {
+                                            type: tg._type,
+                                            data: tg._data
+                                        }
+                                    });
                                 }
-                            });
-                            catan.build = false;
-                            $build.text("Build");
-                        }
+                                else if (catan.build && catan.currentTurn.phase == 'BUILDING') {
+                                    $build.prop('disabled', false);
+                                    gameAction.todo = "BUY_ROAD";
+                                    socket.emit('gameAction', {
+                                        user: username,
+                                        gameId: mygame.id,
+                                        gameAction: gameAction,
+                                        target: {
+                                            type: tg._type,
+                                            data: tg._data
+                                        }
+                                    });
+                                    catan.build = false;
+                                    $build.text("Build");
+                                }
+                            }
+                            break;
+                        case "node":
+                            if (isMyTurn() && catan.build && catan.currentTurn.phase == 'BUILDING') {
+                                $build.prop('disabled', false);
+                                gameAction.todo == "";
+                                if (tg._data.build.type == 0) gameAction.todo = "BUY_SETTLEMENT";
+                                else if (tg._data.build.type == 1) gameAction.todo = "BUY_CITY";
+                                socket.emit('gameAction', {
+                                    user: username,
+                                    gameId: mygame.id,
+                                    gameAction: gameAction,
+                                    target: {
+                                        type: tg._type,
+                                        data: tg._data
+                                    }
+                                });
+                                catan.build = false;
+                                $build.text("Build");
+                            }
+                            break;
+                        default:
                     }
-                    break;
-                    case "node": 
-                        if(isMyTurn() && catan.build && catan.currentTurn.phase == 'BUILDING'){
-                            $build.prop('disabled', false);
-                            gameAction.todo == "";
-                            if (tg._data.build.type == 0) gameAction.todo = "BUY_SETTLEMENT";
-                            else if (tg._data.build.type == 1) gameAction.todo = "BUY_CITY";
-                            socket.emit('gameAction', {
-                                user: username, 
-                                gameId: mygame.id,
-                                gameAction: gameAction,
-                                target: {
-                                    type: tg._type,
-                                    data: tg._data
-                                }
-                            });
-                            catan.build = false;
-                            $build.text("Build");
-                        }
-                        break;
-                    default:
                 }
             }
         }
@@ -1178,22 +1188,20 @@ $(function () {
                 case "node": 
                     if (isMyTurn() && catan.build 
                     && (gameAction.todo == "SETTLEMENT" || gameAction.todo == "CITY" || gameAction.todo == "PLAY")) {
-                        /*tg.item(0).set('fill', getUsernameColor(username));
-                        tg.set('opacity', .8);
-                        tg.item(0).set('strokeWidth', 1);*/
                         if (canPlaceSettlementOrCity(tg._data)) {
                             tg.item(1).set('fill', getUsernameColor(username));
-                            tg.item(1).set('opacity', .8);
+                            tg.item(1).set('opacity', OPACITY_FOR_POSSIBLE_BUIDINGS);
                             tg.item(1).set('strokeWidth', 1);
                         }
                     }
                     break;
                 case "road":
+                    console.log("over road " + tg._data.id);
                     if (isMyTurn() && tg._data.player.index == -1)
                         if ((catan.build && (gameAction.todo == "ROAD" || gameAction.todo == "PLAY")) || gameAction.todo == "SPECIAL_ROAD_1" || gameAction.todo == "SPECIAL_ROAD_2") {
                             if (canPlaceRoad(tg._data)) {
                                 tg.set('stroke', getUsernameColor(username));
-                                //tg.set('opacity', .8);
+                                tg.set('opacity', OPACITY_FOR_POSSIBLE_BUIDINGS);
                                 tg.set('strokeWidth', 11);
                             }
                         }
@@ -1227,8 +1235,8 @@ $(function () {
                             if (isMyTurn() && catan.build) {
                                 if (gameAction.todo == "SETTLEMENT") {
                                     if (canPlaceSettlementOrCity(tg._data)) {
-                                        tg.item(1).set('fill', "green");
-                                        tg.item(1).set('opacity', .8);
+                                        tg.item(1).set('fill', getUsernameColor(username));
+                                        tg.item(1).set('opacity', OPACITY_FOR_POSSIBLE_BUIDINGS);
                                         tg.item(1).set('strokeWidth', 1);
                                     }
                                 }
@@ -1241,8 +1249,22 @@ $(function () {
                     }
                     break;
                 case "road":
+                    console.log("out road " + tg._data.id);
                     if (tg._data.player.index == -1) {
-                        tg.set('stroke', 'rgba(250,250,250,0)');
+
+                        if (isMyTurn() && playerDeck && playerDeck.opts && playerDeck.opts.showPossibleBuilds) {
+
+                            if (gameAction.todo == "ROAD" || gameAction.todo == "PLAY" || gameAction.todo == "SPECIAL_ROAD_1" || gameAction.todo == "SPECIAL_ROAD_2") {
+                                if (canPlaceRoad(tg._data)) {
+                                    tg.set('stroke', getUsernameColor(username));
+                                    tg.set('opacity', OPACITY_FOR_POSSIBLE_BUIDINGS);
+                                    //tg.set('strokeWidth', 11);
+                                }
+                            }
+                        }
+                        else {
+                            tg.set('stroke', 'rgba(250,250,250,0)');
+                        }
                     }
                     else {
                         tg.set('stroke', getUsernameColor(tg._data.player.username));
@@ -1515,9 +1537,20 @@ $(function () {
      * Update Tile
      */
     function updateTile(tile) {
+        // Robber
         let grobber = getFabricObject("robber", tile);
-        if (grobber != null)
-            grobber.set("opacity", (tile.x == catan.world.robber.x && tile.y == catan.world.robber.y) ? 1 : 0);
+        if (grobber != null) {
+            if (tile.x == catan.world.robber.x && tile.y == catan.world.robber.y) {
+                grobber.set("opacity", 1);
+                if (isMyTurn() && gameAction.todo == "MOVE_ROBBER")
+                    grobber.set({ strokeWidth: 3, stroke: 'red' });
+                else
+                    grobber.set({ strokeWidth: 1, stroke: 'white' });
+            }
+            else {
+                grobber.set("opacity", 0);
+            }
+        }
     }
 
     /*
@@ -1527,32 +1560,38 @@ $(function () {
         let gnode = getFabricObject("node", node);
         if (gnode != null) {
             gnode.set('_data', node);
-            console.log("updateNode " + node.i + "/" + node.j);
+            //console.log("updateNode " + node.i + "/" + node.j);
             if (node.build.type == 0) {
+            // Node is free
                 gnode.item(1).set('opacity', 0);
-                gnode.item(1).set('strokeWidth', 0);
-                if (playerDeck && playerDeck.opts && playerDeck.opts.showPossibleBuilds && canPlaceSettlementOrCity(node)) {
-                    if (isMyTurn() && catan.build) {
-                        if (gameAction.todo == "SETTLEMENT") {
-                            gnode.item(1).set('fill', "green");
-                            gnode.item(1).set('opacity', .8);
-                            gnode.item(1).set('strokeWidth', 1);
-                        }
-                        else if (gameAction.todo == "CITY") {
-                            gnode.item(2).set('fill', "green");
-                            gnode.item(2).set('opacity', .8);
-                            gnode.item(2).set('strokeWidth', 1);
-                        }
+                //gnode.item(1).set('strokeWidth', 0);
+                if (playerDeck && playerDeck.opts && playerDeck.opts.showPossibleBuilds && isMyTurn()) {
+                    
+                    if ((gameAction.todo == "SETTLEMENT" && canPlaceSettlementOrCity(node))       // Special turn
+                        || (gameAction.todo == "PLAY" && canPlaceSettlementInNormalTurn(node)))   // Normal turn
+                    {
+                        gnode.item(1).set('fill', getUsernameColor(username));
+                        gnode.item(1).set('opacity', OPACITY_FOR_POSSIBLE_BUIDINGS);
+                        gnode.item(1).set({ strokeWidth: 1, stroke: 'grey' });
                     }
+                    else if ((gameAction.todo == "CITY" && canPlaceSettlementOrCity(node))        // Special turn
+                        /*|| (gameAction.todo == "PLAY" /*&& canPlaceCityInNormalTurn(node))*/)   // Normal turn
+                    {
+                        gnode.item(2).set('fill', getUsernameColor(username));
+                        gnode.item(2).set('opacity', OPACITY_FOR_POSSIBLE_BUIDINGS);
+                        gnode.item(2).set({ strokeWidth: 1, stroke: 'grey' });
+                    }
+ 
                 }
             }
-            else {
+            else if (node.build.type == 1) {
+            // Node is occupied by a settlement
                 gnode.item(1).set('fill', getUsernameColor(node.build.player.username));
                 gnode.item(1).set('opacity', 1);
                 gnode.item(1).set({ strokeWidth: 1, stroke: 'black' });
-                //createjs.Sound.play("house-building");
             }
-            if (node.build.type == 2) {
+            else if (node.build.type == 2) {
+            // Node is occupied by a city
                 gnode.item(1).set('opacity', 0);
                 gnode.item(2).set('fill', getUsernameColor(node.build.player.username));
                 gnode.item(2).set('opacity', 1);
@@ -1574,15 +1613,17 @@ $(function () {
                 groad.set('strokeWidth', 8);
             }
             else {
-                //groad.set('opacity', 0);
-                /*if (playerDeck && playerDeck.opts && playerDeck.opts.showPossibleBuilds) {
-                    if (isMyTurn() && catan.build) {
-                        if (gameAction.todo == "ROAD" && canPlaceRoad(road)) {
-                            groad.set('stroke', "green");
-                            groad.set('opacity', 0.8);
-                        }
-                    }
-                }*/
+                groad.set('opacity', 0);
+                if (playerDeck && playerDeck.opts && playerDeck.opts.showPossibleBuilds && isMyTurn() /*&& catan.build*/
+                    && (gameAction.todo == "ROAD" || gameAction.todo == "PLAY") && canPlaceRoad(road))
+                {
+                    console.log("updateRoad " + road.id + " - " + gameAction.todo);
+                    groad.set('stroke', getUsernameColor(username));
+                    groad.set('opacity', OPACITY_FOR_POSSIBLE_BUIDINGS);
+                    groad.set('strokeWidth', 11);
+
+                }
+
             }
         }
     }
@@ -1606,6 +1647,29 @@ $(function () {
         // check neighbours
         return allNeighboursAreFree(node);
     };
+
+    /** Can place settlement in normal turn?
+    * player: Player
+    * node: Node
+    * return: Boolean
+    * */
+    function canPlaceSettlementInNormalTurn (node) {
+        // check if not other build or other owner or knight
+        if (node.build.type != 0 || node.build.player.index != -1 || node.knight.force != 0)
+            return false;
+        // check neighbours
+        return allNeighboursAreFree(node) && isOnRoad(node);
+    };
+    /**  */
+    function isOnRoad (node) {
+        for (var r = 0; r < catan.world.roads.length; r++) {
+            var road = catan.world.roads[r];
+            if (road.player.index == playerDeck.index)
+                if ((road.nodes[0].i == node.i && road.nodes[0].j == node.j) || (road.nodes[1].i == node.i && road.nodes[1].j == node.j))
+                    return true;
+        }
+        return false;
+    }
     /*
      * All neighbours are free?
      * 
@@ -1658,10 +1722,9 @@ $(function () {
                 return ele.build.player.index == playerDeck.index && !ele.build.connected;
             });
             if (isolatedBuild) {
-                console.log("We found the build to connect this road.");// LOG
                 if ((road.nodes[0].i == isolatedBuild.i && road.nodes[0].j == isolatedBuild.j)
                     || (road.nodes[1].i == isolatedBuild.i && road.nodes[1].j == isolatedBuild.j)) {
-                    isolatedBuild.build.connected = true;
+                    console.log("We found the build to connect this road : " + isolatedBuild.i + "/" + isolatedBuild.j);// LOG
                     return true;
                 }
 
@@ -1670,10 +1733,35 @@ $(function () {
         // NORMAL TURN
         else { // NEVER CALL
             console.log("Can the road be placed in this normal turn?");// LOG
-            return false; // TODO canPlaceRoadInNormalTurn(player, road);
+            return canPlaceRoadInNormalTurn(road);
         }
         return false;
     }
+
+    /** Can place road in normal turn ?
+    * player: Player
+    * userData: Road
+    * return: Boolean
+    * */
+    function canPlaceRoadInNormalTurn (road) {
+        for (var r = 0; r < catan.world.roads.length; r++) {
+            var otherRoad = catan.world.roads[r];
+            if (otherRoad.player.index == playerDeck.index && isAdjacentRoad(otherRoad, road))
+                return true;
+        }
+        return false;
+    }
+    /** Is adjacent road? */
+    function isAdjacentRoad (otherRoad, road) {
+        if (otherRoad.id == road.id) return false;
+        for (var n1 = 0; n1 < 2; n1++) {
+            for (var n2 = 0; n2 < 2; n2++) {
+                var node1 = otherRoad.nodes[n1], node2 = road.nodes[n2];
+                if (node1.i == node2.i && node1.j == node2.j) return true;
+            }
+        }
+        return false;
+    };
 
     /*************
      * GAME UTILS

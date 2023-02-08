@@ -1,9 +1,5 @@
 var Utils = function () {
 
-    this.test = function () {
-        return false;
-    };
-
    /** Can place settlement in normal turn?
    * world: World
    * player: Player
@@ -68,9 +64,8 @@ var Utils = function () {
         for (var r = 0; r < world.roads.length; r++) {
             var road = world.roads[r];
             if (road.player.index == player.index)
-                if ((road.nodes[0].i == node.i && road.nodes[0].j == node.j) || (road.nodes[1].i == node.i && road.nodes[1].j == node.j)) {
+                if ((road.nodes[0].i == node.i && road.nodes[0].j == node.j) || (road.nodes[1].i == node.i && road.nodes[1].j == node.j))
                     return true;
-                }
         }
         return false;
     }
@@ -84,6 +79,7 @@ var Utils = function () {
                 if (node1.i == node2.i && node1.j == node2.j) return true;
             }
         }
+        return false;
     };
 
     this.log = function (text, param) {

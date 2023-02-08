@@ -8,7 +8,7 @@ const port = process.env.PORT || DEV_PORT;
 let Soc = require('./soc');
 
 server.listen(port, function () {
-  log('Server listening at port %d', port);// LOG
+    log('Server listening at port %d', port);// LOG
 });
 
 // Routing
@@ -17,16 +17,16 @@ app.use(express.static(__dirname));
 // Entire GameCollection Object holds all games and info
 
 let gameCollection = new function() {
-  this.totalGameCount = 0,
-  this.gameList = [],
-  this.gameData = {}
+    this.totalGameCount = 0,
+    this.gameList = [],
+    this.gameData = {}
 };
 
 // Latest 100 messages
 let history = [{
-  time: Date.now(),
-  username: "",
-  message: "Server started."
+    time: Date.now(),
+    username: "",
+    message: "Server started."
 }];
 
 // Chatroom
@@ -35,18 +35,18 @@ let numUsers = 0;
 let clients = {};
 
 io.on('connection', function (socket) {
-  let addedUser = false;
+    let addedUser = false;
 
-  // once a client has connected, we expect to get a ping from them saying what room they want to join
-  socket.on('room', function(room) {
+// once a client has connected, we expect to get a ping from them saying what room they want to join
+socket.on('room', function(room) {
     log(socket.username + " join room /" + room);// LOG
     socket.join("/"+room);
     //socket.broadcast.to("/"+room).emit('gameMessage', "You are in the game room. Let's play !");
     let game = getGameOfPlayer(socket.username);
     if (game){
-      game.inRoom++;
-      // All players in game room ?
-      if (game.inRoom==game.playerCount) {
+        game.inRoom++;
+        // All players in game room ?
+        if (game.inRoom==game.playerCount) {
         io.to("/"+room).emit('gameMessage', { username: "GAME", message:  "You are in the game room. Let's play !" });
         // init Game
         gameCollection.gameData[room] = new Soc(game, {}); 
@@ -55,150 +55,176 @@ io.on('connection', function (socket) {
         // send rules et games
         gameData.startTime = Date.now();
         io.to("/"+room).emit('rulesAndGame', { 
-          rules: gameData.rules, 
-          world: gameData.world, 
-          currentTurn: gameData.currentTurn,
-          startTime: gameData.startTime,
-          playersInfos: gameData.getPlayersInfos()
+            rules: gameData.rules, 
+            world: gameData.world, 
+            currentTurn: gameData.currentTurn,
+            startTime: gameData.startTime,
+            playersInfos: gameData.getPlayersInfos()
         });
         // send action to do
         io.to("/"+room).emit('gameData',  { 
-          world: gameData.world, 
-          currentTurn: gameData.currentTurn,
-          currentAction: gameData.currentAction,
-          playersInfos: gameData.getPlayersInfos()
+            world: gameData.world, 
+            currentTurn: gameData.currentTurn,
+            currentAction: gameData.currentAction,
+            playersInfos: gameData.getPlayersInfos()
         });
-      }
-      log("in room " +  game.inRoom + "/" + game.playerCount);// LOG
+        }
+        log("in room " +  game.inRoom + "/" + game.playerCount);// LOG
     }
-  });
-  // once a client has reconnected, we expect to get a ping from them saying what room they want to join
-  socket.on('join room', function(room) {
+});
+
+// once a client has reconnected, we expect to get a ping from them saying what room they want to join
+socket.on('join room', function(room) {
     log(socket.username + " join room /" + room);// LOG
     socket.join("/"+room);
     let game = getGame(room);
     let gameData = gameCollection.gameData[room];
     log("Game: " + JSON.stringify(game));// LOG
     if (game){
-      let n = game.playerCount;
-      game.players[n] = createPlayer(socket.username);
-      game.playerCount++;
-      sendOpenedGameList();
-      // send rules et games
-      gameData.startTime = Date.now();
-      socket.emit('rulesAndGame', { 
-        rules: gameData.rules, 
-        world: gameData.world, 
-        currentTurn: gameData.currentTurn,
-        startTime: gameData.startTime,
-        playersInfos: gameData.getPlayersInfos()
-      });
-      // send action to do
-      socket.emit('gameData',  { 
-        world: gameData.world, 
-        currentTurn: gameData.currentTurn, currentAction: 
-        gameData.currentAction ,
-        playersInfos: gameData.getPlayersInfos()
-      });
-      // Alert other players
-      io.to("/"+room).emit('player reconnect', {gameId: room, player: socket.username });
+        let n = game.playerCount;
+        game.players[n] = createPlayer(socket.username);
+        game.playerCount++;
+        sendOpenedGameList();
+        // send rules et games
+        gameData.startTime = Date.now();
+        socket.emit('rulesAndGame', { 
+            rules: gameData.rules, 
+            world: gameData.world, 
+            currentTurn: gameData.currentTurn,
+            startTime: gameData.startTime,
+            playersInfos: gameData.getPlayersInfos()
+        });
+        // send action to do
+        socket.emit('gameData', { 
+            world: gameData.world, 
+            currentTurn: gameData.currentTurn, currentAction: 
+            gameData.currentAction ,
+            playersInfos: gameData.getPlayersInfos()
+        });
+        // Alert other players
+        io.to("/"+room).emit('player reconnect', {gameId: room, player: socket.username });
     }
-  });
-  // when the client emits 'game message', this listens and executes
-  socket.on('gameMessage', function (data) {
+});
+
+// when the client emits 'game message', this listens and executes
+socket.on('gameMessage', function (data) {
     // we tell the client to execute 'new message'
     socket.broadcast.to("/"+data.room).emit('gameMessage', {
-      username: data.username,
-      message: data.message
+        username: data.username,
+        message: data.message
     });
-  });
+});
 
-  // when the client emits 'new message', this listens and executes
-  socket.on('new message', function (data) {
-      if (data.indexOf("/") == 0) {
-          let cmd = data.substring(1).toLowerCase();
-          let result = "Command '" + cmd + "' not found!";
-          switch (cmd) {
-              // General commands
-              case "date": result = new Date().toString(); break;
-              case "hour": result = new Date().toTimeString(); break;
-              // Game commands
-              default:
-                  // check if the user in in a game
-                  let game = null;
-                  let processingGameID = getProcessingGameOf(socket.username);
-                  if (processingGameID != null) game = gameCollection.gameData[processingGameID];
-                  switch (cmd) {
-                      case "playercount":
-                          result = game != null ? game.playerCount : "No game found!";
-                          break;
-                      case "turn":
-                          result = game != null ? game.currentTurn.turn : "No game found!";
-                          break;
-                      case "road":
-                          result = game != null ? game.getCost("road") : "No game found!";
-                          break;
-                      case "settlement":
-                          result = game != null ? game.getCost("settlement") : "No game found!";
-                          break;
-                      case "city":
-                          result = game != null ? game.getCost("city") : "No game found!";
-                          break;
-                      case "card":
-                          result = game != null ? game.getCost("devCard") : "No game found!";
-                          break;
-                      case "boat":
-                          result = game != null ? game.getCost("boat") : "No game found!";
-                          break;
-                      case "knight":
-                          result = game != null ? game.getCost("knight") : "No game found!";
-                          break;
-                      case "walls":
-                      case "citywalls":
-                          result = game != null ? game.getCost("cityWalls") : "No game found!";
-                          break;
-                      case "showpossiblebuilds":
-                      case "spb":
-                          if (game == null)
-                              result = "No game found!";
-                          else if (game.players && game.players[socket.username]) {
-                              game.players[socket.username].opts.showPossibleBuilds = true;
-                              result = game.players[socket.username].opts.showPossibleBuilds ? "Done." : "A problem occured.";
-                              socket.emit("myDeck", game.players[socket.username]);
-                          }                          
-                          break;
-                      case "hidepossiblebuilds":
-                      case "hpb":
-                          if (game == null)
-                              result = "No game found!";
-                          else if (game.players && game.players[socket.username]) {
-                              game.players[socket.username].opts.showPossibleBuilds = false;
-                              result = !game.players[socket.username].opts.showPossibleBuilds ? "Done." : "A problem occured.";
-                              socket.emit("myDeck", game.players[socket.username]);
-                          }
-                          break;
-                  }
-          }
-          socket.emit('new message', {
-              time: Date.now(),
-              username: socket.username,
-              message: result
-          });
-      }
-      else {
-          let message = {
-              time: Date.now(),
-              username: socket.username,
-              message: data
-          }
-          // we tell the client to execute 'new message'
-          socket.broadcast.emit('new message', message);
-          // we want to keep history of all sent messages
-          history.push(message);
-          history = history.slice(-100);
-      }
+// when the client emits 'new message', this listens and executes
+socket.on('new message', function (data) {
+    if (data.indexOf("/") == 0 && data.length > 2) {
+        let cmd = data.substring(1).toLowerCase().split(" ");
+        let result = "Command '" + cmd + "' not found!";
+        switch (cmd[0]) {
+            // General commands
+            case "date": result = new Date().toString(); break;
+            case "time": result = new Date().toTimeString(); break;
+            // Game commands
+            default:
+                // check if the user in in a game
+                let game = null;
+                let processingGameID = getProcessingGameOf(socket.username);
+                if (processingGameID != null) game = gameCollection.gameData[processingGameID];
+                switch (cmd[0]) {
+                    case "playercount":
+                        result = game != null ? game.playerCount : "No game found!";
+                        break;
+                    case "turn":
+                        result = game != null ? game.currentTurn.turn : "No game found!";
+                        break;
+                    case "road":
+                        result = game != null ? game.getCost("road") : "No game found!";
+                        break;
+                    case "settlement":
+                        result = game != null ? game.getCost("settlement") : "No game found!";
+                        break;
+                    case "city":
+                        result = game != null ? game.getCost("city") : "No game found!";
+                        break;
+                    case "card":
+                        result = game != null ? game.getCost("devCard") : "No game found!";
+                        break;
+                    case "boat":
+                        result = game != null ? game.getCost("boat") : "No game found!";
+                        break;
+                    case "knight":
+                        result = game != null ? game.getCost("knight") : "No game found!";
+                        break;
+                    case "walls":
+                    case "citywalls":
+                        result = game != null ? game.getCost("cityWalls") : "No game found!";
+                        break;
+                    case "showpossiblebuilds":
+                    case "spb":
+                        if (game == null)
+                            result = "No game found!";
+                        else if (game.players && game.players[socket.username]) {
+                            game.players[socket.username].opts.showPossibleBuilds = true;
+                            result = game.players[socket.username].opts.showPossibleBuilds ? "Done." : "A problem occured.";
+                            socket.emit("myDeck", game.players[socket.username]);
+                        }                          
+                        break;
+                    case "hidepossiblebuilds":
+                    case "hpb":
+                        if (game == null)
+                            result = "No game found!";
+                        else if (game.players && game.players[socket.username]) {
+                            game.players[socket.username].opts.showPossibleBuilds = false;
+                            result = !game.players[socket.username].opts.showPossibleBuilds ? "Done." : "A problem occured.";
+                            socket.emit("myDeck", game.players[socket.username]);
+                        }
+                        break;
+                    case "change":
+                        if (cmd.length > 1) {
+                            switch (cmd[1]) {
+                                case "color":
+                                    if (cmd.length > 2) {
+                                        game.players[socket.username].opts.mycolor = cmd[2];
+                                        result = "Done.";
+                                        socket.emit("myDeck", game.players[socket.username]);
+                                    }
+                                    break;
+                            }
+                        }
+                        break;
+                    case "reset":
+                        if (cmd.length > 1) {
+                            switch (cmd[1]) {
+                                case "color":
+                                    game.players[socket.username].opts.mycolor = -1;
+                                    result = "Done.";
+                                    socket.emit("myDeck", game.players[socket.username]);
+                                    break;
+                            }
+                        }
+                        break;
+                }
+        }
+        socket.emit('new message', {
+            time: Date.now(),
+            username: socket.username,
+            message: result
+        });
+    }
+    else {
+        let message = {
+            time: Date.now(),
+            username: socket.username,
+            message: data
+        }
+        // we tell the client to execute 'new message'
+        socket.broadcast.emit('new message', message);
+        // we want to keep history of all sent messages
+        history.push(message);
+        history = history.slice(-100);
+    }
 
-  });
+});
 
   // when the client emits 'add user', this listens and executes
   socket.on('add user', function (username) {

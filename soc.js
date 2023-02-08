@@ -237,7 +237,8 @@ var Soc = function (game, options) {
           playedThisTurnCount: 0
         },
         opts: {
-          showPossibleBuilds: false
+            showPossibleBuilds: true,
+            mycolor: -1
         }
       };
       // Calcul nodes from tiles
@@ -427,7 +428,7 @@ var Soc = function (game, options) {
       this.log("w/"+ this.game.id + " Other road ID " + otherRoad.id);// LOG
       this.log("w/"+ this.game.id + " OtherRoad.player.index " + otherRoad.player.index);// LOG
       this.log("w/"+ this.game.id + " OtherRoad.player " + otherRoad.player);// LOG
-      if (this.isAdjacentRoad(otherRoad, userData) && otherRoad.player.index == player.index) {
+        if (otherRoad.player.index == player.index && this.utils.isAdjacentRoad(otherRoad, userData)) {
         this.log("w/"+ this.game.id + "YES" );// LOG
         return true;
       }
