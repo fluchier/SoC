@@ -13,16 +13,25 @@ npm install
 node index.js
 ```
 
-To run locally, go to [http://localhost:3000](http://localhost:3000)
-
-BETA version playable at [https://free-soc.herokuapp.com/](https://free-soc.herokuapp.com/)
+To run locally, go to [http://localhost:3001](http://localhost:3001)
 
 ## Current Version
 
 ##### 1.0.3 (BETA) - 2023/02/08
 _Playable_
-* add chat commands:
-    * date / time : get respectively serveur date / server time
+* Adding chat commands:
+    * date/time: get respectively serveur date/server time
+    * playerCount: get player count
+    * turn: get current turn
+    * road/settlement/city/card: get cost of road/settlement/city/card
+    * boat/knigth: get cost of boat/knigth
+    * walls/citywalls: get cost of citywalls
+    * showPossibleBuilds/spb: show possible builds (roads, settlements & cities)
+    * hidePossibleBuilds/spb: hide possible builds (roads, settlements & cities)
+    * change color #1: change player buildings color to #1
+    * reset color: reset personnalised color of player buildings
+* Implementation of the display of possible builds (roads & settlements)
+* Adding white border to the robber that turns red when player has to move it
 
 ##### 1.0.2 (BETA) - 2019/06/27
 _Playable_
