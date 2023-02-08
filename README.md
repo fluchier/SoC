@@ -14,6 +14,7 @@ node index.js
 ```
 
 To run locally, go to [http://localhost:3001](http://localhost:3001)
+To run last dev version, go to https://settlersofcatan.onrender.com 
 
 ## Current Version
 
