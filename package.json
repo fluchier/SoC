@@ -1,6 +1,6 @@
 {
   "name": "free-soc",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Settlers of Catan game server matchmaking demo made by Florian with ♥️",
   "main": "index.js",
   "scripts": {
@@ -19,9 +19,8 @@
   "dependencies": {
     "express": "^4.14.0",
     "fabric": "^2.7.0",
-    "nodemon": "^1.11.0",
+    "nodemon": "^2.0.20",
     "socket.io": "^2.2.0",
     "soundjs": "^1.0.1"
-  },
-  "devDependencies": {}
+  }
 }

@@ -1,13 +1,14 @@
 // Setup basic express server
-var express = require('express');
-var app = express();
-var server = require('http').createServer(app);
-var io = require('socket.io')(server);
-var port = process.env.PORT || 3000;
-var Soc = require('./soc');
+const DEV_PORT = 3001;
+let express = require('express');
+let app = express();
+let server = require('http').createServer(app);
+let io = require('socket.io')(server);
+const port = process.env.PORT || DEV_PORT;
+let Soc = require('./soc');
 
 server.listen(port, function () {
-  log('Server listening at port %d', port);// LOG
+    log('Server listening at port %d', port);// LOG
 });
 
 // Routing
@@ -15,117 +16,215 @@ app.use(express.static(__dirname));
 
 // Entire GameCollection Object holds all games and info
 
-var gameCollection = new function() {
-  this.totalGameCount = 0,
-  this.gameList = [],
-  this.gameData = {}
+let gameCollection = new function() {
+    this.totalGameCount = 0,
+    this.gameList = [],
+    this.gameData = {}
 };
 
 // Latest 100 messages
-var history = [{
-  time: Date.now(),
-  username: "",
-  message: "Server started."
-} ];
+let history = [{
+    time: Date.now(),
+    username: "",
+    message: "Server started."
+}];
 
 // Chatroom
 
-var numUsers = 0;
-var clients = {};
+let numUsers = 0;
+let clients = {};
 
 io.on('connection', function (socket) {
-  var addedUser = false;
+    let addedUser = false;
 
-  // once a client has connected, we expect to get a ping from them saying what room they want to join
-  socket.on('room', function(room) {
+// once a client has connected, we expect to get a ping from them saying what room they want to join
+socket.on('room', function(room) {
     log(socket.username + " join room /" + room);// LOG
     socket.join("/"+room);
     //socket.broadcast.to("/"+room).emit('gameMessage', "You are in the game room. Let's play !");
-    var game = getGameOfPlayer(socket.username);
+    let game = getGameOfPlayer(socket.username);
     if (game){
-      game.inRoom++;
-      // All players in game room ?
-      if (game.inRoom==game.playerCount) {
+        game.inRoom++;
+        // All players in game room ?
+        if (game.inRoom==game.playerCount) {
         io.to("/"+room).emit('gameMessage', { username: "GAME", message:  "You are in the game room. Let's play !" });
         // init Game
         gameCollection.gameData[room] = new Soc(game, {}); 
-        var gameData = gameCollection.gameData[room];
+        let gameData = gameCollection.gameData[room];
         gameData.init(game.players);
         // send rules et games
         gameData.startTime = Date.now();
         io.to("/"+room).emit('rulesAndGame', { 
-          rules: gameData.rules, 
-          world: gameData.world, 
-          currentTurn: gameData.currentTurn,
-          startTime: gameData.startTime,
-          playersInfos: gameData.getPlayersInfos()
+            rules: gameData.rules, 
+            world: gameData.world, 
+            currentTurn: gameData.currentTurn,
+            startTime: gameData.startTime,
+            playersInfos: gameData.getPlayersInfos()
         });
         // send action to do
         io.to("/"+room).emit('gameData',  { 
-          world: gameData.world, 
-          currentTurn: gameData.currentTurn, currentAction: 
-          gameData.currentAction ,
-          playersInfos: gameData.getPlayersInfos()
+            world: gameData.world, 
+            currentTurn: gameData.currentTurn,
+            currentAction: gameData.currentAction,
+            playersInfos: gameData.getPlayersInfos()
         });
-      }
-      log("in room " +  game.inRoom + "/" + game.playerCount);// LOG
+        }
+        log("in room " +  game.inRoom + "/" + game.playerCount);// LOG
     }
-  });
-  // once a client has reconnected, we expect to get a ping from them saying what room they want to join
-  socket.on('join room', function(room) {
+});
+
+// once a client has reconnected, we expect to get a ping from them saying what room they want to join
+socket.on('join room', function(room) {
     log(socket.username + " join room /" + room);// LOG
     socket.join("/"+room);
-    var game = getGame(room);
-    var gameData = gameCollection.gameData[room];
+    let game = getGame(room);
+    let gameData = gameCollection.gameData[room];
     log("Game: " + JSON.stringify(game));// LOG
     if (game){
-      var n = game.playerCount;
-      game.players[n] = createPlayer(socket.username);
-      game.playerCount++;
-      sendOpenedGameList();
-      // send rules et games
-      gameData.startTime = Date.now();
-      socket.emit('rulesAndGame', { 
-        rules: gameData.rules, 
-        world: gameData.world, 
-        currentTurn: gameData.currentTurn,
-        startTime: gameData.startTime,
-        playersInfos: gameData.getPlayersInfos()
-      });
-      // send action to do
-      socket.emit('gameData',  { 
-        world: gameData.world, 
-        currentTurn: gameData.currentTurn, currentAction: 
-        gameData.currentAction ,
-        playersInfos: gameData.getPlayersInfos()
-      });
-      // Alert other players
-      io.to("/"+room).emit('player reconnect', {gameId: room, player: socket.username });
+        let n = game.playerCount;
+        game.players[n] = createPlayer(socket.username);
+        game.playerCount++;
+        sendOpenedGameList();
+        // send rules et games
+        gameData.startTime = Date.now();
+        socket.emit('rulesAndGame', { 
+            rules: gameData.rules, 
+            world: gameData.world, 
+            currentTurn: gameData.currentTurn,
+            startTime: gameData.startTime,
+            playersInfos: gameData.getPlayersInfos()
+        });
+        // send action to do
+        socket.emit('gameData', { 
+            world: gameData.world, 
+            currentTurn: gameData.currentTurn, currentAction: 
+            gameData.currentAction ,
+            playersInfos: gameData.getPlayersInfos()
+        });
+        // Alert other players
+        io.to("/"+room).emit('player reconnect', {gameId: room, player: socket.username });
     }
-  });
-  // when the client emits 'game message', this listens and executes
-  socket.on('gameMessage', function (data) {
+});
+
+// when the client emits 'game message', this listens and executes
+socket.on('gameMessage', function (data) {
     // we tell the client to execute 'new message'
     socket.broadcast.to("/"+data.room).emit('gameMessage', {
-      username: data.username,
-      message: data.message
+        username: data.username,
+        message: data.message
     });
-  });
+});
 
-  // when the client emits 'new message', this listens and executes
-  socket.on('new message', function (data) {
-    var message = {
-      time: Date.now(),
-      username:  socket.username,
-      message: data
-    };
-    // we tell the client to execute 'new message'
-    socket.broadcast.emit('new message', message);
-    // we want to keep history of all sent messages
-    history.push(message);
-    history = history.slice(-100);
+// when the client emits 'new message', this listens and executes
+socket.on('new message', function (data) {
+    if (data.indexOf("/") == 0 && data.length > 2) {
+        let cmd = data.substring(1).toLowerCase().split(" ");
+        let result = "Command '" + cmd + "' not found!";
+        switch (cmd[0]) {
+            // General commands
+            case "date": result = new Date().toString(); break;
+            case "time": result = new Date().toTimeString(); break;
+            // Game commands
+            default:
+                // check if the user in in a game
+                let game = null;
+                let processingGameID = getProcessingGameOf(socket.username);
+                if (processingGameID != null) game = gameCollection.gameData[processingGameID];
+                switch (cmd[0]) {
+                    case "playercount":
+                        result = game != null ? game.playerCount : "No game found!";
+                        break;
+                    case "turn":
+                        result = game != null ? game.currentTurn.turn : "No game found!";
+                        break;
+                    case "road":
+                        result = game != null ? game.getCost("road") : "No game found!";
+                        break;
+                    case "settlement":
+                        result = game != null ? game.getCost("settlement") : "No game found!";
+                        break;
+                    case "city":
+                        result = game != null ? game.getCost("city") : "No game found!";
+                        break;
+                    case "card":
+                        result = game != null ? game.getCost("devCard") : "No game found!";
+                        break;
+                    case "boat":
+                        result = game != null ? game.getCost("boat") : "No game found!";
+                        break;
+                    case "knight":
+                        result = game != null ? game.getCost("knight") : "No game found!";
+                        break;
+                    case "walls":
+                    case "citywalls":
+                        result = game != null ? game.getCost("cityWalls") : "No game found!";
+                        break;
+                    case "showpossiblebuilds":
+                    case "spb":
+                        if (game == null)
+                            result = "No game found!";
+                        else if (game.players && game.players[socket.username]) {
+                            game.players[socket.username].opts.showPossibleBuilds = true;
+                            result = game.players[socket.username].opts.showPossibleBuilds ? "Done." : "A problem occured.";
+                            socket.emit("myDeck", game.players[socket.username]);
+                        }                          
+                        break;
+                    case "hidepossiblebuilds":
+                    case "hpb":
+                        if (game == null)
+                            result = "No game found!";
+                        else if (game.players && game.players[socket.username]) {
+                            game.players[socket.username].opts.showPossibleBuilds = false;
+                            result = !game.players[socket.username].opts.showPossibleBuilds ? "Done." : "A problem occured.";
+                            socket.emit("myDeck", game.players[socket.username]);
+                        }
+                        break;
+                    case "change":
+                        if (cmd.length > 1) {
+                            switch (cmd[1]) {
+                                case "color":
+                                    if (cmd.length > 2) {
+                                        game.players[socket.username].opts.mycolor = cmd[2];
+                                        result = "Done.";
+                                        socket.emit("myDeck", game.players[socket.username]);
+                                    }
+                                    break;
+                            }
+                        }
+                        break;
+                    case "reset":
+                        if (cmd.length > 1) {
+                            switch (cmd[1]) {
+                                case "color":
+                                    game.players[socket.username].opts.mycolor = -1;
+                                    result = "Done.";
+                                    socket.emit("myDeck", game.players[socket.username]);
+                                    break;
+                            }
+                        }
+                        break;
+                }
+        }
+        socket.emit('new message', {
+            time: Date.now(),
+            username: socket.username,
+            message: result
+        });
+    }
+    else {
+        let message = {
+            time: Date.now(),
+            username: socket.username,
+            message: data
+        }
+        // we tell the client to execute 'new message'
+        socket.broadcast.emit('new message', message);
+        // we want to keep history of all sent messages
+        history.push(message);
+        history = history.slice(-100);
+    }
 
-  });
+});
 
   // when the client emits 'add user', this listens and executes
   socket.on('add user', function (username) {
@@ -159,7 +258,7 @@ io.on('connection', function (socket) {
     });
     sendOpenedGameList();
     // check if the user in in a game
-    var processingGameID = getProcessingGameOf(username);
+    let processingGameID = getProcessingGameOf(username);
     log("processingGameID " + processingGameID);// LOG
     if (processingGameID) socket.emit('automatic join game', processingGameID);
   });
@@ -184,9 +283,9 @@ io.on('connection', function (socket) {
     if (addedUser) {
       --numUsers;
       delete clients[socket.username];
-      var game = getGameOfPlayer(socket.username);
+      let game = getGameOfPlayer(socket.username);
       if (game != null) {
-        var i = 0
+        let i = 0
         for (i=0; i<game.playerCount; i++) 
           if (game.players[i].username == socket.username) break;
         game.players.splice(i, 1);
@@ -217,11 +316,11 @@ io.on('connection', function (socket) {
   //when the client requests to make a Game
   socket.on('makeGame', function (data) {
     log(JSON.stringify(gameCollection.gameList));// LOG
-    var noGamesFound = true;
-    for(var i = 0; i < gameCollection.totalGameCount; i++){
-      var playerCount = gameCollection.gameList[i]['gameObject'].playerCount;
-      for(var p = 0; p < playerCount; p++){
-        var tempName = gameCollection.gameList[i]['gameObject'].players[p].username;
+    let noGamesFound = true;
+    for(let i = 0; i < gameCollection.totalGameCount; i++){
+      let playerCount = gameCollection.gameList[i]['gameObject'].playerCount;
+      for(let p = 0; p < playerCount; p++){
+        let tempName = gameCollection.gameList[i]['gameObject'].players[p].username;
         if (tempName == socket.username){
           noGamesFound = false;
           log("This user already has a Game!");// LOG
@@ -231,11 +330,11 @@ io.on('connection', function (socket) {
         }
       }
     }
-    var options = data || { minPlayerCount: 3 }
+    let options = data || { minPlayerCount: 3 }
 
     if (noGamesFound == true) {
-      var playerObject = createPlayer(socket.username, 1)
-      var gameObject = createGame(playerObject, options);
+      let playerObject = createPlayer(socket.username, 1)
+      let gameObject = createGame(playerObject, options);
       gameObject.index = gameCollection.totalGameCount;
       gameCollection.totalGameCount ++;
       gameCollection.gameList.push({gameObject});
@@ -254,9 +353,9 @@ io.on('connection', function (socket) {
       socket.emit('noGameOpened');
       return;
     }
-    var alreadyInGame = false;
+    let alreadyInGame = false;
     // already In Game ?
-    var game = getGameOfPlayer(socket.username);
+    let game = getGameOfPlayer(socket.username);
     if (game != null) {
       log(socket.username + " already has a Game!");// LOG
       socket.emit('alreadyJoined', {
@@ -266,7 +365,7 @@ io.on('connection', function (socket) {
     }
     // no ?
     if (alreadyInGame == false){
-      var gameObject = getGame(data.id);
+      let gameObject = getGame(data.id);
       joinGame(socket.username, gameObject);
       socket.emit('joinSuccess', {
         gameId: gameObject['id'],
@@ -281,12 +380,12 @@ io.on('connection', function (socket) {
        socket.emit('noGameOpened');
     }
     else {
-      var game = getGameOfPlayer(socket.username);
+      let game = getGameOfPlayer(socket.username);
       if (game == null) {
         socket.emit('notInGame');
       }
       else {
-        var i = 0
+        let i = 0;
         for (i=0; i<game.playerCount; i++) {
           if (game.players[i].username == socket.username) break;
         }
@@ -305,7 +404,7 @@ io.on('connection', function (socket) {
 
   socket.on('launchGame', function(data) {
     log("w/" + data.id + " " + socket.username + " wants to start game.");// LOG
-    var game = getGame(data.id);
+    let game = getGame(data.id);
     if (game.canBeLaunch) {
       game.canBeLaunch = false;
       game.launched = true;
@@ -332,7 +431,7 @@ io.on('connection', function (socket) {
       type: tg._type,
       data: tg._data
     }*/
-    var game = gameCollection.gameData[data.gameId];
+    let game = gameCollection.gameData[data.gameId];
     log("w/" + data.gameId + " " + socket.username + " wants to play.");// LOG
 
     // Check if it is a valid action
@@ -351,7 +450,7 @@ io.on('connection', function (socket) {
       game.play(data.user, data.gameAction, data.target);
 
       // Update each deck of the players
-      for (var key in game.players) 
+      for (let key in game.players) 
         if (key in clients) clients[key].emit('myDeck', game.players[key]);
 
       // Broadcast "Dice result"
@@ -388,10 +487,10 @@ function sendOpenedGameList() {
   io.emit('openedGameList', gameCollection);
 }
 function getGameOfPlayer(username) {
-  for(var i = 0; i < gameCollection.totalGameCount; i++){
-    var playerCount = gameCollection.gameList[i]['gameObject'].playerCount;
-    for(var p = 0; p < playerCount; p++){
-      var tempName = gameCollection.gameList[i]['gameObject'].players[p].username;
+  for(let i = 0; i < gameCollection.totalGameCount; i++){
+    let playerCount = gameCollection.gameList[i]['gameObject'].playerCount;
+    for(let p = 0; p < playerCount; p++){
+      let tempName = gameCollection.gameList[i]['gameObject'].players[p].username;
       if (tempName == username){
         return gameCollection.gameList[i]['gameObject'];
       }
@@ -401,7 +500,7 @@ function getGameOfPlayer(username) {
 }
 // Create a game
 function createGame(player, options) {
-  var gameObject = {};
+  let gameObject = {};
   gameObject.id = "Game_" + (Math.random()+1).toString(36).slice(2, 18);
   gameObject.players = [];
   gameObject.players[0] = player;
@@ -417,7 +516,7 @@ function createGame(player, options) {
 
 // Create a player
 function createPlayer(username) {
-  var playerObject = {};
+  let playerObject = {};
   playerObject.id = "Player_" + (Math.random()+1).toString(36).slice(2, 18);
   playerObject.username = username;
   return playerObject;
@@ -425,7 +524,7 @@ function createPlayer(username) {
 
 // Join a Game
 function joinGame(username, game) {
-  var n = game.playerCount;
+  let n = game.playerCount;
   game.players[n] = createPlayer(username);
   game.playerCount++;
   game.canBeJoin = game.playerCount<game.maxPlayerCount;
@@ -441,20 +540,20 @@ function destroyGame(game) {
   log(gameCollection.gameList);// LOG
 }
 function getGame(id) {
-  for (var i=0; i<gameCollection.totalGameCount; i++)
+  for (let i=0; i<gameCollection.totalGameCount; i++)
     if (gameCollection.gameList[i]['gameObject'].id==id)
       return gameCollection.gameList[i]['gameObject'];
   return null;
 }
 function getProcessingGameOf(username) {
-  for (var gameId in gameCollection.gameData)
+  for (let gameId in gameCollection.gameData)
     if (gameCollection.gameData[gameId])
-      for (var playername in gameCollection.gameData[gameId].players)
+      for (let playername in gameCollection.gameData[gameId].players)
         if (playername == username) return gameId;
   return null;
 }
 function log(text, param) {
-  if (false) {
+  if (port == DEV_PORT) {
     if (param) console.log(text, param); else console.log(text);
   }
 }
