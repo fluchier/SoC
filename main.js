@@ -1286,25 +1286,37 @@ function getUsernameColor(_username) {
     /* Create WORLD */
  
     function loadPattern(url, target, size) {
-      fabric.Image.fromURL(url, function(img) {
-      img.scaleToWidth(2*size);
-      let patternSourceCanvas = new fabric.StaticCanvas(null, {enableRetinaScaling: false});
-        patternSourceCanvas.add(img);
-        let pattern = new fabric.Pattern({
-          source: function() {
-            patternSourceCanvas.setDimensions({
-              width: img.getScaledWidth() + 1, height: img.getScaledHeight() + 1
-            });
+
+        fabric.Image.fromURL(url, function (img) {
+
+            // scale
+            img.scaleToWidth(2 * size);
+
+            //let patternSourceCanvas = new fabric.StaticCanvas(null, {enableRetinaScaling: false});
+            var patternSourceCanvas = new fabric.StaticCanvas();
+            patternSourceCanvas.add(img);
+
+            /*let pattern = new fabric.Pattern({
+                source: function() {
+                    patternSourceCanvas.setDimensions({
+                        width: img.getScaledWidth() + 1, height: img.getScaledHeight() + 1
+                    });
+                    patternSourceCanvas.renderAll();
+                    return patternSourceCanvas.getElement();
+                },
+                repeat: "no-repeat"
+            });*/
             patternSourceCanvas.renderAll();
-            return patternSourceCanvas.getElement();
-          },
-          repeat: "no-repeat"
+            var pattern = new fabric.Pattern({
+                source: patternSourceCanvas.getElement(),
+                repeat: "no-repeat"
+            });
+
+            target.set( { 
+                fill: pattern
+            });
+            canvas.renderAll();
         });
-        target.set( { 
-          fill: pattern
-        });
-        canvas.renderAll();
-      });
     }
 
     /*
