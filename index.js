@@ -5,7 +5,7 @@ let app = express();
 let server = require('http').createServer(app);
 let io = require('socket.io')(server);
 const port = process.env.PORT || DEV_PORT;
-let Soc = require('./soc');
+let Soc = require('./server/soc');
 
 server.listen(port, function () {
     log('Server listening at port %d', port);// LOG

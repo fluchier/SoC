@@ -1067,8 +1067,7 @@ function getUsernameColor(_username) {
     * 
     ****************/
 
-    /*
-      canvas.on('mouse:wheel', function(opt) {
+    canvas.on('mouse:wheel', function(opt) {
         let delta = opt.e.deltaY;
         let pointer = canvas.getPointer(opt.e);
         let zoom = canvas.getZoom();
@@ -1078,7 +1077,7 @@ function getUsernameColor(_username) {
         canvas.zoomToPoint({ x: opt.e.offsetX, y: opt.e.offsetY }, zoom);
         opt.e.preventDefault();
         opt.e.stopPropagation();
-      });*/
+    });
 
     canvas.on('mouse:down', function(options) {
         if (options.target) {
