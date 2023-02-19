@@ -1067,8 +1067,7 @@ function getUsernameColor(_username) {
     * 
     ****************/
 
-    /*
-      canvas.on('mouse:wheel', function(opt) {
+    canvas.on('mouse:wheel', function(opt) {
         let delta = opt.e.deltaY;
         let pointer = canvas.getPointer(opt.e);
         let zoom = canvas.getZoom();
@@ -1078,7 +1077,7 @@ function getUsernameColor(_username) {
         canvas.zoomToPoint({ x: opt.e.offsetX, y: opt.e.offsetY }, zoom);
         opt.e.preventDefault();
         opt.e.stopPropagation();
-      });*/
+    });
 
     canvas.on('mouse:down', function(options) {
         if (options.target) {
@@ -1186,25 +1185,21 @@ function getUsernameColor(_username) {
                     }
                     break;
                 case "node": 
-                    if (isMyTurn() && catan.build 
-                    && (gameAction.todo == "SETTLEMENT" || gameAction.todo == "CITY" || gameAction.todo == "PLAY")) {
-                        if (canPlaceSettlementOrCity(tg._data)) {
-                            tg.item(1).set('fill', getUsernameColor(username));
-                            tg.item(1).set('opacity', OPACITY_FOR_POSSIBLE_BUIDINGS);
-                            tg.item(1).set('strokeWidth', 1);
-                        }
-                    }
                     break;
                 case "road":
                     console.log("over road " + tg._data.id);
-                    if (isMyTurn() && tg._data.player.index == -1)
-                        if ((catan.build && (gameAction.todo == "ROAD" || gameAction.todo == "PLAY")) || gameAction.todo == "SPECIAL_ROAD_1" || gameAction.todo == "SPECIAL_ROAD_2") {
+                    tg.set('strokeWidth', 12);
+
+                    if (isMyTurn() && tg._data.player.index == -1) {
+
+                        if (catan.build && (gameAction.todo == "ROAD" || gameAction.todo == "PLAY" || gameAction.todo == "SPECIAL_ROAD_1" || gameAction.todo == "SPECIAL_ROAD_2")) {
                             if (canPlaceRoad(tg._data)) {
                                 tg.set('stroke', getUsernameColor(username));
-                                tg.set('opacity', OPACITY_FOR_POSSIBLE_BUIDINGS);
+                                tg.set('opacity', 1);
                                 tg.set('strokeWidth', 11);
                             }
                         }
+                    }
                     break;
                 default:
             }
@@ -1227,9 +1222,6 @@ function getUsernameColor(_username) {
 
                     if (tg._data.build.player.index == -1) {
 
-                        tg.item(1).set('fill', 'rgba(0,0,0,0)');
-                        tg.item(1).set('opacity', 0);
-                        tg.item(1).set('strokeWidth', 0);
 
                         if (playerDeck && playerDeck.opts && playerDeck.opts.showPossibleBuilds) {
                             if (isMyTurn() && catan.build) {
@@ -1243,6 +1235,11 @@ function getUsernameColor(_username) {
                                 else if (gameAction.todo == "CITY") {
 
                                 }
+                            }
+                            else {
+                                tg.item(1).set('fill', 'rgba(0,0,0,0)');
+                                tg.item(1).set('opacity', 0);
+                                tg.item(1).set('strokeWidth', 0);
                             }
                         }
  
@@ -1288,25 +1285,37 @@ function getUsernameColor(_username) {
     /* Create WORLD */
  
     function loadPattern(url, target, size) {
-      fabric.Image.fromURL(url, function(img) {
-      img.scaleToWidth(2*size);
-      let patternSourceCanvas = new fabric.StaticCanvas(null, {enableRetinaScaling: false});
-        patternSourceCanvas.add(img);
-        let pattern = new fabric.Pattern({
-          source: function() {
-            patternSourceCanvas.setDimensions({
-              width: img.getScaledWidth() + 1, height: img.getScaledHeight() + 1
-            });
+
+        fabric.Image.fromURL(url, function (img) {
+
+            // scale
+            img.scaleToWidth(2 * size);
+
+            //let patternSourceCanvas = new fabric.StaticCanvas(null, {enableRetinaScaling: false});
+            var patternSourceCanvas = new fabric.StaticCanvas();
+            patternSourceCanvas.add(img);
+
+            /*let pattern = new fabric.Pattern({
+                source: function() {
+                    patternSourceCanvas.setDimensions({
+                        width: img.getScaledWidth() + 1, height: img.getScaledHeight() + 1
+                    });
+                    patternSourceCanvas.renderAll();
+                    return patternSourceCanvas.getElement();
+                },
+                repeat: "no-repeat"
+            });*/
             patternSourceCanvas.renderAll();
-            return patternSourceCanvas.getElement();
-          },
-          repeat: "no-repeat"
+            var pattern = new fabric.Pattern({
+                source: patternSourceCanvas.getElement(),
+                repeat: "no-repeat"
+            });
+
+            target.set( { 
+                fill: pattern
+            });
+            canvas.renderAll();
         });
-        target.set( { 
-          fill: pattern
-        });
-        canvas.renderAll();
-      });
     }
 
     /*
@@ -1522,10 +1531,11 @@ function getUsernameColor(_username) {
         */
 
         let line = new fabric.Line([dx1, dy1, dx2, dy2], {
-            stroke: 'rgba(250,250,250,0)', strokeWidth: 12,
+            stroke: 'rgba(250,250,250, 0)', strokeWidth: 12,
             selectable: false, objectCaching: false,
             originX: 'center', originY: 'center',
         });
+
         line.set('_type', "road");
         line.set('_data', road);
         canvas.add(line);
@@ -1613,15 +1623,13 @@ function getUsernameColor(_username) {
                 groad.set('strokeWidth', 8);
             }
             else {
-                groad.set('opacity', 0);
                 if (playerDeck && playerDeck.opts && playerDeck.opts.showPossibleBuilds && isMyTurn() /*&& catan.build*/
                     && (gameAction.todo == "ROAD" || gameAction.todo == "PLAY") && canPlaceRoad(road))
                 {
-                    console.log("updateRoad " + road.id + " - " + gameAction.todo);
+                    //console.log("updateRoad " + road.id + " - " + gameAction.todo);
                     groad.set('stroke', getUsernameColor(username));
                     groad.set('opacity', OPACITY_FOR_POSSIBLE_BUIDINGS);
                     groad.set('strokeWidth', 11);
-
                 }
 
             }
