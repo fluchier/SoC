@@ -585,7 +585,7 @@ function getUsernameColor(_username) {
         console.log(data.totalGameCount + " opened Game.");
         $rooms.empty().css('text-align', 'left');
         if (data.totalGameCount == 0) $rooms.text('No games in progress! Create yours.').prepend('<br>').css('text-align', 'center');
-        for (let i=0; i<data.totalGameCount; i++){
+        for (let i = 0; i < data.totalGameCount; i++){
             console.log("Game: " + data.gameList[i]["gameObject"]);
             addRoom(data.gameList[i]["gameObject"]);
         }
@@ -621,7 +621,7 @@ function getUsernameColor(_username) {
             .text("DISCONNECTED");
         disconnectedPlayerTimer[data.player] = setInterval(function() {
             $playerPanel.find('._p_' + data.player).find('.playerPanelStatus')
-                .text("DISCONNECTED " + getElapsedTime(start));
+            .text("DISCONNECTED " + getElapsedTime(start));
         }, 1000);
     });
 
@@ -1067,19 +1067,44 @@ function getUsernameColor(_username) {
     * 
     ****************/
 
-    canvas.on('mouse:wheel', function(opt) {
-        let delta = opt.e.deltaY;
-        let pointer = canvas.getPointer(opt.e);
+    canvas.on('mouse:wheel', function (options) {
+        let delta = options.e.deltaY;
+        let pointer = canvas.getPointer(options.e);
         let zoom = canvas.getZoom();
         zoom = zoom + delta/200;
         if (zoom > 20) zoom = 20;
         if (zoom < 0.01) zoom = 0.01;
-        canvas.zoomToPoint({ x: opt.e.offsetX, y: opt.e.offsetY }, zoom);
-        opt.e.preventDefault();
-        opt.e.stopPropagation();
+        canvas.zoomToPoint({ x: options.e.offsetX, y: options.e.offsetY }, zoom);
+        options.e.preventDefault();
+        options.e.stopPropagation();
     });
 
-    canvas.on('mouse:down', function(options) {
+    canvas.on('mouse:move', function (options) {
+        if (canvas.isDragging) {
+            var pointer = canvas.getPointer(options.e);
+            var deltaX = pointer.x - canvas.lastPosX;
+            var deltaY = pointer.y - canvas.lastPosY;
+            canvas.lastPosX = pointer.x;
+            canvas.lastPosY = pointer.y;
+
+            //canvas.relativePan(deltaX, deltaY); // Utiliser la fonction relativePan pour déplacer le canvas
+            //canvas.renderAll(); // Redessiner le canvas
+        }
+    });
+
+    canvas.on('mouse:up', function (options) {
+        canvas.isDragging = false;
+        canvas.selection = true;
+    });
+
+    canvas.on('mouse:down', function (options) {
+
+        var pointer = canvas.getPointer(options.e);
+        canvas.isDragging = true;
+        canvas.selection = false;
+        canvas.lastPosX = pointer.x;
+        canvas.lastPosY = pointer.y;
+ 
         if (options.target) {
             let tg = options.target;
             console.log("You're click on ", tg._type);
@@ -1617,6 +1642,7 @@ function getUsernameColor(_username) {
         let groad = getFabricObject("road", road);
         if (groad != null) {
             groad.set('_data', road);
+            console.log("updateRoad " + road.id + " (" + road.player.index + ") - " + gameAction.todo);
             if (road.player.index != -1) {
                 groad.set('stroke', getUsernameColor(road.player.username));
                 groad.set('opacity', 1);
@@ -1624,12 +1650,13 @@ function getUsernameColor(_username) {
             }
             else {
                 if (playerDeck && playerDeck.opts && playerDeck.opts.showPossibleBuilds && isMyTurn() /*&& catan.build*/
-                    && (gameAction.todo == "ROAD" || gameAction.todo == "PLAY") && canPlaceRoad(road))
-                {
-                    //console.log("updateRoad " + road.id + " - " + gameAction.todo);
+                    && (gameAction.todo == "ROAD" || gameAction.todo == "PLAY") && canPlaceRoad(road)) {
                     groad.set('stroke', getUsernameColor(username));
                     groad.set('opacity', OPACITY_FOR_POSSIBLE_BUIDINGS);
                     groad.set('strokeWidth', 11);
+                }
+                else {
+                    groad.set('opacity', 0);
                 }
 
             }
