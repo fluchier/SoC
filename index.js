@@ -14,8 +14,36 @@ server.listen(port, function () {
 // Routing
 app.use(express.static(__dirname));
 
-// Entire GameCollection Object holds all games and info
+app.get('/about', (req, res) => {
+  res.send("Settlers of Catan game server matchmaking demo made by Florian with ♥️");
+});
+app.get('/games', (req, res) => {
+  res.send(gameCollection.gameList);
+});
+app.get('/gameData', (req, res) => {
+  res.send(gameCollection.gameData);
+});
+app.get('/history', (req, res) => {
+  res.send(history);
+});
+app.get('/addUser/:username', (req, res) => {
+  let username = req.params.username;
+  if (username in clients){
+    res.send('username already exists : ' + username);
+  }
+  else {
+    res.send("Not implemented" );
+  }
+});
 
+app.get('/date', (req, res) => {
+  res.send(getServerDate());
+});
+app.get('/time', (req, res) => {
+  res.send(getServerTime());
+});
+
+// Entire GameCollection Object holds all games and info
 let gameCollection = new function() {
     this.totalGameCount = 0,
     this.gameList = [],
@@ -37,8 +65,8 @@ let clients = {};
 io.on('connection', function (socket) {
     let addedUser = false;
 
-// once a client has connected, we expect to get a ping from them saying what room they want to join
-socket.on('room', function(room) {
+  // once a client has connected, we expect to get a ping from them saying what room they want to join
+  socket.on('room', function(room) {
     log(socket.username + " join room /" + room);// LOG
     socket.join("/"+room);
     //socket.broadcast.to("/"+room).emit('gameMessage', "You are in the game room. Let's play !");
@@ -122,8 +150,8 @@ socket.on('new message', function (data) {
         let result = "Command '" + cmd + "' not found!";
         switch (cmd[0]) {
             // General commands
-            case "date": result = new Date().toString(); break;
-            case "time": result = new Date().toTimeString(); break;
+            case "date": result = getServerDate(); break;
+            case "time": result = getServerTime(); break;
             // Game commands
             default:
                 // check if the user in in a game
@@ -476,7 +504,7 @@ socket.on('new message', function (data) {
     }
     else {
       log("w/" + data.gameId + " " + data.user + " can't play :-(");// LOG
-      socket.emit('gameMessage', { username: "GAME", message:  socket.username + ", you can't do it!" });
+      //socket.emit('gameMessage', { username: "GAME", message:  socket.username + ", you can't do it!" });
     }
   });
 
@@ -556,4 +584,12 @@ function log(text, param) {
   if (port == DEV_PORT) {
     if (param) console.log(text, param); else console.log(text);
   }
+}
+
+function getServerDate() {
+  return new Date().toString(); 
+}
+
+function getServerTime() {
+  return new Date().toTimeString(); 
 }
