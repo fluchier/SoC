@@ -10,21 +10,12 @@ var SocGames = function () {
     ];
 
     this.getRules = function (id) {
-        for (var t = 0; t < this.games.length; t++) {
-            var item = this.games[t];
-            if (item.id == id)
-                return item.game.rules;
-        }
-        return null;
+        var item = this.games.find(function (ele) { return ele.id === id;});
+        return item.game.rules;
     }
-
     this.getWorld = function (id) {
-        for (var t = 0; t < this.games.length; t++) {
-            var item = this.games[t];
-            if (item.id == id)
-                return item.game.world;
-        }
-        return null;
+        var item = this.games.find(function (ele) { return ele.id === id; });
+        return item.game.world;
     }
     this.log = function (text, param) {
         if (true) {

@@ -1,6 +1,7 @@
 let Utils = require('./utils');
 let Path = require('./path');
 let SocGames = require('./socgames');
+const fs = require('fs'); // module pour gérer les fichiers
 var Soc = function (game, options) {
 
     this.game = game;
@@ -143,31 +144,21 @@ var Soc = function (game, options) {
                 }
             }
             this.log("Nodes built " + this.world.nodes.length);// LOG
+            /*fs.writeFile('nodes.json', JSON.stringify(this.world.nodes, null, 2), (err) => { // création ou écrasement du fichier "fichier.txt" avec le contenu "data"
+                if (err) throw err;
+                console.log('Le fichier a été écrit avec succès !');
+              });
+            */
             // place harbors
-            this.placeHarbor( -1,  5, { type: "*", tradeCoef: 3} );
-            this.placeHarbor(  1,  5, { type: "*", tradeCoef: 3} );
-            this.placeHarbor(  3,  3, { type: "*", tradeCoef: 3} );
-            this.placeHarbor(  3,  4, { type: "*", tradeCoef: 3} );
-            this.placeHarbor(  5,  2, { type: "wool", tradeCoef: 2} );
-            this.placeHarbor(  5,  1, { type: "wool", tradeCoef: 2} );
-            this.placeHarbor(  5, -2, { type: "*", tradeCoef: 3} );
-            this.placeHarbor(  5, -3, { type: "*", tradeCoef: 3} );
-            this.placeHarbor(  1, -4, { type: "grain", tradeCoef: 2} );
-            this.placeHarbor(  1, -5, { type: "grain", tradeCoef: 2} );
-            this.placeHarbor( -1, -4, { type: "bricks", tradeCoef: 2} );
-            this.placeHarbor( -3, -4, { type: "bricks", tradeCoef: 2} );
-            this.placeHarbor( -5, -3, { type: "*", tradeCoef: 3} );
-            this.placeHarbor( -5, -2, { type: "*", tradeCoef: 3} );
-            this.placeHarbor( -5,  0, { type: "lumber", tradeCoef: 2} );
-            this.placeHarbor( -5,  1, { type: "lumber", tradeCoef: 2} );
-            this.placeHarbor( -5,  3, { type: "ore", tradeCoef: 2} );
-            this.placeHarbor( -3,  3, { type: "ore", tradeCoef: 2} );
+            var seasWithHarbors = this.world.tiles.filter(tile => tile.type == "SEA" && tile.harbor != "no");
+            seasWithHarbors.forEach(tile => this.placeHarbors(tile));
+
             // Calcul roads from nodes
             // TODO:
             // Init DevCard Stub
             for (var key in this.rules.devCardStub) {
                 var count = this.rules.devCardStub[key];
-                for (var i=0; i<count; i++)
+                for (var i = 0; i < count; i++)
                     this.devCardStub.push(key);
             }
             this.log("w/"+ this.game.id + " DevCard Stub: " + this.devCardStub);// LOG
@@ -175,6 +166,10 @@ var Soc = function (game, options) {
             this.log("w/"+ this.game.id + " DevCard Stub: " + this.devCardStub);// LOG
         }
     };
+
+    this.placeHarbors = function (tile) {
+        tile.nodes.forEach(node => this.placeHarbor(node.x, node.y, tile.tradeCoef));
+    } 
     this.placeHarbor = function (i, j, harbor) {
         var node = this.world.nodes.find(function (ele) {
             return ele.i === i && ele.j === j;
