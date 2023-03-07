@@ -1,5 +1,6 @@
-
 $(function () {
+
+    const DEBUG = false;
 
     const FADE_TIME = 150; // ms
     const TYPING_TIMER_LENGTH = 400; // ms
@@ -10,6 +11,9 @@ $(function () {
     ];
     const OPACITY_FOR_POSSIBLE_BUIDINGS = .6; 
     const rscsClass = [ "lumber", "bricks", "wool", "grain", "ore"];
+  
+    const STATE_IDLE = 'idle';
+    const STATE_PANNING = 'panning';
 
     // Initialize variables
     let $window = $(window);
@@ -31,6 +35,80 @@ $(function () {
 
     let canvas = new fabric.Canvas('canvas_world'),
         f = fabric.Image.filters;
+        
+    fabric.Canvas.prototype.toggleDragMode = function(dragMode) {
+      // Remember the previous X and Y coordinates for delta calculations
+      let lastClientX;
+      let lastClientY;
+      // Keep track of the state
+      let state = STATE_IDLE;
+      // We're entering dragmode
+      if (dragMode) {
+        // Discard any active object
+        this.discardActiveObject();
+        // Set the cursor to 'move'
+        this.defaultCursor = 'move';
+        // Loop over all objects and disable events / selectable. We remember its value in a temp variable stored on each object
+        this.forEachObject(function(object) {
+          object.prevEvented = object.evented;
+          object.prevSelectable = object.selectable;
+          object.evented = false;
+          object.selectable = false;
+        });
+        // Remove selection ability on the canvas
+        this.selection = false;
+        // When MouseUp fires, we set the state to idle
+        this.on('mouse:up', function(e) {
+          state = STATE_IDLE;
+        });
+        // When MouseDown fires, we set the state to panning
+        this.on('mouse:down', (e) => {
+          state = STATE_PANNING;
+          lastClientX = e.e.clientX;
+          lastClientY = e.e.clientY;
+        });
+        // When the mouse moves, and we're panning (mouse down), we continue
+        this.on('mouse:move', (e) => {
+          if (state === STATE_PANNING && e && e.e) {
+            // let delta = new fabric.Point(e.e.movementX, e.e.movementY); // No Safari support for movementX and movementY
+            // For cross-browser compatibility, I had to manually keep track of the delta
+    
+            // Calculate deltas
+            let deltaX = 0;
+            let deltaY = 0;
+            if (lastClientX) {
+              deltaX = e.e.clientX - lastClientX;
+            }
+            if (lastClientY) {
+              deltaY = e.e.clientY - lastClientY;
+            }
+            // Update the last X and Y values
+            lastClientX = e.e.clientX;
+            lastClientY = e.e.clientY;
+    
+            let delta = new fabric.Point(deltaX, deltaY);
+            this.relativePan(delta);
+            this.trigger('moved');
+          }
+        });
+      } else {
+        // When we exit dragmode, we restore the previous values on all objects
+        this.forEachObject(function(object) {
+          object.evented = (object.prevEvented !== undefined) ? object.prevEvented : object.evented;
+          object.selectable = (object.prevSelectable !== undefined) ? object.prevSelectable : object.selectable;
+        });
+        // Reset the cursor
+        this.defaultCursor = 'default';
+        // Remove the event listeners
+        this.off('mouse:up');
+        this.off('mouse:down');
+        this.off('mouse:move');
+        // Restore selection ability on the canvas
+        this.selection = true;
+      }
+    };
+    
+    canvas.toggleDragMode(true);
 
     // Prompt for setting a username
     let username;
@@ -1066,47 +1144,22 @@ function getUsernameColor(_username) {
     * CANVAS Mouse Triggers
     * 
     ****************/
-
-    canvas.on('mouse:wheel', function (options) {
-        let delta = options.e.deltaY;
-        let pointer = canvas.getPointer(options.e);
-        let zoom = canvas.getZoom();
-        zoom = zoom + delta/200;
-        if (zoom > 20) zoom = 20;
-        if (zoom < 0.01) zoom = 0.01;
-        canvas.zoomToPoint({ x: options.e.offsetX, y: options.e.offsetY }, zoom);
-        options.e.preventDefault();
-        options.e.stopPropagation();
+  
+    canvas.on('mouse:wheel', function (opt) {
+      var delta = opt.e.deltaY;
+      var zoom = canvas.getZoom();
+      zoom *= 0.999 ** delta;
+      if (zoom > 10) zoom = 10;
+      if (zoom < 1) zoom = 1;
+      canvas.setZoom(zoom);
+      opt.e.preventDefault();
+      opt.e.stopPropagation();
     });
 
-    canvas.on('mouse:move', function (options) {
-        if (canvas.isDragging) {
-            var pointer = canvas.getPointer(options.e);
-            var deltaX = pointer.x - canvas.lastPosX;
-            var deltaY = pointer.y - canvas.lastPosY;
-            canvas.lastPosX = pointer.x;
-            canvas.lastPosY = pointer.y;
+    canvas.on('mouse:down', function (opt) {
 
-            //canvas.relativePan(deltaX, deltaY); // Utiliser la fonction relativePan pour déplacer le canvas
-            //canvas.renderAll(); // Redessiner le canvas
-        }
-    });
-
-    canvas.on('mouse:up', function (options) {
-        canvas.isDragging = false;
-        canvas.selection = true;
-    });
-
-    canvas.on('mouse:down', function (options) {
-
-        var pointer = canvas.getPointer(options.e);
-        canvas.isDragging = true;
-        canvas.selection = false;
-        canvas.lastPosX = pointer.x;
-        canvas.lastPosY = pointer.y;
- 
-        if (options.target) {
-            let tg = options.target;
+        if (opt.target) {
+            let tg = opt.target;
             console.log("You're click on ", tg._type);
             console.log('data: ', tg._data);
             // SPECIAL TURN
@@ -1192,9 +1245,9 @@ function getUsernameColor(_username) {
         }
     });
 
-    canvas.on('mouse:over', function(options) {
-        if (options.target) {
-            let tg = options.target;
+    canvas.on('mouse:over', function(opt) {
+        if (opt.target) {
+            let tg = opt.target;
             //console.log("You're over a ", tg._type); console.log('data: ', tg._data);
             switch (tg._type) {
                 case "tile":
@@ -1213,7 +1266,6 @@ function getUsernameColor(_username) {
                     break;
                 case "road":
                     console.log("over road " + tg._data.id);
-                    tg.set('strokeWidth', 12);
 
                     if (isMyTurn() && tg._data.player.index == -1) {
 
@@ -1221,7 +1273,6 @@ function getUsernameColor(_username) {
                             if (canPlaceRoad(tg._data)) {
                                 tg.set('stroke', getUsernameColor(username));
                                 tg.set('opacity', 1);
-                                tg.set('strokeWidth', 11);
                             }
                         }
                     }
@@ -1232,9 +1283,9 @@ function getUsernameColor(_username) {
         }
     });
 
-    canvas.on('mouse:out', function(options) {
-        if (options.target) {
-            let tg = options.target;
+    canvas.on('mouse:out', function(opt) {
+        if (opt.target) {
+            let tg = opt.target;
             //console.log("You're out a ", tg._type);  console.log('data: ', tg._data);
             switch (tg._type) {
                 case "tile":
@@ -1279,6 +1330,7 @@ function getUsernameColor(_username) {
                             if (gameAction.todo == "ROAD" || gameAction.todo == "PLAY" || gameAction.todo == "SPECIAL_ROAD_1" || gameAction.todo == "SPECIAL_ROAD_2") {
                                 if (canPlaceRoad(tg._data)) {
                                     tg.set('stroke', getUsernameColor(username));
+                                    tg.set('fill', getUsernameColor(username));
                                     tg.set('opacity', OPACITY_FOR_POSSIBLE_BUIDINGS);
                                     //tg.set('strokeWidth', 11);
                                 }
@@ -1290,6 +1342,7 @@ function getUsernameColor(_username) {
                     }
                     else {
                         tg.set('stroke', getUsernameColor(tg._data.player.username));
+                        tg.set('fill', getUsernameColor(tg._data.player.username));
                         tg.set('opacity', 1);
                     }
                     break;
@@ -1518,8 +1571,8 @@ function getUsernameColor(_username) {
 
         canvas.add(group);
 
-        if (false) {
-            let text = new fabric.Text(""+node.i+","+node.j, { fontSize: 18, stroke: 'purple', textBackgroundColor: 'white', left: dx, top: dy, selectable: false, objectCaching: false, evented: false});
+        if (DEBUG) {
+            let text = new fabric.Text(""+node.i+","+node.j, { fontSize: 9, stroke: 'purple', textBackgroundColor: 'white', left: dx, top: dy, selectable: false, objectCaching: false, evented: false});
             canvas.add(text);
         }
     }
@@ -1543,7 +1596,7 @@ function getUsernameColor(_username) {
             dx2 = dx2 - lsize;
 
         /* 
-        let path = "M" + dx1 + " " + dy1 + "L" + dx2 + " " + dy2;
+        let path = "M" + dx1 + " " + dy1 + "L" +  + " " + dy2;
 
         var pathline = new fabric.Path(path, {
             stroke: 'red', strokeWidth: 3,
@@ -1555,11 +1608,34 @@ function getUsernameColor(_username) {
         canvas.add(pathline);
         */
 
-        let line = new fabric.Line([dx1, dy1, dx2, dy2], {
-            stroke: 'rgba(250,250,250, 0)', strokeWidth: 12,
+        let ep = 3;
+
+        var points = [
+          { x: dx1, y: dy1 - ep},
+          { x: dx1, y: dy1 + ep },
+          { x: dx2, y: dy2 + ep },
+          { x: dx2, y: dy2 - ep }
+        ];
+        if (dy1 != dy2) {
+            points = [
+              { x: dx1 - ep/2, y: dy1 - ep/2},
+              { x: dx1 + ep/2, y: dy1 + ep/2 },
+              { x: dx2 + ep/2, y: dy2 + ep/2 },
+              { x: dx2 - ep/2, y: dy2 - ep/2 }
+            ];
+        }
+
+        let line = new fabric.Polygon(points, {
+            stroke: 'rgba(250,250,250, 0)', strokeWidth: 2,
             selectable: false, objectCaching: false,
             originX: 'center', originY: 'center',
         });
+
+        /*let line = new fabric.Line([dx1, dy1, dx2, dy2], {
+            stroke: 'rgba(250,250,250, 0)', strokeWidth: 12,
+            selectable: false, objectCaching: false,
+            originX: 'center', originY: 'center',
+        });*/
 
         line.set('_type', "road");
         line.set('_data', road);
@@ -1645,15 +1721,17 @@ function getUsernameColor(_username) {
             console.log("updateRoad " + road.id + " (" + road.player.index + ") - " + gameAction.todo);
             if (road.player.index != -1) {
                 groad.set('stroke', getUsernameColor(road.player.username));
+                groad.set('fill', getUsernameColor(road.player.username));
                 groad.set('opacity', 1);
-                groad.set('strokeWidth', 8);
+                groad.set('strokeWidth', 2);
             }
             else {
                 if (playerDeck && playerDeck.opts && playerDeck.opts.showPossibleBuilds && isMyTurn() /*&& catan.build*/
                     && (gameAction.todo == "ROAD" || gameAction.todo == "PLAY") && canPlaceRoad(road)) {
                     groad.set('stroke', getUsernameColor(username));
+                    groad.set('fill', getUsernameColor(username));
                     groad.set('opacity', OPACITY_FOR_POSSIBLE_BUIDINGS);
-                    groad.set('strokeWidth', 11);
+                    groad.set('strokeWidth', 2);
                 }
                 else {
                     groad.set('opacity', 0);
